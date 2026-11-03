@@ -168,11 +168,13 @@ export default async function importCatalog({ container, args }: ExecArgs) {
       },
     })
     region = result[0]
+    logger.info("[import] region Pakistan (PKR, COD) created")
+  }
+  try {
     await createTaxRegionsWorkflow(container).run({
       input: [{ country_code: COUNTRY, provider_id: "tp_system" }],
     })
-    logger.info("[import] region Pakistan (PKR, COD) created")
-  }
+  } catch {}
 
   await updateStoresWorkflow(container).run({
     input: {
@@ -196,17 +198,21 @@ export default async function importCatalog({ container, args }: ExecArgs) {
       },
     })
     location = result[0]
+  }
+  try {
     await link.create({
       [Modules.STOCK_LOCATION]: { stock_location_id: location.id },
       [Modules.FULFILLMENT]: { fulfillment_provider_id: "manual_manual" },
     })
+  } catch {}
+  try {
     await linkSalesChannelsToStockLocationWorkflow(container).run({
       input: { id: location.id, add: [salesChannel.id] },
     })
-    await updateStoresWorkflow(container).run({
-      input: { selector: { id: store.id }, update: { default_location_id: location.id } },
-    })
-  }
+  } catch {}
+  await updateStoresWorkflow(container).run({
+    input: { selector: { id: store.id }, update: { default_location_id: location.id } },
+  })
 
   let [shippingProfile] = await fulfillmentService.listShippingProfiles({ type: "default" })
   if (!shippingProfile) {
@@ -216,21 +222,45 @@ export default async function importCatalog({ container, args }: ExecArgs) {
     shippingProfile = result[0]
   }
 
+  let [serviceZone] = await fulfillmentService.listServiceZones(
+    { name: "Pakistan" },
+    { relations: ["fulfillment_set", "geo_zones"] }
+  )
   let [fulfillmentSet] = await fulfillmentService.listFulfillmentSets(
     { name: FULFILLMENT_SET },
     { relations: ["service_zones"] }
   )
+  if (!fulfillmentSet && (serviceZone as any)?.fulfillment_set) {
+    fulfillmentSet = (serviceZone as any).fulfillment_set
+  }
   if (!fulfillmentSet) {
+    if (serviceZone) {
+      await fulfillmentService.deleteServiceZones([serviceZone.id])
+      serviceZone = undefined as any
+    }
     fulfillmentSet = await fulfillmentService.createFulfillmentSets({
       name: FULFILLMENT_SET,
       type: "shipping",
       service_zones: [{ name: "Pakistan", geo_zones: [{ country_code: COUNTRY, type: "country" }] }],
     })
+    serviceZone = fulfillmentSet.service_zones?.[0] as any
+  } else if (!serviceZone) {
+    if (fulfillmentSet.service_zones?.length) {
+      serviceZone = fulfillmentSet.service_zones[0] as any
+    } else {
+      serviceZone = await fulfillmentService.createServiceZones({
+        name: "Pakistan",
+        fulfillment_set_id: fulfillmentSet.id,
+        geo_zones: [{ country_code: COUNTRY, type: "country" }],
+      })
+    }
+  }
+  try {
     await link.create({
       [Modules.STOCK_LOCATION]: { stock_location_id: location.id },
       [Modules.FULFILLMENT]: { fulfillment_set_id: fulfillmentSet.id },
     })
-  }
+  } catch {}
 
   const existingOptions = await fulfillmentService.listShippingOptions({ name: "Standard Delivery" })
   if (!existingOptions.length) {
@@ -240,7 +270,7 @@ export default async function importCatalog({ container, args }: ExecArgs) {
           name: "Standard Delivery",
           price_type: "flat",
           provider_id: "manual_manual",
-          service_zone_id: fulfillmentSet.service_zones[0].id,
+          service_zone_id: serviceZone.id,
           shipping_profile_id: shippingProfile.id,
           type: { label: "Standard", description: "Delivery across Pakistan in 2–4 days.", code: "standard" },
           prices: [
@@ -274,10 +304,12 @@ export default async function importCatalog({ container, args }: ExecArgs) {
       input: { api_keys: [{ title: API_KEY_TITLE, type: "publishable", created_by: "" }] },
     })
     apiKey = result[0] as any
+  }
+  try {
     await linkSalesChannelsToApiKeyWorkflow(container).run({
       input: { id: apiKey.id, add: [salesChannel.id] },
     })
-  }
+  } catch {}
 
   /* ---------------- images ---------------- */
 

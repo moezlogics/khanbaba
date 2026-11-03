@@ -45,7 +45,9 @@ const LINK_TABLES = [
   { table: 'publishable_api_key_sales_channel', columns: ['publishable_key_id', 'sales_channel_id'] },
   { table: 'cart_payment_collection', columns: ['cart_id', 'payment_collection_id'] },
   { table: 'cart_promotion', columns: ['cart_id', 'promotion_id'] },
-  { table: 'customer_account_holder', columns: ['customer_id', 'account_id'] },
+  { table: 'customer_account_holder', columns: ['customer_id', 'account_holder_id'] },
+  { table: 'location_fulfillment_provider', columns: ['stock_location_id', 'fulfillment_provider_id'] },
+  { table: 'location_fulfillment_set', columns: ['stock_location_id', 'fulfillment_set_id'] },
   { table: 'fulfillment_provider_location', columns: ['fulfillment_provider_id', 'stock_location_id'] },
   { table: 'fulfillment_set_location', columns: ['fulfillment_set_id', 'stock_location_id'] },
   { table: 'invite_rbac_role', columns: ['invite_id', 'rbac_role_id'] },
@@ -55,6 +57,7 @@ const LINK_TABLES = [
   { table: 'order_fulfillment', columns: ['order_id', 'fulfillment_id'] },
   { table: 'order_payment_collection', columns: ['order_id', 'payment_collection_id'] },
   { table: 'order_promotion', columns: ['order_id', 'promotion_id'] },
+  { table: 'return_fulfillment', columns: ['return_id', 'fulfillment_id'] },
   { table: 'order_return_fulfillment', columns: ['return_id', 'fulfillment_id'] },
   { table: 'product_sales_channel', columns: ['product_id', 'sales_channel_id'] },
   { table: 'product_shipping_profile', columns: ['product_id', 'shipping_profile_id'] },
@@ -64,6 +67,8 @@ const LINK_TABLES = [
   { table: 'sales_channel_stock_location', columns: ['sales_channel_id', 'stock_location_id'] },
   { table: 'shipping_option_price_set', columns: ['shipping_option_id', 'price_set_id'] },
   { table: 'user_rbac_role', columns: ['user_id', 'rbac_role_id'] },
+  { table: 'bundle_product', columns: ['bundle_id', 'product_id'] },
+  { table: 'bundle_item_product', columns: ['bundle_item_id', 'product_id'] },
 ];
 
 // ── Mock Migration Runner ───────────────────────────────────────────────
@@ -76,12 +81,16 @@ class Mock {
 }
 
 // Monkey-patch require to intercept @mikro-orm/migrations
-const rr = require.resolve('@medusajs/framework/mikro-orm/migrations', { paths: [__dirname] });
+let rr = null;
+try { rr = require.resolve('@medusajs/framework/mikro-orm/migrations', { paths: [__dirname] }); } catch (e) {}
 const oReq = Module.prototype.require;
 Module.prototype.require = function (id) {
+  if (id === '@medusajs/framework/mikro-orm/migrations' || id === '@mikro-orm/migrations') {
+    return { Migration: Mock };
+  }
   let rp;
   try { rp = Module._resolveFilename(id, this); } catch (e) { return oReq.apply(this, arguments); }
-  if (rp === rr) return { Migration: Mock };
+  if (rr && rp === rr) return { Migration: Mock };
   // Also intercept @mikro-orm/migrations directly (used by plugins)
   if (typeof rp === 'string' && rp.includes('@mikro-orm') && rp.includes('migrations') && rp.endsWith('index.js')) {
     return { Migration: Mock };
@@ -92,18 +101,50 @@ Module.prototype.require = function (id) {
 // ── Find all migration files ────────────────────────────────────────────
 function findAllMigrationFiles() {
   const R = [];
+  const seenCore = new Set();
 
-  // 1. Core @medusajs modules
-  const coreDir = path.join(__dirname, 'node_modules', '@medusajs');
-  if (fs.existsSync(coreDir)) {
-    fs.readdirSync(coreDir).forEach(pkg => {
-      const md = path.join(coreDir, pkg, 'dist', 'migrations');
+  function scanMedusaScopeDir(scopeDir) {
+    if (!scopeDir || !fs.existsSync(scopeDir)) return;
+    let pkgs = [];
+    try { pkgs = fs.readdirSync(scopeDir); } catch (e) { return; }
+    pkgs.forEach(pkg => {
+      const md = path.join(scopeDir, pkg, 'dist', 'migrations');
       if (!fs.existsSync(md)) return;
-      fs.readdirSync(md)
+      let files = [];
+      try { files = fs.readdirSync(md); } catch (e) { return; }
+      files
         .filter(f => f.endsWith('.js') && (f.startsWith('Migration') || f.startsWith('Initial')))
         .sort()
-        .forEach(f => R.push({ type: 'js', src: `@medusajs/${pkg}`, file: path.join(md, f) }));
+        .forEach(f => {
+          const key = `${pkg}/${f}`;
+          if (seenCore.has(key)) return;
+          seenCore.add(key);
+          R.push({ type: 'js', src: `@medusajs/${pkg}`, file: path.join(md, f) });
+        });
     });
+  }
+
+  // 1a. Direct node_modules/@medusajs
+  scanMedusaScopeDir(path.join(__dirname, 'node_modules', '@medusajs'));
+
+  // 1b. Sibling @medusajs packages of @medusajs/medusa and @medusajs/framework (pnpm layout)
+  ['@medusajs/medusa/package.json', '@medusajs/framework/package.json'].forEach(target => {
+    try {
+      const pkgJson = require.resolve(target, { paths: [__dirname] });
+      scanMedusaScopeDir(path.resolve(path.dirname(pkgJson), '..'));
+    } catch (e) {}
+  });
+
+  // 1c. Full scan of node_modules/.pnpm/@medusajs+* (pnpm virtual store)
+  const pnpmDir = path.join(__dirname, 'node_modules', '.pnpm');
+  if (fs.existsSync(pnpmDir)) {
+    try {
+      fs.readdirSync(pnpmDir)
+        .filter(d => d.startsWith('@medusajs+'))
+        .forEach(d => {
+          scanMedusaScopeDir(path.join(pnpmDir, d, 'node_modules', '@medusajs'));
+        });
+    } catch (e) {}
   }
 
   // 2. Installed plugins (e.g. @alphabite/medusa-wishlist)
@@ -139,22 +180,23 @@ async function extractSQL(mf) {
   if (mf.type === 'ts') {
     // For TypeScript files: regex-based extraction (no ts-node needed)
     try {
-      const content = fs.readFileSync(mf.file, 'utf8');
-      // Find the up() method body
-      const upMatch = content.match(/async\s+up\s*\(\s*\)[^{]*\{([\s\S]*?)\n\s*\}/);
-      if (!upMatch) return [];
-      const body = upMatch[1];
+      const content = fs.readFileSync(mf.file, 'utf8').replace(/\r\n/g, '\n');
+      const upIdx = content.search(/async\s+up\s*\(/);
+      if (upIdx === -1) return [];
+      const downIdx = content.search(/async\s+down\s*\(/);
+      const body = content.slice(upIdx, downIdx !== -1 ? downIdx : undefined);
       const sqls = [];
-      // Match this.addSql(`...`) — backtick strings (may span multiple lines)
-      const regex = /this\.addSql\(\s*`([\s\S]*?)`\s*\)/g;
+      const callRegex = /this\.addSql\(([\s\S]*?)\)\s*;?/g;
       let m;
-      while ((m = regex.exec(body)) !== null) {
-        if (m[1].trim()) sqls.push(m[1].trim());
-      }
-      // Also match this.addSql( `...` + `...` ) — concatenated strings
-      const concatRegex = /this\.addSql\(\s*\n?\s*((?:`[^`]*`\s*\+?\s*\n?\s*)+)\)/g;
-      while ((m = concatRegex.exec(body)) !== null) {
-        const combined = m[1].replace(/`\s*\+\s*`/g, '').replace(/`/g, '').trim();
+      while ((m = callRegex.exec(body)) !== null) {
+        const arg = m[1];
+        const parts = [];
+        const strRegex = /`([\s\S]*?)`/g;
+        let sm;
+        while ((sm = strRegex.exec(arg)) !== null) {
+          parts.push(sm[1]);
+        }
+        const combined = parts.join('').trim();
         if (combined && !sqls.includes(combined)) sqls.push(combined);
       }
       return sqls;
@@ -408,6 +450,8 @@ async function run() {
       // Engagement (populated by SW click handler)
       ['total_clicked', 'INTEGER NOT NULL DEFAULT 0'],
       ['last_clicked_at', 'TIMESTAMPTZ NULL'],
+      ['total_shown', 'INTEGER NOT NULL DEFAULT 0'],
+      ['last_shown_at', 'TIMESTAMPTZ NULL'],
       // Demographic segmentation (May 2026 — Migration20260507000000).
       // Synced from customer.metadata.gender after onboarding so push
       // campaigns can target male / female / other audiences.
@@ -461,6 +505,7 @@ async function run() {
       ['filter_browsers', 'TEXT NULL'],
       ['filter_customers_only', 'BOOLEAN NOT NULL DEFAULT FALSE'],
       ['total_clicked', 'INTEGER NOT NULL DEFAULT 0'],
+      ['total_shown', 'INTEGER NOT NULL DEFAULT 0'],
       // Demographic targeting (May 2026 — Migration20260507000000).
       // JSON-stringified array of gender codes, e.g. ["male","female"].
       ['filter_genders', 'TEXT NULL'],
@@ -483,9 +528,322 @@ async function run() {
       );
     `);
 
-    console.log('      Push subscription + campaign tables ready.');
+    // push_delivery — per-recipient delivery log
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "push_delivery" (
+        "id" TEXT NOT NULL,
+        "campaign_id" TEXT NOT NULL,
+        "subscription_id" TEXT NULL,
+        "endpoint" TEXT NOT NULL,
+        "customer_id" TEXT NULL,
+        "status" TEXT CHECK ("status" IN ('sent', 'failed', 'expired', 'invalid')) NOT NULL DEFAULT 'sent',
+        "status_code" INTEGER NULL,
+        "error" TEXT NULL,
+        "attempts" INTEGER NOT NULL DEFAULT 1,
+        "shown_at" TIMESTAMPTZ NULL,
+        "clicked_at" TIMESTAMPTZ NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "push_delivery_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_push_delivery_campaign_id" ON "push_delivery" ("campaign_id") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_push_delivery_endpoint" ON "push_delivery" ("endpoint") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_push_delivery_status" ON "push_delivery" ("status") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_push_delivery_deleted_at" ON "push_delivery" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    // admin_push_subscription — admin PWA order notification devices
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "admin_push_subscription" (
+        "id" TEXT NOT NULL,
+        "endpoint" TEXT NOT NULL,
+        "p256dh" TEXT NOT NULL,
+        "auth" TEXT NOT NULL,
+        "admin_id" TEXT NULL,
+        "label" TEXT NULL,
+        "device_browser" TEXT NULL,
+        "is_active" BOOLEAN NOT NULL DEFAULT true,
+        "last_sent_at" TIMESTAMPTZ NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "admin_push_subscription_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE UNIQUE INDEX IF NOT EXISTS "IDX_admin_push_subscription_endpoint_unique" ON "admin_push_subscription" ("endpoint") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_admin_push_subscription_deleted_at" ON "admin_push_subscription" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    console.log('      Push subscription + campaign + delivery + admin push tables ready.');
   } catch (e) {
     console.error('      Error creating push tables:', e.message);
+  }
+
+  // ── CUSTOM: Site Settings, Banners, Blog, Contact Leads, Search Log, Reviews, Wishlist ──
+  console.log(`[2.55/6] Ensuring site_setting, banner, blog, contact_lead, search_log, advanced_review, wishlist & review tables...`);
+  try {
+    // site_setting
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "site_setting" (
+        "id" TEXT NOT NULL,
+        "key" TEXT NOT NULL,
+        "value" TEXT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "site_setting_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE UNIQUE INDEX IF NOT EXISTS "IDX_site_setting_key_unique" ON "site_setting" ("key") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_site_setting_deleted_at" ON "site_setting" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    // banner
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "banner" (
+        "id" TEXT NOT NULL,
+        "title" TEXT NULL,
+        "subtitle" TEXT NULL,
+        "image_url" TEXT NOT NULL,
+        "image_url_mobile" TEXT NULL,
+        "link_url" TEXT NULL,
+        "cta_label" TEXT NULL,
+        "sort_order" INTEGER NOT NULL DEFAULT 0,
+        "is_active" BOOLEAN NOT NULL DEFAULT true,
+        "text_position" TEXT NOT NULL DEFAULT 'bottom-left',
+        "theme" TEXT NOT NULL DEFAULT 'dark',
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "banner_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`ALTER TABLE "banner" ADD COLUMN IF NOT EXISTS "text_position" TEXT NOT NULL DEFAULT 'bottom-left';`); } catch (e) { }
+    try { await c.query(`ALTER TABLE "banner" ADD COLUMN IF NOT EXISTS "theme" TEXT NOT NULL DEFAULT 'dark';`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_banner_deleted_at" ON "banner" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    // blog_category, blog_author, blog_post, blog_post_categories
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "blog_category" (
+        "id" TEXT NOT NULL,
+        "name" TEXT NOT NULL,
+        "handle" TEXT NOT NULL,
+        "description" TEXT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "blog_category_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE UNIQUE INDEX IF NOT EXISTS "IDX_blog_category_handle_unique" ON "blog_category" ("handle") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_blog_category_deleted_at" ON "blog_category" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "blog_author" (
+        "id" TEXT NOT NULL,
+        "name" TEXT NOT NULL,
+        "handle" TEXT NOT NULL,
+        "role" TEXT NULL,
+        "bio" TEXT NULL,
+        "avatar_url" TEXT NULL,
+        "email" TEXT NULL,
+        "expertise" TEXT NULL,
+        "twitter_url" TEXT NULL,
+        "linkedin_url" TEXT NULL,
+        "facebook_url" TEXT NULL,
+        "website_url" TEXT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "blog_author_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE UNIQUE INDEX IF NOT EXISTS "IDX_blog_author_handle_unique" ON "blog_author" ("handle") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_blog_author_deleted_at" ON "blog_author" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "blog_post" (
+        "id" TEXT NOT NULL,
+        "title" TEXT NOT NULL,
+        "handle" TEXT NOT NULL,
+        "excerpt" TEXT NULL,
+        "content" TEXT NULL,
+        "featured_image" TEXT NULL,
+        "featured_image_alt" TEXT NULL,
+        "status" TEXT CHECK ("status" IN ('draft', 'published')) NOT NULL DEFAULT 'draft',
+        "published_at" TIMESTAMPTZ NULL,
+        "seo_title" TEXT NULL,
+        "seo_description" TEXT NULL,
+        "seo_keywords" TEXT NULL,
+        "author_id" TEXT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "blog_post_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`ALTER TABLE "blog_post" ADD COLUMN IF NOT EXISTS "author_id" TEXT NULL;`); } catch (e) { }
+    try { await c.query(`CREATE UNIQUE INDEX IF NOT EXISTS "IDX_blog_post_handle_unique" ON "blog_post" ("handle") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_blog_post_deleted_at" ON "blog_post" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_blog_post_author_id" ON "blog_post" ("author_id") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "blog_post_categories" (
+        "blog_post_id" TEXT NOT NULL,
+        "blog_category_id" TEXT NOT NULL,
+        CONSTRAINT "blog_post_categories_pkey" PRIMARY KEY ("blog_post_id", "blog_category_id")
+      );
+    `);
+
+    // contact_lead
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "contact_lead" (
+        "id" TEXT NOT NULL,
+        "name" TEXT NOT NULL,
+        "email" TEXT NOT NULL,
+        "phone" TEXT NULL,
+        "subject" TEXT NULL,
+        "message" TEXT NOT NULL,
+        "status" TEXT NOT NULL DEFAULT 'new',
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "contact_lead_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_contact_lead_deleted_at" ON "contact_lead" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_contact_lead_status" ON "contact_lead" ("status") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_contact_lead_created_at" ON "contact_lead" ("created_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    // search_log
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "search_log" (
+        "id" TEXT NOT NULL,
+        "query" TEXT NOT NULL,
+        "count" INTEGER NOT NULL DEFAULT 1,
+        "last_used_at" TIMESTAMPTZ NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "search_log_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_search_log_deleted_at" ON "search_log" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_search_log_query" ON "search_log" ("query") WHERE deleted_at IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_search_log_count" ON "search_log" ("count" DESC) WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    // advanced_review
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "advanced_review" (
+        "id" TEXT NOT NULL,
+        "product_id" TEXT NOT NULL,
+        "customer_id" TEXT NULL,
+        "guest_name" TEXT NULL,
+        "guest_email" TEXT NULL,
+        "rating" INTEGER NOT NULL,
+        "content" TEXT NOT NULL,
+        "photos" JSONB NOT NULL DEFAULT '[]',
+        "is_verified" BOOLEAN NOT NULL DEFAULT false,
+        "status" TEXT CHECK ("status" IN ('pending', 'approved', 'flagged')) NOT NULL DEFAULT 'pending',
+        "owner_reply" TEXT NULL,
+        "metadata" JSONB NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "advanced_review_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_advanced_review_deleted_at" ON "advanced_review" ("deleted_at") WHERE deleted_at IS NULL;`); } catch (e) { }
+
+    // wishlist + wishlist_item
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "wishlist" (
+        "id" TEXT NOT NULL,
+        "name" TEXT NULL,
+        "customer_id" TEXT NULL,
+        "sales_channel_id" TEXT NOT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "wishlist_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_wishlist_customer_id_sales_channel_id" ON "wishlist" ("customer_id", "sales_channel_id") WHERE ("customer_id" IS NOT NULL AND "deleted_at" IS NULL);`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_wishlist_deleted_at" ON "wishlist" ("deleted_at") WHERE "deleted_at" IS NULL;`); } catch (e) { }
+
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "wishlist_item" (
+        "id" TEXT NOT NULL,
+        "product_variant_id" TEXT NOT NULL,
+        "wishlist_id" TEXT NOT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "wishlist_item_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_wishlist_item_deleted_at" ON "wishlist_item" ("deleted_at") WHERE "deleted_at" IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE UNIQUE INDEX IF NOT EXISTS "IDX_wishlist_item_product_variant_id_wishlist_id_unique" ON "wishlist_item" ("product_variant_id", "wishlist_id") WHERE "deleted_at" IS NULL;`); } catch (e) { }
+    try { await c.query(`CREATE INDEX IF NOT EXISTS "IDX_wishlist_item_wishlist_id" ON "wishlist_item" ("wishlist_id") WHERE "deleted_at" IS NULL;`); } catch (e) { }
+
+    // product_review + product_review_image + product_review_response + product_review_stats
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "product_review" (
+        "id" TEXT NOT NULL,
+        "name" TEXT NULL,
+        "email" TEXT NULL,
+        "rating" INTEGER NOT NULL,
+        "content" TEXT NULL,
+        "order_line_item_id" TEXT NULL,
+        "product_id" TEXT NULL,
+        "order_id" TEXT NULL,
+        "status" TEXT CHECK ("status" IN ('pending', 'approved', 'flagged')) NOT NULL DEFAULT 'pending',
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "product_review_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "product_review_image" (
+        "id" TEXT NOT NULL,
+        "url" TEXT NOT NULL,
+        "product_review_id" TEXT NOT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "product_review_image_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "product_review_response" (
+        "id" TEXT NOT NULL,
+        "content" TEXT NOT NULL,
+        "product_review_id" TEXT NOT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "product_review_response_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    await c.query(`
+      CREATE TABLE IF NOT EXISTS "product_review_stats" (
+        "id" TEXT NOT NULL,
+        "product_id" TEXT NOT NULL,
+        "average_rating" INTEGER NULL,
+        "review_count" INTEGER NOT NULL DEFAULT 0,
+        "rating_count_1" INTEGER NOT NULL DEFAULT 0,
+        "rating_count_2" INTEGER NOT NULL DEFAULT 0,
+        "rating_count_3" INTEGER NOT NULL DEFAULT 0,
+        "rating_count_4" INTEGER NOT NULL DEFAULT 0,
+        "rating_count_5" INTEGER NOT NULL DEFAULT 0,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMPTZ NULL,
+        CONSTRAINT "product_review_stats_pkey" PRIMARY KEY ("id")
+      );
+    `);
+  } catch (e) {
+    console.error('      Error creating custom/plugin tables:', e.message);
   }
 
   // ── CUSTOM: OTP Auth Table ────────────────────────────────────────
