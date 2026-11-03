@@ -1,6 +1,6 @@
 {
-  "name": "Mobile Store",
-  "short_name": "Mobile Store",
+  "name": "Khan Baba",
+  "short_name": "Khan Baba",
   "description": "View orders, change status, and get instant alerts on new orders.",
   "start_url": "/",
   "scope": "/",

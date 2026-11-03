@@ -11,7 +11,7 @@ if ! git pull origin main; then
 fi
 cd ..
 
-echo "=== Syncing files to backend/ ==="
+echo "=== Syncing files to Root ==="
 rsync -av --delete \
   --exclude='.deploy-source/' \
   --exclude='.git/' \
@@ -19,15 +19,15 @@ rsync -av --delete \
   --exclude='pull.sh' \
   --exclude='admin-static/' \
   --exclude='node_modules/' \
+  --exclude='.medusa/' \
   --exclude='dist/' \
-  --exclude='ecosystem.config.js' \
   --exclude='logs/' \
-  .deploy-source/api/ backend/
+  .deploy-source/api/ .
 
 echo "=== Running Deploy script ==="
-if [ -f "backend/deploy-backend.sh" ]; then
-  chmod +x backend/deploy-backend.sh
-  cd backend && ./deploy-backend.sh && cd ..
+if [ -f "./deploy-backend.sh" ]; then
+  chmod +x ./deploy-backend.sh
+  ./deploy-backend.sh
 else
   echo "No deploy-backend.sh found. Please build manually or restart PM2."
 fi

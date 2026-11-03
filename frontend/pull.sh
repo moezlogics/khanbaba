@@ -19,7 +19,6 @@ rsync -av --delete \
   --exclude='pull.sh' \
   --exclude='node_modules/' \
   --exclude='.next/' \
-  --exclude='ecosystem.config.js' \
   --exclude='logs/' \
   .deploy-source/frontend/ .
 

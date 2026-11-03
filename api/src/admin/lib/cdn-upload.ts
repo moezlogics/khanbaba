@@ -27,10 +27,10 @@ export type CdnUploadResult = {
 /** CDN config — reads from global window vars set by admin panel build */
 function getCdnConfig() {
   return {
-    url: (window as any).__CDN_URL__ || "http://localhost:8041",
+    url: (window as any).__CDN_URL__ || "https://cdn.khanbaba.pk",
     apiKey:
       (window as any).__CDN_API_KEY__ ||
-      "ecomm-cdn-secret-key-change-in-production",
+      "d56628333ffe1079f763ff4e6973e70c3b8b89a349a054481f7974bba153a463",
   }
 }
 

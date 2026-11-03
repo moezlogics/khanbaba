@@ -1,6 +1,6 @@
 {
-  "name": "Z Mobiles",
-  "short_name": "Z Mobiles",
+  "name": "Khan Baba",
+  "short_name": "Khan Baba",
   "description": "View orders, change status, and get instant alerts on new orders.",
   "start_url": "/",
   "scope": "/",

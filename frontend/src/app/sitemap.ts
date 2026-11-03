@@ -9,7 +9,7 @@ export const revalidate = 360
 const BACKEND_URL =
   process.env.MEDUSA_BACKEND_URL ||
   process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
-  "http://localhost:3122"
+  "http://127.0.0.1:3252"
 
 const PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""

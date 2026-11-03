@@ -1,7 +1,7 @@
 import { sdk } from "@lib/config"
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:3122"
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "https://api.khanbaba.pk"
 
 export type ProductReview = {
   id: string

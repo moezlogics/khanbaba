@@ -15,7 +15,7 @@ import Medusa, { FetchArgs, FetchInput } from "@medusajs/js-sdk"
 // client `MEDUSA_BACKEND_URL` (non-public) is undefined and we fall back to
 // the public url automatically.
 const PUBLIC_BACKEND_URL =
-  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:3122"
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "https://api.khanbaba.pk"
 const INTERNAL_BACKEND_URL =
   process.env.MEDUSA_BACKEND_URL || PUBLIC_BACKEND_URL
 

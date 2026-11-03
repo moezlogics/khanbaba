@@ -128,7 +128,7 @@ const nextConfig = {
         // Self-hosted CDN (development)
         protocol: "http",
         hostname: "localhost",
-        port: "3061",
+        port: "3251",
       },
       {
         protocol: "https",

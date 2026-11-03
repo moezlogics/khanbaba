@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
   process.env.MEDUSA_BACKEND_URL ||
-  "http://localhost:8042"
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
+  "http://127.0.0.1:3252"
 
 const PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""

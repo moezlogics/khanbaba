@@ -1,7 +1,10 @@
 import "server-only"
 import { cache } from "react"
 
-const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:3122"
+const BACKEND_URL =
+  process.env.MEDUSA_BACKEND_URL ||
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
+  "http://127.0.0.1:3252"
 
 export type SiteSettings = {
   site_name?: string

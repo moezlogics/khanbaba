@@ -19,7 +19,19 @@ rsync -av --delete \
   --exclude='pull.sh' \
   --exclude='uploads/' \
   --exclude='node_modules/' \
-  --exclude='ecosystem.config.js' \
+  --exclude='dist/' \
+  --exclude='logs/' \
   .deploy-source/cdn/ .
+
+echo "=== Building and Reloading CDN ==="
+mkdir -p logs uploads
+npm install --no-audit --no-fund
+npm run build
+
+if pm2 describe khanbaba-cdn >/dev/null 2>&1; then
+  pm2 reload khanbaba-cdn --update-env
+else
+  pm2 start ecosystem.config.js
+fi
 
 echo "=== CDN Updated Successfully ==="

@@ -41,8 +41,9 @@ export const sendAbandonedNotificationsStep = createStep(
     const storeUrl =
       settings.store_url ||
       process.env.STORE_URL ||
+      process.env.STOREFRONT_URL ||
       process.env.STORE_CORS?.split(",")[0] ||
-      "http://localhost:3090"
+      "https://khanbaba.pk"
     const storeName =
       settings.site_name ||
       process.env.STORE_NAME ||

@@ -8,8 +8,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided." }, { status: 400 })
     }
 
-    const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:3121"
-    const cdnKey = process.env.CDN_API_KEY || "ecomm-cdn-secret-key-change-in-production"
+    const cdnUrl =
+      process.env.CDN_INTERNAL_URL ||
+      process.env.NEXT_PUBLIC_CDN_URL ||
+      "http://127.0.0.1:3251"
+    const cdnKey =
+      process.env.CDN_API_KEY ||
+      "d56628333ffe1079f763ff4e6973e70c3b8b89a349a054481f7974bba153a463"
 
     // Prepare FormData for CDN
     const cdnFormData = new FormData()

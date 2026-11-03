@@ -1,11 +1,11 @@
 // Server-only data function → hit the backend directly (internal/localhost)
 // instead of looping out through the public domain + Cloudflare. Prefer the
-// internal URL; fall back to the public one, then localhost (3122 — the
+// internal URL; fall back to the public one, then localhost (3252 — the
 // backend's real port).
 const BACKEND_URL =
   process.env.MEDUSA_BACKEND_URL ||
   process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
-  "http://localhost:3122"
+  "http://127.0.0.1:3252"
 
 const PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""

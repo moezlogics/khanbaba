@@ -29,9 +29,9 @@ import { NextRequest, NextResponse } from "next/server"
  */
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
   process.env.MEDUSA_BACKEND_URL ||
-  "http://localhost:3122" // fallback to 3120 if needed
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
+  "http://127.0.0.1:3252"
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
 
 type DecodedToken = {

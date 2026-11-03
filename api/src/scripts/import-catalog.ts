@@ -9,6 +9,7 @@ import {
   createProductCategoriesWorkflow,
   createProductsWorkflow,
   createRegionsWorkflow,
+  createSalesChannelsWorkflow,
   createShippingOptionsWorkflow,
   createShippingProfilesWorkflow,
   createStockLocationsWorkflow,
@@ -139,8 +140,16 @@ export default async function importCatalog({ container, args }: ExecArgs) {
   })
 
   const salesChannelService = container.resolve(Modules.SALES_CHANNEL)
-  const [salesChannel] = await salesChannelService.listSalesChannels({}, { take: 1 })
-  if (!salesChannel) throw new Error("No sales channel — start the server once so Medusa creates the default one.")
+  let [salesChannel] = await salesChannelService.listSalesChannels({}, { take: 1 })
+  if (!salesChannel) {
+    const { result } = await createSalesChannelsWorkflow(container).run({
+      input: {
+        salesChannelsData: [{ name: "Default Sales Channel" }],
+      },
+    })
+    salesChannel = result[0]
+    logger.info("[import] created Default Sales Channel")
+  }
 
   const regionService = container.resolve(Modules.REGION)
   let [region] = await regionService.listRegions({ currency_code: CURRENCY })

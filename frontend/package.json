@@ -8,9 +8,9 @@
     "ecommerce-storefront"
   ],
   "scripts": {
-    "dev": "next dev --turbopack -p 3120",
+    "dev": "next dev --turbopack -p 3250",
     "build": "next build",
-    "start": "next start -p 3120",
+    "start": "next start -p 3250",
     "lint": "next lint",
     "analyze": "ANALYZE=true next build"
   },

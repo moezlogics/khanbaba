@@ -4,7 +4,7 @@ import { useState } from "react"
 import { recordReturnTo } from "@lib/data/customer"
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:3122"
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "https://api.khanbaba.pk"
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
 
 type GoogleSignInButtonProps = {

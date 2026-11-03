@@ -190,7 +190,9 @@ export async function addBundleToCart({
   if (!cart) throw new Error("Error retrieving or creating cart")
 
   const backendUrl =
-    process.env.MEDUSA_BACKEND_URL || "http://localhost:3122"
+    process.env.MEDUSA_BACKEND_URL ||
+    process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
+    "http://127.0.0.1:3252"
   const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
 
   const authHeaders = (await getAuthHeaders()) as Record<string, string>

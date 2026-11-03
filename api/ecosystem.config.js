@@ -1,4 +1,3 @@
-cat > /home/khanbaba-api/htdocs/api.khanbaba.pk/ecosystem.config.js << 'SCRIPT'
 /**
  * Medusa v2 process config — SINGLE SHARED process.
  *
@@ -6,10 +5,7 @@ cat > /home/khanbaba-api/htdocs/api.khanbaba.pk/ecosystem.config.js << 'SCRIPT'
  *   In "shared" mode ONE process handles BOTH the HTTP API AND the
  *   background worker (event subscribers + scheduled jobs + the Redis
  *   event-bus loop). This is the most robust setup for a single VPS —
- *   there's no separate "worker" process that can be forgotten / crash,
- *   which was exactly why auto push + auto emails weren't firing
- *   (manual push works because it's an HTTP route; order.placed /
- *   customer.created are EVENTS that need the worker loop).
+ *   there's no separate "worker" process that can be forgotten / crash.
  *
  * `instances: 1` + fork so scheduled jobs (e.g. abandoned-cart) don't
  * double-run. For this store one instance is plenty.
@@ -46,14 +42,11 @@ module.exports = {
     {
       name: "khanbaba-api",
       cwd: "/home/khanbaba-api/htdocs/api.khanbaba.pk",
-      // Run via npm so the medusa CLI is resolved correctly regardless of
-      // where the binary lives (the hard-coded @medusajs/cli/bin path does
-      // not exist in this install). package.json "start" = "medusa start".
       script: "npm",
       args: "run start",
       env: {
         NODE_ENV: "production",
-        PORT: 3122,
+        PORT: 3252,
         MEDUSA_WORKER_MODE: "shared",
         ...envConfig
       },
@@ -70,8 +63,4 @@ module.exports = {
       time: true
     }
   ]
-};
-SCRIPT
-
-mkdir -p /home/khanbaba-api/htdocs/api.khanbaba.pk/logs
-
+}

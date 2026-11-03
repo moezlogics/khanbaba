@@ -4,16 +4,16 @@ import path from "path";
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 export const env = {
-    PORT: parseInt(process.env.PORT || "3091", 10),
+    PORT: parseInt(process.env.PORT || "3251", 10),
     NODE_ENV: process.env.NODE_ENV || "development",
-    CDN_PUBLIC_URL: process.env.CDN_PUBLIC_URL || "http://localhost:3091",
+    CDN_PUBLIC_URL: process.env.CDN_PUBLIC_URL || "https://cdn.khanbaba.pk",
     CDN_API_KEY: process.env.CDN_API_KEY || "",
     UPLOAD_DIR: path.resolve(process.env.UPLOAD_DIR || "./uploads"),
     MAX_FILE_SIZE_MB: parseInt(process.env.MAX_FILE_SIZE_MB || "10", 10),
     WEBP_QUALITY: parseInt(process.env.WEBP_QUALITY || "90", 10),
     MAX_WIDTH: parseInt(process.env.MAX_WIDTH || "1920", 10),
     THUMB_WIDTH: parseInt(process.env.THUMB_WIDTH || "400", 10),
-    CORS_ORIGINS: (process.env.CORS_ORIGINS || "http://localhost:3090,http://localhost:3092,http://localhost:3091")
+    CORS_ORIGINS: (process.env.CORS_ORIGINS || "https://www.khanbaba.pk,https://khanbaba.pk,https://api.khanbaba.pk,http://localhost:3250,http://localhost:3252,http://localhost:3251")
         .split(",")
         .map((o) => o.trim()),
 
