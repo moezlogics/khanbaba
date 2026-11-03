@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build & runtime directories
+.next/
+.medusa/
+logs/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,35 @@
+#!/bin/bash
+echo "=== Pulling Backend Updates from GitHub ==="
+cd .deploy-source
+if ! git pull origin main; then
+  echo ""
+  echo "!!! git pull failed — ABORTING before rsync."
+  echo "    Nothing was copied, so the live site still runs the previous"
+  echo "    build rather than being re-deployed from stale checkout files."
+  echo "    Fix the pull (usually GitHub auth), then run this script again."
+  exit 1
+fi
+cd ..
+
+echo "=== Syncing files to backend/ ==="
+rsync -av --delete \
+  --exclude='.deploy-source/' \
+  --exclude='.git/' \
+  --exclude='.env' \
+  --exclude='pull.sh' \
+  --exclude='admin-static/' \
+  --exclude='node_modules/' \
+  --exclude='dist/' \
+  --exclude='ecosystem.config.js' \
+  --exclude='logs/' \
+  .deploy-source/api/ backend/
+
+echo "=== Running Deploy script ==="
+if [ -f "backend/deploy-backend.sh" ]; then
+  chmod +x backend/deploy-backend.sh
+  cd backend && ./deploy-backend.sh && cd ..
+else
+  echo "No deploy-backend.sh found. Please build manually or restart PM2."
+fi
+
+echo "=== Backend Updated Successfully ==="

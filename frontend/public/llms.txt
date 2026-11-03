@@ -1,0 +1,23 @@
+# Khan Baba Dry Fruits
+
+> Khan Baba (khanbaba.pk) is a Pakistani dry fruits wholesaler and online store with over 40 years in the trade. It sells chilgoza (pine nuts), badam (almonds), pista (pistachios), kaju (cashews), akhrot (walnuts), anjeer (figs), khajoor (dates), dried apricots, honey and mixed dry fruits in 250g to 3KG packs, delivered across Pakistan with cash on delivery.
+
+## Navigation
+
+- [Home](/) - Category shortcuts, weekly discounts and the best-selling dry fruits.
+- [Shop](/store) - Every product, filterable by category, price and stock.
+- [Chilgoza](/chilgoza-price-in-pakistan/) - Grade A, Grade B, Standard and shelled pine nuts.
+- [Badam](/badam/) - American, Iranian and desi almond kernels.
+- [Dates](/dates-price-in-pakistan/) - Ajwa, Amber and Mabroom dates.
+- [Pista](/pista-price-in-pakistan/) - Pistachio kernels and salted roasted pista.
+- [Kaju](/kaju-price-in-pakistan/) - Raw and roasted salted cashews.
+- [About](/about/) - The Khan Baba story.
+- [Contact](/contact/) - Phone, WhatsApp and email.
+
+## Ordering
+
+- Prices are in Pakistani Rupees (PKR); each product page lists every pack size with its price.
+- Delivery is Rs 199 per order and free on orders over Rs 3,000.
+- Payment is cash on delivery.
+- Damaged, expired or incorrect items can be reported for a refund within 24 hours of delivery — see [Refund Policy](/refund-policy/).
+- Wholesale and bulk orders: WhatsApp +92 303 0119992 or email order@khanbaba.pk.
