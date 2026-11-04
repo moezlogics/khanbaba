@@ -35,13 +35,13 @@ export default function CustomerReviews({
 
   return (
     <section className="py-8 small:py-12" aria-labelledby="customer-reviews-heading">
-      <div className="mb-4 small:mb-6 flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h2 id="customer-reviews-heading" className="text-[22px] small:text-[30px] font-semibold text-ink">
+      <div className="mb-5 small:mb-7 flex flex-col items-center gap-2 text-center">
+        <div className="w-full">
+          <h2 id="customer-reviews-heading" className="section-title text-[22px] small:text-[32px]">
             Loved by customers across Pakistan
           </h2>
           {count > 0 && (
-            <p className="mt-1 inline-flex items-center gap-2 text-[13px] text-ink/65">
+            <p className="mt-2 inline-flex items-center gap-2 text-[14px] text-ink">
               <Stars value={average} />
               <span>
                 <strong className="text-ink">{average.toFixed(1)}</strong> average · {count}{" "}

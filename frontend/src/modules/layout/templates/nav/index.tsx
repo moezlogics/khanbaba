@@ -156,7 +156,7 @@ export default async function Nav() {
               <li className="h-full flex items-center relative group">
                 <LocalizedClientLink
                   href="/shop"
-                  className="relative px-4 h-full inline-flex items-center text-sm font-medium text-header-fg transition-colors gap-1.5 group-hover:text-header-accent"
+                  className="label-caps relative px-4 h-full inline-flex items-center text-[14px] text-header-fg transition-colors gap-1.5 group-hover:text-header-accent"
                 >
                   Shop
                   {topCategories.length > 0 && (
@@ -180,7 +180,7 @@ export default async function Nav() {
                         <LocalizedClientLink
                           key={c.id}
                           href={`/collection/${c.handle}`}
-                          className="group/cat text-sm text-ink/80 hover:text-primary hover:bg-surface rounded-base px-3 py-2 -mx-3 transition-colors inline-flex items-center justify-between"
+                          className="group/cat text-[15px] font-semibold text-ink hover:text-primary hover:bg-surface rounded-base px-3 py-2 -mx-3 transition-colors inline-flex items-center justify-between"
                         >
                           <span>{c.name}</span>
                           <i
@@ -241,7 +241,7 @@ function NavLink({
   return (
     <LocalizedClientLink
       href={href}
-      className="relative group px-4 h-full inline-flex items-center text-sm font-medium text-header-fg hover:text-header-accent transition-colors"
+      className="label-caps relative group px-4 h-full inline-flex items-center text-[14px] text-header-fg hover:text-header-accent transition-colors"
     >
       {children}
       <span

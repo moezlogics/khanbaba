@@ -9,7 +9,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
  * Colours come ONLY from the theme's footer tokens (Appearance → Footer
  * background / text / border), so it reads correctly on a dark or light
  * footer: headings use the footer text colour at full strength, links at
- * 75%. Every piece is admin-driven and hides itself when blank.
+ * 88%. Every piece is admin-driven and hides itself when blank.
  */
 export default async function Footer() {
   const [settings, categories] = await Promise.all([
@@ -58,9 +58,9 @@ export default async function Footer() {
 
   // Footer tokens as utility values (no Tailwind alias exists for them).
   const fgStrong = "text-[rgb(var(--color-footer-fg))]"
-  const fgSoft = "text-[rgb(var(--color-footer-fg)/0.72)]"
-  const heading = `mb-4 text-[14px] font-semibold ${fgStrong}`
-  const link = `text-[15px] ${fgSoft} transition-colors hover:text-[rgb(var(--color-footer-fg))]`
+  const fgSoft = "text-[rgb(var(--color-footer-fg)/0.88)]"
+  const heading = `label-caps mb-4 text-[15px] ${fgStrong}`
+  const link = `text-[15px] ${fgSoft} transition-colors hover:text-[rgb(var(--color-footer-fg))] hover:underline underline-offset-4`
 
   return (
     <footer
@@ -69,7 +69,7 @@ export default async function Footer() {
     >
       <div className="container-anvogue grid grid-cols-2 gap-x-6 gap-y-10 py-12 small:grid-cols-[1.5fr_1fr_1fr_1.3fr] small:gap-12 small:py-16">
         <div className="col-span-2 small:col-span-1">
-          <p className={`text-[24px] font-semibold font-heading ${fgStrong}`}>{siteName}</p>
+          <p className={`text-[28px] font-heading ${fgStrong}`}>{siteName}</p>
           {tagline && <p className={`mt-2 max-w-xs text-[15px] leading-relaxed ${fgSoft}`}>{tagline}</p>}
           {socials.length > 0 && (
             <div className="mt-5 flex flex-wrap gap-2">

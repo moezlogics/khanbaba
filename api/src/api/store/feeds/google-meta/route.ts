@@ -102,7 +102,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
             id: variant.id,
             title: escapeHtml(product.title),
             description: escapeHtml(product.description || product.title),
-            link: escapeHtml(`${cleanBaseUrl}/${countryCode}/products/${product.handle}`),
+            link: escapeHtml(`${cleanBaseUrl}/product/${product.handle}/`),
             image_link: escapeHtml(product.thumbnail || ""),
             additional_image_link: escapeHtml(product.images?.map((img: any) => img.url)?.join(",") || ""),
             availability: stockStatus,

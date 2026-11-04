@@ -34,40 +34,40 @@ const DEFAULTS = {
   // Khan Baba brand (the WordPress/Woodmart theme it replaces): deep brown
   // on white, warm sand surfaces, Manrope, black footer. Every key can still
   // be overridden from the admin Theme page.
-  primary: "#603F26",
+  primary: "#8E3B12",
   primary_fg: "#FFFFFF",
-  accent: "#F4E6D0",
-  accent_fg: "#603F26",
+  accent: "#F3E3D3",
+  accent_fg: "#4A1D06",
   bg: "#FFFFFF",
-  surface: "#F7F4EF",
-  surface_alt: "#FBF9F6",
-  text: "#242424",
-  text_muted: "#777777",
-  border: "#ECE5DA",
-  success: "#3DAB25",
-  warning: "#ECB018",
-  danger: "#DB4444",
-  info: "#8684D4",
+  surface: "#FAF4EC",
+  surface_alt: "#FDF9F4",
+  text: "#111111",
+  text_muted: "#3A3A3A",
+  border: "#E6D8C6",
+  success: "#2F6B1F",
+  warning: "#B45309",
+  danger: "#B42318",
+  info: "#0E7490",
   // Header — fall back to page colours so the header looks identical
   // to the rest of the storefront when the admin hasn't customised it.
   header_bg: "#FFFFFF",
-  header_fg: "#242424",
-  header_fg_muted: "#777777",
-  header_hover_bg: "#F7F4EF",
-  header_border: "#ECE5DA",
-  header_accent: "#603F26",
+  header_fg: "#111111",
+  header_fg_muted: "#3A3A3A",
+  header_hover_bg: "#FAF4EC",
+  header_border: "#ECE1D3",
+  header_accent: "#8E3B12",
   radius: "lg",
   container: "default",
-  font: "dm-sans",
-  font_heading: "fraunces",
+  font: "josefin",
+  font_heading: "abril",
   header_top_border: "",
-  footer_bg: "#000000",
-  footer_fg: "#CFCFCF",
-  footer_border: "#262626",
+  footer_bg: "#4A1A06",
+  footer_fg: "#FFFFFF",
+  footer_border: "#6E3517",
   card_bg: "",
   card_border: "",
   price_color: "",
-  radius_card: "xl",
+  radius_card: "lg",
   radius_btn: "sm",
   radius_search: "default",
   radius_input: "default",
@@ -136,6 +136,7 @@ const FONT_STACKS: Record<string, string> = {
   outfit: `Outfit, ${SYSTEM_FALLBACK}`,
   sora: `Sora, ${SYSTEM_FALLBACK}`,
   jost: `Jost, ${SYSTEM_FALLBACK}`,
+  josefin: `"Josefin Sans", ${SYSTEM_FALLBACK}`,
 
   // ---- Friendly / rounded — great for grocery, kids, food, lifestyle ----
   manrope: `Manrope, ${SYSTEM_FALLBACK}`,
@@ -153,6 +154,7 @@ const FONT_STACKS: Record<string, string> = {
   cormorant: `"Cormorant Garamond", ${SERIF_FALLBACK}`,
   lora: `Lora, ${SERIF_FALLBACK}`,
   fraunces: `Fraunces, ${SERIF_FALLBACK}`,
+  abril: `"Abril Fatface", ${SERIF_FALLBACK}`,
 
   // ---- System default — fastest possible load, zero network cost ----
   system: SYSTEM_FALLBACK,
@@ -477,6 +479,10 @@ const GOOGLE_FONT_HREFS: Record<string, string> = {
     "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap",
   jost:
     "https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap",
+  josefin:
+    "https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&display=swap",
+  abril:
+    "https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap",
 }
 
 /** Stylesheets for the body and heading fonts (deduplicated). */

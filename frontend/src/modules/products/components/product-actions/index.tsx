@@ -400,7 +400,7 @@ export default function ProductActions({
               onClick={handleAddToCart}
               disabled={disabledAdd}
               data-testid="add-product-button"
-              className="inline-flex items-center justify-center gap-1.5 h-[54px] px-3 rounded-[var(--radius-btn)] bg-bg border-2 border-primary text-primary text-[17px] font-bold transition-all duration-200 hover:bg-primary/5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-1.5 h-[54px] px-3 rounded-[var(--radius-btn)] bg-bg border-2 border-primary text-primary label-caps text-[15px] small:text-[16px] transition-all duration-200 hover:bg-primary/5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isAdding ? (
                 <>
@@ -424,7 +424,7 @@ export default function ProductActions({
               type="button"
               onClick={handleBuyItNow}
               disabled={disabledAdd || isBuyingNow}
-              className="inline-flex items-center justify-center gap-1.5 h-[54px] px-3 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[17px] font-bold shadow-[0_10px_24px_-12px_rgb(var(--color-primary)/0.9)] transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-1.5 h-[54px] px-3 rounded-[var(--radius-btn)] bg-primary text-primary-fg label-caps text-[15px] small:text-[16px] shadow-[0_10px_24px_-12px_rgb(var(--color-primary)/0.9)] transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isBuyingNow ? (
                 <>
@@ -475,7 +475,7 @@ export default function ProductActions({
               onClick={handleStickyAddToCart}
               disabled={disabledStickyAdd}
               tabIndex={showStickyBar ? 0 : -1}
-              className="h-12 shrink-0 px-4 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-bold flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="label-caps h-12 shrink-0 px-4 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[15px] flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isAdding ? (
                 <>

@@ -130,7 +130,7 @@ export const getProductFeedItemsStep = createStep(
           id: variant.id,
           title: product.title,
           description: product.description ?? "",
-          link: `${storefrontUrl || ""}/${input.country_code}/${product.handle}`,
+          link: `${storefrontUrl || ""}/product/${product.handle}/`,
           image_link: product.thumbnail ?? "",
           additional_image_link: product.images?.map((image) => image.url)?.join(","),
           availability: stockStatus,
@@ -149,9 +149,9 @@ export const getProductFeedItemsStep = createStep(
           size: size || undefined,
           seller_name: "Medusa", // TODO add seller name if supported
           seller_url: storefrontUrl || "",
-          seller_privacy_policy: `${storefrontUrl}/privacy-policy`, // TODO update
-          seller_tos: `${storefrontUrl}/terms-of-service`, // TODO update
-          return_policy: `${storefrontUrl}/return-policy`, // TODO update
+          seller_privacy_policy: `${storefrontUrl}/privacy-policy/`,
+          seller_tos: `${storefrontUrl}/terms-conditions/`,
+          return_policy: `${storefrontUrl}/refund_returns/`,
           return_window: 0, // TODO update
         })
       }

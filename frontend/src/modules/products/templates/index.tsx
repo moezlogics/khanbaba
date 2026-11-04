@@ -347,7 +347,7 @@ const ProductTemplate = async ({
 
       {related.length > 0 && (
         <section className="container-anvogue pb-10">
-          <h2 className="text-[22px] small:text-[30px] font-semibold text-ink mb-4">
+          <h2 className="section-title text-[22px] small:text-[32px] mb-6">
             You may also like
           </h2>
           <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 no-scrollbar small:mx-0 small:grid small:grid-cols-4 small:gap-x-5 small:gap-y-4 small:overflow-visible small:px-0 medium:grid-cols-5">

@@ -66,7 +66,7 @@ export default function KhanBabaCard({
         </LocalizedClientLink>
 
         {isSale && cheapestPrice?.percentage_diff && (
-          <span className="absolute top-2 left-2 z-[1] pointer-events-none rounded-full bg-primary text-primary-fg text-[11px] font-semibold leading-none px-2 py-1">
+          <span className="absolute top-2 left-2 z-[1] pointer-events-none rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[12px] font-bold leading-none px-2 py-1.5">
             -{cheapestPrice.percentage_diff}%
           </span>
         )}
@@ -76,18 +76,18 @@ export default function KhanBabaCard({
         <LocalizedClientLink
           href={href}
           data-testid="product-title"
-          className="text-[13px] small:text-[15px] font-bold text-ink hover:text-primary transition-colors line-clamp-2 leading-snug"
+          className="text-[15px] small:text-[17px] font-bold text-ink hover:text-primary transition-colors line-clamp-2 leading-snug"
         >
           {product.title}
         </LocalizedClientLink>
 
         {cheapestPrice && (
           <div className="flex items-baseline flex-wrap gap-x-1.5">
-            <span className="text-[14px] small:text-[16px] font-bold text-primary" data-testid="price">
+            <span className="text-[16px] small:text-[18px] font-bold text-primary" data-testid="price">
               {cheapestPrice.calculated_price}
             </span>
             {isSale && (
-              <span className="text-[11.5px] small:text-[12.5px] line-through text-ink/45" data-testid="original-price">
+              <span className="text-[13px] small:text-[14px] line-through text-ink/60" data-testid="original-price">
                 {cheapestPrice.original_price}
               </span>
             )}
@@ -99,13 +99,13 @@ export default function KhanBabaCard({
             {shownPacks.map((s) => (
               <li
                 key={s}
-                className="text-[10.5px] small:text-[11px] font-medium text-ink/70 border border-line rounded-[var(--radius-btn)] px-1.5 py-0.5 leading-none"
+                className="text-[12px] font-semibold text-ink border border-ink/25 rounded-[var(--radius-btn)] px-1.5 py-1 leading-none"
               >
                 {s}
               </li>
             ))}
             {packs.length > shownPacks.length && (
-              <li className="text-[10.5px] small:text-[11px] font-medium text-ink/50 px-1 py-0.5 leading-none">
+              <li className="text-[12px] font-semibold text-ink/70 px-1 py-1 leading-none">
                 +{packs.length - shownPacks.length}
               </li>
             )}
@@ -117,7 +117,7 @@ export default function KhanBabaCard({
           className="mt-auto pt-1.5"
           aria-label={`Choose a size of ${product.title}`}
         >
-          <span className="flex items-center justify-center gap-1.5 h-10 px-2 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[14px] small:text-[15px] font-semibold transition-[filter] group-hover:brightness-110">
+          <span className="flex items-center justify-center gap-1.5 label-caps h-11 px-2 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[13px] small:text-[14px] transition-[filter] group-hover:brightness-110">
             <i className="ph-bold ph-shopping-bag text-[14px]" aria-hidden />
             {packs.length > 1 ? "Choose size" : "View product"}
           </span>

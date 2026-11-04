@@ -16,6 +16,7 @@ import CustomerReviews from "@modules/home/components/customer-reviews"
 import WholesaleBand from "@modules/home/components/wholesale-band"
 import ExpandableContent from "@modules/common/components/expandable-content"
 import { getLatestReviews } from "@lib/data/reviews"
+import { listProducts } from "@lib/data/products"
 
 // ── ISR: let the CDN hold the homepage ───────────────────────────────
 // The homepage is anonymous and identical for every first-time visitor
@@ -91,6 +92,24 @@ export default async function Home(props: {
 
   if (!region) return null
 
+  // Photos for the built-in hero (only needed while no admin banner exists).
+  const heroProducts =
+    banners.length > 0
+      ? []
+      : await listProducts({
+          regionId: region.id,
+          queryParams: { limit: 6, fields: "id,title,handle,thumbnail" } as any,
+        })
+          .then(({ response }) =>
+            response.products.map((p) => ({
+              id: p.id,
+              title: p.title || "",
+              handle: p.handle || "",
+              thumbnail: p.thumbnail || null,
+            }))
+          )
+          .catch(() => [])
+
   // Admin "Homepage Builder" sections — an ordered list of category rails
   // configured in /app/homepage and stored in site_settings as a JSON
   // string under `homepage_sections`. Malformed/empty → just the Latest
@@ -132,11 +151,14 @@ export default async function Home(props: {
       {banners.length > 0 ? (
         <HeroSlider banners={banners} />
       ) : (
-        <BrandHero rating={{ average: latestReviews.average, count: latestReviews.count }} />
+        <BrandHero
+          rating={{ average: latestReviews.average, count: latestReviews.count }}
+          products={heroProducts}
+        />
       )}
 
       <div id="shop-by-category" className="mt-8 small:mt-12 scroll-mt-28">
-        <h2 className="mb-4 text-[22px] small:text-[30px] font-semibold text-ink">Shop by category</h2>
+        <h2 className="section-title mb-5 small:mb-7 text-[22px] small:text-[32px]">Shop by category</h2>
         <CategoryCarouselServer
           selectedIds={topCategoryBar.ids}
           hidden={topCategoryBar.hidden}

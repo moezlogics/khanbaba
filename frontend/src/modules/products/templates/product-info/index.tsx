@@ -78,7 +78,7 @@ const ProductInfo = async ({ product, mode = "main" }: ProductInfoProps) => {
   return (
     <div className="flex flex-col gap-2">
       <h1
-        className="text-[22px] small:text-[28px] font-bold text-ink leading-[1.2] tracking-tight"
+        className="font-heading text-[28px] small:text-[38px] text-ink leading-[1.12]"
         data-testid="product-title"
       >
         {product.title}

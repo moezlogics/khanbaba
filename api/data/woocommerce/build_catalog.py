@@ -214,25 +214,26 @@ Cash on Delivery all over Pakistan
         "business_region": "Khyber Pakhtunkhwa",
         "business_opening_hours": "Mo-Su 00:00-23:59",
         "business_price_range": "Rs 800 - Rs 25,000",
-        # Brand look of the WordPress theme (Woodmart): brown #603F26 on
-        # white, Manrope headings, rounded cards, black footer.
-        "theme_primary": "#603F26",
+        # Brand look: solid near-black text, deep terracotta actions,
+        # maroon-brown footer, Josefin Sans body + Abril Fatface headings.
+        "theme_primary": "#8E3B12",
         "theme_primary_fg": "#FFFFFF",
-        "theme_accent": "#F4E6D0",
-        "theme_accent_fg": "#603F26",
-        "theme_text": "#242424",
-        "theme_text_muted": "#777777",
-        "theme_surface": "#F7F4EF",
-        "theme_surface_alt": "#FBF9F6",
-        "theme_border": "#ECE5DA",
-        "theme_footer_bg": "#000000",
-        "theme_footer_fg": "#CFCFCF",
-        "theme_footer_border": "#262626",
-        "theme_font": "manrope",
+        "theme_accent": "#F3E3D3",
+        "theme_accent_fg": "#4A1D06",
+        "theme_text": "#111111",
+        "theme_text_muted": "#3A3A3A",
+        "theme_surface": "#FAF4EC",
+        "theme_surface_alt": "#FDF9F4",
+        "theme_border": "#E6D8C6",
+        "theme_footer_bg": "#4A1A06",
+        "theme_footer_fg": "#FFFFFF",
+        "theme_footer_border": "#6E3517",
+        "theme_font": "josefin",
+        "theme_font_heading": "abril",
         # Every WordPress product photo is square.
         "product_card_aspect": "1/1",
-        "theme_radius": "lg",
-        "theme_radius_card": "xl",
+        "theme_radius": "md",
+        "theme_radius_card": "lg",
         "theme_radius_btn": "sm",
     }
     for slug, key in (("about-us", "about"), ("terms-conditions", "terms"),
@@ -305,12 +306,11 @@ def main(csv_path):
     def rewrite_links(markup):
         """Point internal links at the new URL scheme, as site-relative paths."""
         def coll(m):
-            return f'href="/{m.group(1)}/"'
+            return f'href="/collection/{m.group(1)}/"'
 
         def prod(m):
             slug = m.group(1)
-            cat = product_cat.get(slug)
-            return f'href="/{cat}/{slug}/"' if cat else f'href="/{slug}/"'
+            return f'href="/product/{slug}/"'
 
         markup = re.sub(r'href="https?://(?:www\.)?khanbaba\.pk/(?:collection|product-category)/([^/"]+)/?"', coll, markup)
         markup = re.sub(r'href="https?://(?:www\.)?khanbaba\.pk/product/([^/"]+)/?"', prod, markup)
@@ -479,12 +479,9 @@ def main(csv_path):
     with open(os.path.join(HERE, "catalog.json"), "w", encoding="utf-8") as f:
         json.dump(catalog, f, ensure_ascii=False, indent=2)
 
-    # The storefront deploys separately and cannot read this folder, so it
-    # gets its own copy for next.config.js.
-    fe = os.path.normpath(os.path.join(HERE, "..", "..", "..", "frontend", "wordpress-redirects.json"))
-    if os.path.isdir(os.path.dirname(fe)):
-        with open(fe, "w", encoding="utf-8") as f:
-            json.dump(redirects, f, ensure_ascii=False, indent=2)
+    # The storefront keeps the WordPress URL structure itself, so its
+    # redirect list (frontend/wordpress-redirects.json) is maintained by
+    # hand — it is not regenerated from here.
 
     n_var = sum(len(p["variants"]) for p in products)
     print(f"categories {len(categories)}, products {len(products)}, variants {n_var}, "
