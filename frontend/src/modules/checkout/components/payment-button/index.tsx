@@ -15,7 +15,6 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({ cart, "data-testid": data
     !cart ||
     !cart.shipping_address ||
     !cart.billing_address ||
-    !cart.email ||
     (cart.shipping_methods?.length ?? 0) < 1
 
   return <DefaultPaymentButton notReady={notReady} data-testid={dataTestId} />

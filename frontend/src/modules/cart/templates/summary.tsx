@@ -16,7 +16,7 @@ type SummaryProps = {
 }
 
 export default function Summary({ cart, loyaltyBalance = null }: SummaryProps) {
-  const hasAddress = !!(cart?.shipping_address?.address_1 && cart?.email)
+  const hasAddress = !!cart?.shipping_address?.address_1
   const hasShipping = (cart?.shipping_methods?.length ?? 0) > 0
   const checkoutHref = hasAddress && hasShipping ? "/checkout" : "/checkout"
 

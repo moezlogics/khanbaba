@@ -253,14 +253,13 @@ const ShippingAddress = ({
           />
         </div>
         <Input
-          label="Email"
+          label="Email (optional)"
           name="email"
           type="email"
           title="Enter a valid email address."
           autoComplete="email"
           value={formData.email}
           onChange={handleChange}
-          required
           data-testid="shipping-email-input"
         />
         <Input

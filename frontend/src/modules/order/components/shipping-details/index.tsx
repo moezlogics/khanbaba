@@ -35,10 +35,12 @@ const ShippingDetails = ({ order, hideHeading = false }: ShippingDetailsProps) =
                 <i className="ph-bold ph-phone text-primary text-sm shrink-0" aria-hidden />
                 {order.shipping_address?.phone || "No phone provided"}
               </p>
-              <p className="flex items-center gap-2 text-xs text-ink/95 truncate">
-                <i className="ph-bold ph-envelope text-primary text-sm shrink-0" aria-hidden />
-                {order.email}
-              </p>
+              {order.email && (
+                <p className="flex items-center gap-2 text-xs text-ink/95 truncate">
+                  <i className="ph-bold ph-envelope text-primary text-sm shrink-0" aria-hidden />
+                  {order.email}
+                </p>
+              )}
             </div>
           </div>
 

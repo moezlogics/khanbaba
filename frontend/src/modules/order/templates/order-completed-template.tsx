@@ -191,12 +191,14 @@ export default async function OrderCompletedTemplate({
                   </span>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <span className="text-ink/40 font-bold uppercase tracking-wider text-[10px]">Email Confirmation</span>
-                  <span className="font-bold text-ink mt-1 text-[13px] truncate" title={order.email}>
-                    {order.email}
-                  </span>
-                </div>
+                {order.email && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-ink/40 font-bold uppercase tracking-wider text-[10px]">Email Confirmation</span>
+                    <span className="font-bold text-ink mt-1 text-[13px] truncate" title={order.email}>
+                      {order.email}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

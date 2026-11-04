@@ -37,13 +37,15 @@ const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
           </span>
         </div>
 
-        {/* Email */}
-        <div className="flex flex-col gap-1">
-          <span className="text-ink/40 text-xs font-semibold uppercase tracking-wider">Confirmation Email</span>
-          <span className="font-semibold text-ink truncate" data-testid="order-email">
-            {order.email}
-          </span>
-        </div>
+        {/* Email (optional at checkout) */}
+        {order.email && (
+          <div className="flex flex-col gap-1">
+            <span className="text-ink/40 text-xs font-semibold uppercase tracking-wider">Confirmation Email</span>
+            <span className="font-semibold text-ink truncate" data-testid="order-email">
+              {order.email}
+            </span>
+          </div>
+        )}
 
         {showStatus && (
           <>

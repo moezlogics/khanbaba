@@ -410,6 +410,13 @@ export async function submitPromotionForm(
   }
 }
 
+// Email is optional at checkout. Medusa rejects an empty string as an
+// invalid email, so only send it when the shopper typed one.
+function optionalEmail(formData: FormData): { email?: string } {
+  const email = String(formData.get("email") ?? "").trim()
+  return email ? { email } : {}
+}
+
 // TODO: Pass a POJO instead of a form entity here
 export async function setAddresses(currentState: unknown, formData: FormData) {
   try {
@@ -434,7 +441,7 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
         province: formData.get("shipping_address.province"),
         phone: formData.get("shipping_address.phone"),
       },
-      email: formData.get("email"),
+      ...optionalEmail(formData),
     } as any
 
     const sameAsBilling = formData.get("same_as_billing")
@@ -537,7 +544,7 @@ export async function setAddressesAndPlace(currentState: unknown, formData: Form
         province: formData.get("shipping_address.province"),
         phone: formData.get("shipping_address.phone"),
       },
-      email: formData.get("email"),
+      ...optionalEmail(formData),
     }
 
     const sameAsBilling = formData.get("same_as_billing")
