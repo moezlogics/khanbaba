@@ -1,41 +1,52 @@
 "use client"
 
-import { useParams, usePathname } from "next/navigation"
 import { getBaseURL } from "@lib/util/env"
 
 /**
- * "Order on WhatsApp" button — rendered on PDP below Buy Now.
+ * "Order on WhatsApp" button on the PDP.
  *
- * Dynamically generates a WhatsApp link with the product name and URL
- * so the seller knows exactly which product the customer is enquiring about.
+ * Pre-fills a message with the product, the chosen pack and its price and
+ * the product's public link, so the seller can confirm the order without
+ * asking anything back. The link is built from the canonical product path
+ * (same on server and client — no hydration mismatch).
  */
 type WhatsAppOrderButtonProps = {
   productTitle: string
-  productHandle: string
+  /** Public path of the product, e.g. /badam/premium-american-badam */
+  productPath: string
   whatsappNumber: string
+  /** Chosen pack and price, e.g. "500g — Rs 1,850" */
+  selection?: string
+  quantity?: number
 }
 
 export default function WhatsAppOrderButton({
   productTitle,
-  productHandle,
+  productPath,
   whatsappNumber,
+  selection,
+  quantity = 1,
 }: WhatsAppOrderButtonProps) {
-  const countryCode = useParams().countryCode as string
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : getBaseURL()
-  const productUrl = `${baseUrl}/${countryCode}/products/${productHandle}`
-
-  const message = encodeURIComponent(
-    `Hi! I want to buy this product:\n\n*${productTitle}*\n${productUrl}\n\nPlease share availability and delivery details.`
-  )
-
-  const waLink = `https://wa.me/${whatsappNumber.replace(/[^0-9+]/g, "")}?text=${message}`
+  const productUrl = `${getBaseURL().replace(/\/+$/, "")}${productPath}`
+  const lines = [
+    "Assalam o Alaikum! I want to order:",
+    "",
+    `*${productTitle}*`,
+    ...(selection ? [`Pack: ${selection}`] : []),
+    ...(quantity > 1 ? [`Quantity: ${quantity}`] : []),
+    productUrl,
+    "",
+    "Please confirm availability and delivery.",
+  ]
+  const message = encodeURIComponent(lines.join("\n"))
+  const waLink = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${message}`
 
   return (
     <a
       href={waLink}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-full inline-flex items-center justify-center gap-2.5 h-12 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-[1px] active:translate-y-0"
+      className="w-full inline-flex items-center justify-center gap-2.5 h-12 rounded-[var(--radius-btn)] text-[15px] font-semibold transition-all duration-200 hover:-translate-y-[1px] active:translate-y-0"
       style={{
         backgroundColor: "#25D366",
         color: "#ffffff",

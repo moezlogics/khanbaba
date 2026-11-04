@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import dynamic from "next/dynamic"
+import ExpandableContent from "@modules/common/components/expandable-content"
 
 const DynamicProductReviews = dynamic(() => import("@modules/products/components/product-reviews"), { ssr: false })
 
@@ -253,11 +254,15 @@ export default function ProductDescriptionTabs({
               lang="en"
               className="prose prose-sm md:prose-base max-w-4xl text-ink/80 leading-relaxed prose-strong:font-semibold prose-headings:font-semibold prose-headings:text-ink prose-a:text-primary"
             >
-              {englishHtml ? (
-                <div dangerouslySetInnerHTML={{ __html: englishHtml }} />
-              ) : (
-                <p className="whitespace-pre-line">{plainDescription}</p>
-              )}
+              {/* Long SEO copy stays in the HTML but is folded, so reviews
+                  and related products are a short scroll away on phones. */}
+              <ExpandableContent collapsedHeight={420} moreLabel="Read full description">
+                {englishHtml ? (
+                  <div dangerouslySetInnerHTML={{ __html: englishHtml }} />
+                ) : (
+                  <p className="whitespace-pre-line">{plainDescription}</p>
+                )}
+              </ExpandableContent>
             </div>
           </div>
         )}

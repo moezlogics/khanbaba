@@ -3,6 +3,7 @@
 import { addToCart } from "@lib/data/cart"
 import { trackAddToCart } from "@lib/analytics"
 import { notifyCartUpdated } from "@lib/context/user-data-context"
+import { useCartDrawer } from "@lib/context/cart-drawer-context"
 
 import { HttpTypes } from "@medusajs/types"
 import { isEqual } from "lodash"
@@ -18,6 +19,10 @@ import QuantityStepper from "../quantity-stepper"
 import WhatsAppOrderButton from "@modules/common/components/whatsapp-button"
 import { getPreorderState } from "@lib/util/preorder"
 import ProductTrustBadges from "@modules/products/components/product-trust-badges"
+import SizeCards, { isWeightOption } from "./size-cards"
+import DeliveryInfo from "./delivery-info"
+import { convertToLocale } from "@lib/util/money"
+import { getProductPath } from "@lib/util/product"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -37,8 +42,10 @@ const optionsAsKeymap = (
 }
 
 /**
- * PDP buy box, in the itwarbazar order: size chips → stock → price →
- * quantity → Buy Now / Add to Cart → WhatsApp → trust tiles.
+ * PDP buy box, ordered for conversion: price (with savings) → pack sizes
+ * with per-size and per-kg prices → quantity + stock → Add to Cart /
+ * Buy Now → delivery dates + free-delivery progress → WhatsApp → trust
+ * tiles, plus a sticky buy bar on phones.
  *
  * Buy It Now → goes DIRECTLY to checkout (not cart page).
  */
@@ -83,6 +90,9 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const [isBuyingNow, setIsBuyingNow] = useState(false)
   const countryCode = useParams().countryCode as string
+  // Slide the cart in after an add (no-op when the drawer is disabled in
+  // Site Settings, since it is then not rendered).
+  const { open: openCartDrawer } = useCartDrawer()
 
   // Manage body class for hiding bottom nav on PDP
   useEffect(() => {
@@ -214,6 +224,19 @@ export default function ProductActions({
   }, [selectedVariant, inStock, stockQty])
 
   const actionsRef = useRef<HTMLDivElement>(null)
+  const buyButtonsRef = useRef<HTMLDivElement>(null)
+  // The sticky bar only shows once the main buttons have scrolled off.
+  const [showStickyBar, setShowStickyBar] = useState(false)
+  useEffect(() => {
+    const el = buyButtonsRef.current
+    if (!el || typeof IntersectionObserver === "undefined") return
+    const io = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting && entry.boundingClientRect.top < 0),
+      { threshold: 0 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   const performAddToCart = async () => {
     if (!selectedVariant?.id) return
@@ -238,6 +261,7 @@ export default function ProductActions({
     setIsAdding(true)
     try {
       await performAddToCart()
+      openCartDrawer()
     } finally {
       setIsAdding(false)
     }
@@ -300,83 +324,86 @@ export default function ProductActions({
     (product.metadata as any)?.for_sale !== false &&
     (product.metadata as any)?.for_sale !== "false"
 
+  // Weight-based packs get the price-per-size cards; anything else falls
+  // back to the generic option chips.
+  const weightOption =
+    (product.options?.length ?? 0) === 1 && isWeightOption(product.options![0])
+      ? product.options![0]
+      : null
+
+  const unitPrice: number | null =
+    (selectedVariant as any)?.calculated_price?.calculated_amount ?? null
+  const currency: string =
+    (selectedVariant as any)?.calculated_price?.currency_code ||
+    (product.variants?.[0] as any)?.calculated_price?.currency_code ||
+    "pkr"
+
   return (
-    <div className="flex flex-col gap-3.5" ref={actionsRef}>
-      {/* Size chips */}
-      {(product.variants?.length ?? 0) > 1 && (
-        <div className="flex flex-col gap-1.5">
-          {(product.options || []).map((option) => (
-            <OptionSelect
-              key={option.id}
-              option={option}
-              current={options[option.id]}
-              updateOption={setOptionValue}
-              title={option.title ?? ""}
-              data-testid="product-options"
-              disabled={!!disabled || isAdding}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Stock status */}
-      {forSale && stockLabel && (
-        <div className="flex items-center gap-2 text-xs font-medium text-ink/75 self-start">
-          <span className="relative flex h-2 w-2">
-            {!preorder.isPreorder && inStock && (
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                stockLabel.text.startsWith("Only") ? "bg-warning" : "bg-success"
-              }`} />
-            )}
-            <span className={`relative inline-flex rounded-full h-2 w-2 ${
-              !inStock ? "bg-danger" : stockLabel.text.startsWith("Only") ? "bg-warning" : "bg-success"
-            }`} />
-          </span>
-          <span>{stockLabel.text}</span>
-        </div>
-      )}
-
+    <div className="flex flex-col gap-4" ref={actionsRef}>
       <ProductPrice product={product} variant={selectedVariant} size="lg" />
+
+      {(product.variants?.length ?? 0) > 1 &&
+        (weightOption ? (
+          <SizeCards
+            option={weightOption}
+            variants={product.variants ?? []}
+            current={options[weightOption.id]}
+            onSelect={setOptionValue}
+            disabled={!!disabled || isAdding}
+          />
+        ) : (
+          <div className="flex flex-col gap-1.5">
+            {(product.options || []).map((option) => (
+              <OptionSelect
+                key={option.id}
+                option={option}
+                current={options[option.id]}
+                updateOption={setOptionValue}
+                title={option.title ?? ""}
+                data-testid="product-options"
+                disabled={!!disabled || isAdding}
+              />
+            ))}
+          </div>
+        ))}
 
       {forSale && (
         <>
           <div className="flex items-center justify-between gap-3">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/55">
-              Quantity
-            </span>
-            <QuantityStepper
-              value={qty}
-              onChange={setQty}
-              min={1}
-              max={Math.max(1, Math.min(99, inStock ? stockQty || 99 : 1))}
-              disabled={!!disabled || isAdding || !inStock}
-            />
+            <div className="flex items-center gap-3">
+              <span className="text-[13px] font-semibold text-ink">Quantity</span>
+              <QuantityStepper
+                value={qty}
+                onChange={setQty}
+                min={1}
+                max={Math.max(1, Math.min(99, inStock ? stockQty || 99 : 1))}
+                disabled={!!disabled || isAdding || !inStock}
+              />
+            </div>
+            {stockLabel && (
+              <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink/70">
+                <span className="relative flex h-2 w-2">
+                  {!preorder.isPreorder && inStock && (
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                      stockLabel.text.startsWith("Only") ? "bg-warning" : "bg-success"
+                    }`} />
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                    !inStock ? "bg-danger" : stockLabel.text.startsWith("Only") ? "bg-warning" : "bg-success"
+                  }`} />
+                </span>
+                {stockLabel.text}
+              </span>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={handleBuyItNow}
-              disabled={disabledAdd || isBuyingNow}
-              className="inline-flex items-center justify-center gap-1.5 h-12 px-4 rounded-[var(--radius-btn)] bg-bg border border-primary text-primary text-sm font-semibold tracking-wide transition-all duration-200 hover:bg-primary/5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isBuyingNow ? (
-                <>
-                  <i className="ph-bold ph-spinner animate-spin text-sm" aria-hidden />
-                  Processing…
-                </>
-              ) : preorder.isPreorder ? (
-                "Pre-order & Pay"
-              ) : (
-                "Buy Now"
-              )}
-            </button>
+          <div ref={buyButtonsRef} className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={handleAddToCart}
               disabled={disabledAdd}
               data-testid="add-product-button"
-              className="inline-flex items-center justify-center gap-1.5 h-12 px-4 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-sm font-semibold tracking-wide transition-all duration-200 shadow-[0_4px_14px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-1.5 h-[52px] px-4 rounded-[var(--radius-btn)] bg-bg border-2 border-primary text-primary text-[15px] font-bold transition-all duration-200 hover:bg-primary/5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isAdding ? (
                 <>
@@ -390,16 +417,51 @@ export default function ProductActions({
               ) : !inStock || !isValidVariant ? (
                 "Out of stock"
               ) : (
-                "Add to Cart"
+                <>
+                  <i className="ph-bold ph-shopping-bag text-[17px]" aria-hidden />
+                  Add to Cart
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleBuyItNow}
+              disabled={disabledAdd || isBuyingNow}
+              className="inline-flex items-center justify-center gap-1.5 h-[52px] px-4 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[15px] font-bold shadow-[0_10px_24px_-12px_rgb(var(--color-primary)/0.9)] transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isBuyingNow ? (
+                <>
+                  <i className="ph-bold ph-spinner animate-spin text-sm" aria-hidden />
+                  Processing…
+                </>
+              ) : preorder.isPreorder ? (
+                "Pre-order & Pay"
+              ) : (
+                <>
+                  Buy Now
+                  <i className="ph-bold ph-lightning text-[16px]" aria-hidden />
+                </>
               )}
             </button>
           </div>
 
+          <DeliveryInfo subtotal={unitPrice !== null ? unitPrice * qty : null} currency={currency} />
+
           {whatsappNumber && whatsappBuyNowEnabled && (
             <WhatsAppOrderButton
               productTitle={product.title || ""}
-              productHandle={product.handle || ""}
+              productPath={getProductPath(product)}
               whatsappNumber={whatsappNumber}
+              selection={
+                selectedVariant
+                  ? `${selectedVariant.title}${
+                      unitPrice !== null
+                        ? ` — ${convertToLocale({ amount: unitPrice, currency_code: currency, maximumFractionDigits: 0 })}`
+                        : ""
+                    }`
+                  : undefined
+              }
+              quantity={qty}
             />
           )}
         </>
@@ -407,50 +469,49 @@ export default function ProductActions({
 
       <ProductTrustBadges />
 
-      {/* Mobile sticky bottom bar — jump links + Add to Cart. */}
-      <div className="small:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg border-t border-line px-4 py-2 flex items-center justify-between gap-3 pb-[safe-area-inset-bottom] shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+      {/* Mobile sticky buy bar — slides in once the main buttons scroll
+          out of view, so the CTA is always one tap away without doubling
+          up while the real buttons are on screen. */}
+      {forSale && (
         <div
-          className={`flex items-center py-0.5 ${
-            forSale ? "gap-[22px]" : "w-full justify-around gap-0"
+          className={`small:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-line bg-bg/95 px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] backdrop-blur shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.25)] transition-transform duration-300 ${
+            showStickyBar ? "translate-y-0" : "translate-y-full"
           }`}
+          aria-hidden={!showStickyBar}
         >
-          <a
-            href="#description"
-            className="flex flex-col items-center gap-0.5 text-[10.5px] font-semibold text-ink/75 hover:text-primary transition-colors shrink-0"
-          >
-            <i className="ph ph-article text-[18px]" />
-            <span>Details</span>
-          </a>
-          <a
-            href="#reviews"
-            className="flex flex-col items-center gap-0.5 text-[10.5px] font-semibold text-ink/75 hover:text-primary transition-colors shrink-0"
-          >
-            <i className="ph ph-chat-circle-dots text-[18px]" />
-            <span>Reviews</span>
-          </a>
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[12px] text-ink/60">
+                {selectedVariant ? `${product.title} · ${selectedVariant.title}` : product.title}
+              </p>
+              <p className="text-[16px] font-extrabold leading-tight text-primary" suppressHydrationWarning>
+                {unitPrice !== null
+                  ? convertToLocale({ amount: unitPrice * qty, currency_code: currency, maximumFractionDigits: 0 })
+                  : ""}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleStickyAddToCart}
+              disabled={disabledStickyAdd}
+              tabIndex={showStickyBar ? 0 : -1}
+              className="h-11 shrink-0 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isAdding ? (
+                <>
+                  <i className="ph-bold ph-spinner animate-spin text-xs" aria-hidden />
+                  Adding…
+                </>
+              ) : (
+                <>
+                  <i className="ph-bold ph-shopping-bag text-[15px]" aria-hidden />
+                  {stickyButtonText}
+                </>
+              )}
+            </button>
+          </div>
         </div>
-
-        {forSale && (
-          <button
-            type="button"
-            onClick={handleStickyAddToCart}
-            disabled={disabledStickyAdd}
-            className="flex-1 max-w-[190px] h-10 px-3 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[12px] font-bold tracking-wide flex items-center justify-center gap-1 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-          >
-            {isAdding ? (
-              <>
-                <i className="ph-bold ph-spinner animate-spin text-xs" aria-hidden />
-                <span>Adding...</span>
-              </>
-            ) : (
-              <>
-                <i className="ph ph-shopping-bag text-sm" />
-                <span>{stickyButtonText}</span>
-              </>
-            )}
-          </button>
-        )}
-      </div>
+      )}
     </div>
   )
 }

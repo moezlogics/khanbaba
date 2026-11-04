@@ -245,10 +245,8 @@ const ImageGallery = ({
                     alt={altFor(active.url, activeIndex)}
                     fill
                     priority={priority && activeIndex === 0}
-                    // Desktop PDP: gallery is the left col of a 1.15:1 grid.
-                    // At 1322px container it's ~700px wide → roughly 53vw, but
-                    // on large screens the container caps so ~40vw is safer.
-                    sizes="(min-width: 1024px) 40vw, 50vw"
+                    // Desktop PDP: the gallery column is capped at 560px.
+                    sizes="(min-width: 1024px) 560px, 100vw"
                     quality={80}
                     className={`object-cover ${isZooming ? "" : "transition-all duration-300 ease-in-out"}`}
                     style={isZooming ? {
@@ -270,7 +268,8 @@ const ImageGallery = ({
           </div>
 
           {/* Mobile View: visible on screen < lg */}
-          <div className="block lg:hidden relative w-full overflow-hidden px-8">
+          {/* Edge-to-edge on phones (breaks out of the page gutter). */}
+          <div className="block lg:hidden relative -mx-4 overflow-hidden">
             <div
               ref={mobileScrollRef}
               onScroll={handleMobileScroll}
@@ -281,7 +280,7 @@ const ImageGallery = ({
                 <div
                   key={item.id || i}
                   onClick={() => setLightboxIndex(i)}
-                  className={`w-full shrink-0 snap-center relative ${aspectClass} bg-bg rounded-[var(--radius-card)] overflow-hidden cursor-zoom-in`}
+                  className={`w-full shrink-0 snap-center relative ${aspectClass} bg-bg overflow-hidden cursor-zoom-in`}
                 >
                   {item.type === "video" ? (
                     <video
@@ -300,13 +299,11 @@ const ImageGallery = ({
                       alt={altFor(item.url, i)}
                       fill
                       priority={priority && i === 0}
-                      /* On mobile the PDP shows the gallery in a 50/50 grid
-                         (≈50vw), not full width — `100vw` was making Next
-                         serve a 2× oversized image (PageSpeed: 750×875 for a
-                         206×240 slot). `priority` on the first image already
-                         applies eager + fetchpriority=high; the rest stay
-                         lazy by default. */
-                      sizes="50vw"
+                      /* Full-width on phones now (the old 50/50 phone-spec
+                         layout is gone), so 50vw would serve a blurry image.
+                         `priority` on the first image applies eager +
+                         fetchpriority=high; the rest stay lazy. */
+                      sizes="100vw"
                       quality={75}
                       className="object-cover"
                     />
@@ -315,13 +312,25 @@ const ImageGallery = ({
               ))}
             </div>
 
-            {/* Prev/Next arrows on mobile */}
+            {/* Prev/Next arrows + position dots on mobile */}
             {galleryItems.length > 1 && (
-              <GalleryArrows
-                activeIndex={activeIndex}
-                total={galleryItems.length}
-                onChange={handleThumbnailClick}
-              />
+              <>
+                <GalleryArrows
+                  activeIndex={activeIndex}
+                  total={galleryItems.length}
+                  onChange={handleThumbnailClick}
+                />
+                <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 pointer-events-none" aria-hidden>
+                  {galleryItems.map((_, i) => (
+                    <span
+                      key={i}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === activeIndex ? "w-5 bg-primary" : "w-1.5 bg-ink/25"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -438,7 +447,7 @@ function GalleryArrows({
         type="button"
         onClick={(e) => { e.stopPropagation(); onChange((activeIndex - 1 + total) % total) }}
         aria-label="Previous image"
-        className="pointer-events-auto w-[26px] h-[26px] rounded-full bg-surface border border-line flex items-center justify-center shadow-md text-black"
+        className="pointer-events-auto w-9 h-9 rounded-full bg-bg/90 backdrop-blur border border-line flex items-center justify-center shadow-md text-ink"
       >
         <i className="ph-bold ph-caret-left text-[16px]" aria-hidden />
       </button>
@@ -446,7 +455,7 @@ function GalleryArrows({
         type="button"
         onClick={(e) => { e.stopPropagation(); onChange((activeIndex + 1) % total) }}
         aria-label="Next image"
-        className="pointer-events-auto w-[26px] h-[26px] rounded-full bg-surface border border-line flex items-center justify-center shadow-md text-black"
+        className="pointer-events-auto w-9 h-9 rounded-full bg-bg/90 backdrop-blur border border-line flex items-center justify-center shadow-md text-ink"
       >
         <i className="ph-bold ph-caret-right text-[16px]" aria-hidden />
       </button>

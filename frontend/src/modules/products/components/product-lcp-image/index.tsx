@@ -60,16 +60,15 @@ export default function ProductLcpImage({
 
   return (
     <div
-      className={`relative ${aspectRatioClass} w-full rounded-[var(--radius-card)] bg-bg overflow-hidden ${className}`}
+      className={`relative ${aspectRatioClass} -mx-4 lg:mx-0 lg:w-full rounded-none lg:rounded-[var(--radius-card)] bg-bg overflow-hidden ${className}`}
       data-lcp-hero="true"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         srcSet={srcSet}
-        // Mobile PDP: gallery is in a 50/50 grid â†’ ~50vw
-        // Desktop PDP: left column â‰ˆ 1.15fr in a 1.15:1 two-col layout â†’ ~40vw
-        sizes="(min-width: 1024px) 40vw, 50vw"
+        // Same box as the gallery: edge-to-edge on phones, a 560px column on desktop.
+        sizes="(min-width: 1024px) 560px, 100vw"
         alt={alt}
         fetchPriority="high"
         loading="eager"

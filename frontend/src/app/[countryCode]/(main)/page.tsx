@@ -11,6 +11,13 @@ import HeroSlider from "@modules/home/components/hero-slider"
 import ProductRail from "@modules/home/components/featured-products/product-rail"
 import CategoryCarouselServer from "@modules/home/components/category-carousel/server"
 import BenefitsStrip from "@modules/home/components/benefits-strip"
+import BrandHero from "@modules/home/components/brand-hero"
+import CustomerReviews from "@modules/home/components/customer-reviews"
+import WholesaleBand from "@modules/home/components/wholesale-band"
+import ExpandableContent from "@modules/common/components/expandable-content"
+import { listProducts } from "@lib/data/products"
+import { getLatestReviews } from "@lib/data/reviews"
+import { PRODUCT_CARD_FIELDS } from "@lib/util/product-card-fields"
 
 // ── ISR: let the CDN hold the homepage ───────────────────────────────
 // The homepage is anonymous and identical for every first-time visitor
@@ -77,10 +84,17 @@ export default async function Home(props: {
   const { countryCode } = await props.params
 
   // Parallelize independent fetches so the homepage TTFB stays tight.
-  const [region, banners, settings] = await Promise.all([
+  const [region, banners, settings, heroProducts, latestReviews] = await Promise.all([
     getRegion(countryCode),
     listBanners(),
     getSiteSettings(),
+    listProducts({
+      countryCode,
+      queryParams: { limit: 12, fields: PRODUCT_CARD_FIELDS } as any,
+    })
+      .then(({ response }) => response.products)
+      .catch(() => []),
+    getLatestReviews(8),
   ])
 
   if (!region) return null
@@ -114,33 +128,47 @@ export default async function Home(props: {
   // mode "all" → all top-level; "custom" → chosen ids; "hidden" → no bar.
   const topCategoryBar = parseCategoryBar((settings as any).homepage_top_categories)
 
-  // Same order as the WordPress homepage: category circles, the deals
-  // rail, category rails, store promises, then the long SEO article.
+  const whatsappNumber = settings.whatsapp_number?.trim() || null
+  // The hero owns the page's <h1>; the imported SEO article opens with
+  // one too, so demote its headings a level.
+  const homeArticle = (settings.page_home_content || "").replace(/<(\/?)h1\b/gi, "<$1h2")
+
+  // Shopify-style flow: hero → categories → deals → promises → category
+  // rails → reviews → wholesale → long-form copy (collapsed).
   return (
-    <div className="container-anvogue pt-2 pb-6">
-      {banners.length > 0 && (
-        <div className="mb-4 small:mb-6">
-          <HeroSlider banners={banners} />
-        </div>
+    <div className="container-anvogue pt-3 small:pt-5 pb-6">
+      {banners.length > 0 ? (
+        <HeroSlider banners={banners} />
+      ) : (
+        <BrandHero
+          products={heroProducts}
+          whatsappNumber={whatsappNumber}
+          rating={{ average: latestReviews.average, count: latestReviews.count }}
+        />
       )}
 
-      <CategoryCarouselServer
-        selectedIds={topCategoryBar.ids}
-        hidden={topCategoryBar.hidden}
-      />
+      <div className="mt-6 small:mt-10">
+        <h2 className="mb-3 text-lg small:text-2xl font-bold text-ink">Shop by category</h2>
+        <CategoryCarouselServer
+          selectedIds={topCategoryBar.ids}
+          hidden={topCategoryBar.hidden}
+        />
+      </div>
 
       {/* Streams behind a skeleton so the shell above paints first. */}
-      <div className="mt-3 small:mt-5">
+      <div className="mt-6 small:mt-10">
         <Suspense fallback={<GridSkeleton count={10} />}>
           <ProductRail region={region} title="Weekly Discounts" limit={10} />
         </Suspense>
       </div>
 
+      <BenefitsStrip />
+
       {/* Admin-configured category rails (Homepage Builder), in order.
           Each streams independently so a slow category query never
           blocks the rest of the page. */}
       {homeSections.map((s) => (
-        <div key={s.category_id} className="mt-6 small:mt-10">
+        <div key={s.category_id} className="mt-4 small:mt-8">
           <Suspense fallback={<GridSkeleton count={Math.min(10, s.limit || 10)} />}>
             <ProductRail
               region={region}
@@ -155,15 +183,25 @@ export default async function Home(props: {
         </div>
       ))}
 
-      <BenefitsStrip />
+      <CustomerReviews
+        reviews={latestReviews.reviews}
+        count={latestReviews.count}
+        average={latestReviews.average}
+      />
 
-      {settings.page_home_content && (
+      <WholesaleBand whatsappNumber={whatsappNumber} />
+
+      {homeArticle && (
         <section className="pt-8 pb-4 mt-2 border-t border-line">
-          <div
-            className="prose prose-sm md:prose-base max-w-4xl mx-auto text-ink/75 leading-relaxed prose-headings:text-ink prose-a:text-primary"
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: settings.page_home_content }}
-          />
+          <div className="max-w-4xl mx-auto">
+            <ExpandableContent collapsedHeight={260} moreLabel="Read more about Khan Baba">
+              <div
+                className="prose prose-sm md:prose-base max-w-none text-ink/75 leading-relaxed prose-headings:text-ink prose-a:text-primary"
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: homeArticle }}
+              />
+            </ExpandableContent>
+          </div>
         </section>
       )}
     </div>

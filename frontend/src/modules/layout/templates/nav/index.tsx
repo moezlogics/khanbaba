@@ -8,6 +8,7 @@ import CartButton from "@modules/layout/components/cart-button"
 import NavAccountLink from "@modules/layout/components/nav-account-link"
 import SideMenu from "@modules/layout/components/side-menu"
 import LazySearchBar from "@modules/search/components/smart-search-bar/lazy-search-bar"
+import MobileSearchPill from "@modules/layout/components/mobile-search-pill"
 import NextImage from "next/image"
 
 /**
@@ -105,8 +106,8 @@ export default async function Nav() {
           colour to the background still saw a seam they could not
           remove from the admin. */}
       <div className="small:hidden bg-header">
-        {/* Row 1 â€” hamburger Â· logo Â· search Â· cart (64px) */}
-        <div className="px-2 h-16 flex items-center gap-1">
+        {/* Row 1 — menu · logo · cart */}
+        <div className="px-2 h-14 flex items-center gap-1">
           <div className="w-12 h-12 flex items-center justify-center shrink-0">
             <SideMenu regions={regions} locales={locales} />
           </div>
@@ -123,6 +124,10 @@ export default async function Nav() {
           <div className="w-12 h-12 flex items-center justify-center shrink-0">
             <CartButton />
           </div>
+        </div>
+        {/* Row 2 — always-visible search, like the WordPress header */}
+        <div className="px-3 pb-2.5">
+          <MobileSearchPill />
         </div>
       </div>
 

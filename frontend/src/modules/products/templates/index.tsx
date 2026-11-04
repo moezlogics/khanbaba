@@ -113,6 +113,7 @@ const ProductTemplate = async ({
     if (ids.length > 0) variantImageIds[v.id] = ids
   }
 
+  const shortDescription = (product.metadata as any)?.short_description as string | undefined
   const whatsappNumber = (settings as any).whatsapp_number?.trim() || undefined
   const whatsappBuyNowEnabled = (settings as any).whatsapp_buy_now_enabled !== "false"
 
@@ -315,6 +316,18 @@ const ProductTemplate = async ({
               whatsappBuyNowEnabled={whatsappBuyNowEnabled}
             />
             {bundles && bundles.length > 0 && <BundleCard bundles={bundles} />}
+            {/* WordPress "short description" — below the buy box so the
+                price and buttons stay near the top on phones. */}
+            {shortDescription && (
+              <div className="rounded-[var(--radius-btn)] border border-line p-4">
+                <p className="mb-1.5 text-[13px] font-bold text-ink">About this product</p>
+                <div
+                  className="text-[13.5px] text-ink/70 leading-relaxed [&_p]:my-1 [&_a]:text-primary"
+                  // eslint-disable-next-line react/no-danger
+                  dangerouslySetInnerHTML={{ __html: shortDescription }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -337,9 +350,12 @@ const ProductTemplate = async ({
           <h2 className="text-lg small:text-xl font-bold text-ink mb-3 small:mb-4">
             You may also like
           </h2>
-          <ul className="grid grid-cols-2 xsmall:grid-cols-3 small:grid-cols-4 medium:grid-cols-5 gap-x-3 small:gap-x-5 gap-y-4">
+          <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 no-scrollbar small:mx-0 small:grid small:grid-cols-4 small:gap-x-5 small:gap-y-4 small:overflow-visible small:px-0 medium:grid-cols-5">
             {related.map((p, i) => (
-              <li key={p.id} className={i >= 4 ? "hidden medium:block" : ""}>
+              <li
+                key={p.id}
+                className={`w-[44%] shrink-0 snap-start xsmall:w-[30%] small:w-auto ${i >= 4 ? "small:hidden medium:block" : ""}`}
+              >
                 <ProductPreview region={region} product={p} aspectClass={aspectRatioClass} />
               </li>
             ))}

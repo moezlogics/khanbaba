@@ -3,6 +3,8 @@ import { HttpTypes } from "@medusajs/types"
 import StoreTemplate from "@modules/store/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import CategoryCarousel from "@modules/home/components/category-carousel"
+import CategoryCarouselServer from "@modules/home/components/category-carousel/server"
+import ExpandableContent from "@modules/common/components/expandable-content"
 import { buildCategoryPath } from "@lib/util/category-path"
 import { listCategories, collectDescendantCategoryIds } from "@lib/data/categories"
 
@@ -65,9 +67,10 @@ export default async function CategoryTemplate({
         breadcrumbs={breadcrumbs}
         countryCode={countryCode}
       >
-        {/* Subcategory icons — same clean style as homepage/store */}
-        {category.category_children && category.category_children.length > 0 && (
-          <div className="-mx-4 md:mx-0">
+        {/* Subcategory icons when there are any; otherwise every top-level
+            category, so shoppers can hop from Badam to Pista in one tap. */}
+        {category.category_children && category.category_children.length > 0 ? (
+          <div>
             <CategoryCarousel
               items={category.category_children.map((c) => ({
                 id: c.id,
@@ -80,17 +83,24 @@ export default async function CategoryTemplate({
               }))}
             />
           </div>
+        ) : (
+          <CategoryCarouselServer />
         )}
       </StoreTemplate>
 
       {/* Rich content from admin — rendered below products */}
       {richContent && (
         <div className="container-anvogue pb-12">
-          <div className="border-t border-line pt-8 mt-4">
-            <div
-              className="prose prose-sm max-w-none text-ink/80 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: richContent }}
-            />
+          <div className="border-t border-line pt-8 mt-4 max-w-4xl">
+            <ExpandableContent collapsedHeight={240} moreLabel={`Read more about ${category.name}`}>
+              <div
+                className="prose prose-sm md:prose-base max-w-none text-ink/80 leading-relaxed prose-headings:text-ink prose-a:text-primary"
+                // The page title is the <h1>; demote any in the imported copy.
+                dangerouslySetInnerHTML={{
+                  __html: richContent.replace(/<(\/?)h1\b/gi, "<$1h2"),
+                }}
+              />
+            </ExpandableContent>
           </div>
         </div>
       )}

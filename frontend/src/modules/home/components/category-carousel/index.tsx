@@ -66,7 +66,7 @@ export default function CategoryCarousel({
   return (
     <section
       aria-label={ariaLabel}
-      className="container-anvogue pt-0 pb-1 relative"
+      className="relative pt-0 pb-1"
     >
       {/* Arrows (desktop only) */}
       {canScrollLeft && (

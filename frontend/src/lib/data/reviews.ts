@@ -135,3 +135,47 @@ export async function submitProductReview(
     body: { product_id: productId, ...payload },
   })
 }
+
+export type LatestReview = {
+  id: string
+  rating: number
+  content: string
+  /** First name + last initial — never an email. */
+  name: string
+  is_verified: boolean
+  created_at: string
+  product: {
+    title: string
+    handle: string
+    thumbnail: string | null
+    category_handle: string | null
+  }
+}
+
+/**
+ * Newest 4–5 star reviews across the store plus the store-wide average,
+ * for the homepage testimonials strip. Server-only, ISR-cached.
+ */
+export async function getLatestReviews(
+  limit = 8
+): Promise<{ reviews: LatestReview[]; count: number; average: number }> {
+  const empty = { reviews: [] as LatestReview[], count: 0, average: 0 }
+  try {
+    const res = await fetch(`${BACKEND_URL}/store/reviews/latest?limit=${limit}`, {
+      headers: {
+        "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "",
+      },
+      next: { revalidate: 300, tags: ["reviews"] },
+      cache: "force-cache",
+    })
+    if (!res.ok) return empty
+    const data = await res.json()
+    return {
+      reviews: Array.isArray(data.reviews) ? data.reviews : [],
+      count: Number(data.count) || 0,
+      average: Number(data.average) || 0,
+    }
+  } catch {
+    return empty
+  }
+}

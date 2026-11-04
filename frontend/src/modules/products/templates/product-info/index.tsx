@@ -8,7 +8,7 @@ type ProductInfoProps = {
   product: HttpTypes.StoreProduct
   /**
    * `top`  — breadcrumb row, rendered above the gallery
-   * `main` — title, rating and short description (buy-box column)
+   * `main` — title and rating (buy-box column)
    */
   mode?: "top" | "main"
 }
@@ -74,8 +74,6 @@ const ProductInfo = async ({ product, mode = "main" }: ProductInfoProps) => {
 
   const stats = await getProductReviewStats(product.id).catch(() => null)
   const hasRating = !!(stats && stats.reviewCount > 0)
-  // WordPress "short description", imported as HTML.
-  const shortDescription = (product.metadata as any)?.short_description as string | undefined
 
   return (
     <div className="flex flex-col gap-2">
@@ -87,14 +85,6 @@ const ProductInfo = async ({ product, mode = "main" }: ProductInfoProps) => {
       </h1>
 
       {hasRating && <StarRating rating={stats!.averageRating} count={stats!.reviewCount} />}
-
-      {shortDescription && (
-        <div
-          className="text-[13.5px] text-ink/70 leading-relaxed [&_p]:my-1 [&_a]:text-primary"
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: shortDescription }}
-        />
-      )}
     </div>
   )
 }

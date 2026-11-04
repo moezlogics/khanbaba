@@ -29,6 +29,7 @@ export default async function ProductRail({
   category,
   limit = 10,
   title,
+  eagerImages = 0,
   region,
 }: {
   collection?: HttpTypes.StoreCollection
@@ -36,6 +37,8 @@ export default async function ProductRail({
   limit?: number
   /** Heading for the uncategorised rail (e.g. "Weekly Discounts"). */
   title?: string
+  /** How many leading cards load their image eagerly (above-the-fold rails only). */
+  eagerImages?: number
   region: HttpTypes.StoreRegion
 }) {
   const safeLimit = Math.max(1, Math.min(24, Number(limit) || 10))
@@ -76,47 +79,35 @@ export default async function ProductRail({
 
   return (
     <section className="pt-0 pb-2">
-      <div className="w-full">
-        <div className="flex flex-col mb-2 sm:mb-3">
-          {(category || collection) && (
-            <div className="text-sub-display has-line-before text-brand-black/70 text-[11px] sm:text-xs mb-1">
-              {category ? "Category" : "Featured"}
-            </div>
-          )}
-          <h2 className="text-lg sm:text-xl font-bold text-ink leading-tight">
-            {heading}
-          </h2>
-        </div>
-
-        <ul className="grid grid-cols-2 xsmall:grid-cols-3 small:grid-cols-4 medium:grid-cols-5 gap-x-3 small:gap-x-5 gap-y-4 small:gap-y-7">
-          {rankedProducts.map((product, index) => (
-            <li key={product.id}>
-              {/* First 5 cards are above the fold — eager-load their images
-                  so the LCP image isn't lazy (PageSpeed: 1.4s load delay). */}
-              <ProductPreview
-                product={product}
-                region={region}
-                aspectClass={aspectClass}
-                priority={index < 5}
-                // Full-width grid: 2 cols → 3 (xsmall ≥512) → 4 (small ≥1024) → 5 (medium ≥1280).
-                sizes="(max-width: 511px) 48vw, (max-width: 1023px) 32vw, (max-width: 1279px) 24vw, 260px"
-              />
-            </li>
-          ))}
-        </ul>
-
-
-        {/* "View All" — bottom-right, after the last product. */}
-        <div className="flex justify-end mt-4 sm:mt-5">
-          <LocalizedClientLink
-            href={viewAllHref}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-ink hover:text-primary transition-colors"
-          >
-            View All
-            <i className="ph-bold ph-arrow-right text-[12px]" aria-hidden />
-          </LocalizedClientLink>
-        </div>
+      <div className="mb-3 small:mb-4 flex items-end justify-between gap-3">
+        <h2 className="text-lg small:text-2xl font-bold text-ink leading-tight">{heading}</h2>
+        <LocalizedClientLink
+          href={viewAllHref}
+          className="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-primary hover:underline underline-offset-4"
+        >
+          View all
+          <i className="ph-bold ph-arrow-right text-[12px]" aria-hidden />
+        </LocalizedClientLink>
       </div>
+
+      {/* Mobile: a swipeable row (keeps the page short, app-like).
+          small+: a grid of 4 → 5 columns. */}
+      <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 no-scrollbar small:mx-0 small:grid small:grid-cols-4 small:gap-x-5 small:gap-y-7 small:overflow-visible small:px-0 medium:grid-cols-5">
+        {rankedProducts.map((product, index) => (
+          <li
+            key={product.id}
+            className="w-[44%] shrink-0 snap-start xsmall:w-[30%] small:w-auto"
+          >
+            <ProductPreview
+              product={product}
+              region={region}
+              aspectClass={aspectClass}
+              priority={index < eagerImages}
+              sizes="(max-width: 511px) 44vw, (max-width: 1023px) 30vw, (max-width: 1279px) 24vw, 260px"
+            />
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }

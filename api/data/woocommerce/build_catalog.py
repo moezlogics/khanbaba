@@ -200,6 +200,15 @@ def write_site_settings(pages):
         "social_facebook": "https://www.facebook.com/khanbabashop",
         "social_instagram": "https://www.instagram.com/khanbaba_pk",
         "footer_copyright": "Khanbaba.pk. All Rights Reserved.",
+        # The store's three promises, scrolling in the brand colour.
+        # Add-to-cart slides the cart in (Shopify behaviour).
+        "cart_drawer_enabled": "true",
+        "announcement_bar_enabled": "true",
+        "announcement_bar_text": "Free delivery on orders over Rs 3,000
+Cash on Delivery all over Pakistan
+100% pure & fresh dry fruits — trusted for 40+ years",
+        "announcement_bar_bg": "#603F26",
+        "announcement_bar_fg": "#FFFFFF",
         "business_type": "dryfruits",
         "business_country": "Pakistan",
         "business_locality": "Swat",
