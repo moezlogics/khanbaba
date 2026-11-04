@@ -16,14 +16,15 @@ echo "      Build Dir:  $BUILD_DIR"
 
 # 2. Sync files to build directory
 echo "[2/7] Syncing source files to build directory..."
+rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --exclude='.git' --exclude='.medusa/server' --exclude='node_modules' --exclude='logs' "$ACTIVE_DIR/" "$BUILD_DIR/"
+  rsync -a --exclude='.deploy-source' --exclude='.git' --exclude='.medusa/server' --exclude='node_modules' --exclude='logs' "$ACTIVE_DIR/" "$BUILD_DIR/"
 else
   echo "rsync not found, falling back to cp..."
   cp -R "$ACTIVE_DIR/"* "$BUILD_DIR/"
-  rm -rf "$BUILD_DIR/.git" "$BUILD_DIR/.medusa/server" "$BUILD_DIR/node_modules" "$BUILD_DIR/logs" 2>/dev/null || true
+  rm -rf "$BUILD_DIR/.deploy-source" "$BUILD_DIR/.git" "$BUILD_DIR/.medusa/server" "$BUILD_DIR/node_modules" "$BUILD_DIR/logs" 2>/dev/null || true
 fi
 
 # 3. Copy node_modules to build folder to cache package installs
@@ -41,39 +42,43 @@ fi
 # 4. Install dependencies and build in the build folder
 cd "$BUILD_DIR"
 echo "[4/7] Installing dependencies in build directory..."
-npm install --no-audit --no-fund
+if command -v pnpm >/dev/null 2>&1; then
+  pnpm install
+else
+  npm install --no-audit --no-fund
+fi
 
 echo "[4/7] Compiling Medusa typescript files..."
-# Set memory limit to prevent VPS OOM (Out Of Memory) crash
-export NODE_OPTIONS="--max-old-space-size=1536"
-npm run build
+export NODE_OPTIONS="--max-old-space-size=2048"
+if command -v pnpm >/dev/null 2>&1; then
+  pnpm run build
+else
+  npm run build
+fi
 
-# 5. Run Database Migrations
-echo "[5/7] Running database migrations..."
+# 5. Run Database Sync
+echo "[5/7] Syncing database schema..."
 if [ -f "$ACTIVE_DIR/.env" ] && [ ! -f ".env" ]; then
   cp "$ACTIVE_DIR/.env" ".env"
 fi
-# # npx medusa db:migrate
+if [ -f "sync-db-completely.js" ]; then
+  node sync-db-completely.js || true
+fi
 
 # 6. Swap the builds atomically
 echo "[6/7] Build successful! Swapping compiled server files in active directory..."
 
-# Ensure logs directory exists
 mkdir -p "$ACTIVE_DIR/logs"
-
-# Atomic swap of the compiled .medusa/server folder
 mkdir -p "$ACTIVE_DIR/.medusa"
 if [ -d "$ACTIVE_DIR/.medusa/server" ]; then
+  rm -rf "$ACTIVE_DIR/.medusa/server_old"
   mv "$ACTIVE_DIR/.medusa/server" "$ACTIVE_DIR/.medusa/server_old"
 fi
 mv "$BUILD_DIR/.medusa/server" "$ACTIVE_DIR/.medusa/server"
 
-# Sync other configurations/source files in case they were updated
+# Keep node_modules synced back to active dir if new packages were added
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --exclude='node_modules' --exclude='.medusa' --exclude='logs' "$BUILD_DIR/" "$ACTIVE_DIR/"
-else
-  cp -f "$BUILD_DIR/package.json" "$ACTIVE_DIR/" 2>/dev/null || true
-  cp -f "$BUILD_DIR/medusa-config.ts" "$ACTIVE_DIR/" 2>/dev/null || true
+  rsync -a --delete "$BUILD_DIR/node_modules/" "$ACTIVE_DIR/node_modules/"
 fi
 
 # 7. Reload PM2 with Zero-Downtime
@@ -82,24 +87,18 @@ cd "$ACTIVE_DIR"
 
 GEN_CONFIG="/home/khanbaba-api/htdocs/api.khanbaba.pk/ecosystem.config.js"
 
-# Always (re)generate the real PM2 config from the heredoc generator so
-# topology changes (e.g. the server + worker split) are picked up.
 if [ -f "ecosystem.config.js" ] && head -n 1 ecosystem.config.js | grep -q "cat >"; then
   echo "Generating ecosystem.config.js file..."
   bash ecosystem.config.js
 fi
 
-# One-time migration: the old single app was named "medusa-backend".
-# It's been replaced by "medusa-server" + "medusa-worker". Remove the
-# stale process so it doesn't keep serving old code / double-process.
 if pm2 describe medusa-backend >/dev/null 2>&1; then
-  echo "Removing legacy 'medusa-backend' process (replaced by server + worker)..."
+  echo "Removing legacy 'medusa-backend' process..."
   pm2 delete medusa-backend || true
 fi
 
-# startOrReload = start apps that aren't running, zero-downtime reload
-# the ones that are. --update-env applies the env block (worker mode).
 pm2 startOrReload "$GEN_CONFIG" --update-env
+pm2 save
 
 # Cleanup
 echo "Cleaning up temporary folders..."

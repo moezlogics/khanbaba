@@ -1,22 +1,26 @@
 #!/bin/bash
-echo "=== Pulling Backend Updates from GitHub ==="
-cd .deploy-source
-if ! git pull origin main; then
-  echo ""
-  echo "!!! git pull failed — ABORTING before rsync."
-  echo "    Nothing was copied, so the live site still runs the previous"
-  echo "    build rather than being re-deployed from stale checkout files."
-  echo "    Fix the pull (usually GitHub auth), then run this script again."
-  exit 1
-fi
-cd ..
+set -e
 
-echo "=== Syncing files to Root ==="
+REPO_URL="https://github.com/moezlogics/khanbaba.git"
+BRANCH="main"
+
+echo "=== [API] Pulling Backend Updates from GitHub ==="
+if [ ! -d ".deploy-source/.git" ]; then
+  echo "Initializing .deploy-source repository..."
+  rm -rf .deploy-source
+  git clone --branch "$BRANCH" "$REPO_URL" .deploy-source
+else
+  cd .deploy-source
+  git fetch origin "$BRANCH"
+  git reset --hard "origin/$BRANCH"
+  cd ..
+fi
+
+echo "=== [API] Syncing api/ folder to Root ==="
 rsync -av --delete \
   --exclude='.deploy-source/' \
   --exclude='.git/' \
   --exclude='.env' \
-  --exclude='pull.sh' \
   --exclude='admin-static/' \
   --exclude='node_modules/' \
   --exclude='.medusa/' \
@@ -24,12 +28,13 @@ rsync -av --delete \
   --exclude='logs/' \
   .deploy-source/api/ .
 
-echo "=== Running Deploy script ==="
+chmod +x ./pull.sh ./deploy-backend.sh 2>/dev/null || true
+
+echo "=== [API] Running Deploy script ==="
 if [ -f "./deploy-backend.sh" ]; then
-  chmod +x ./deploy-backend.sh
   ./deploy-backend.sh
 else
   echo "No deploy-backend.sh found. Please build manually or restart PM2."
 fi
 
-echo "=== Backend Updated Successfully ==="
+echo "=== [API] Backend Updated Successfully ==="

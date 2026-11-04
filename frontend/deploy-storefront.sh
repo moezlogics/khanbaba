@@ -16,15 +16,15 @@ echo "      Build Dir:  $BUILD_DIR"
 
 # 2. Sync files to build directory
 echo "[2/7] Syncing source files to build directory..."
+rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-# If rsync is available, use it (recommended). Otherwise, fall back to cp.
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --exclude='.git' --exclude='.next' --exclude='node_modules' --exclude='logs' "$ACTIVE_DIR/" "$BUILD_DIR/"
+  rsync -a --exclude='.deploy-source' --exclude='.git' --exclude='.next' --exclude='node_modules' --exclude='logs' "$ACTIVE_DIR/" "$BUILD_DIR/"
 else
   echo "rsync not found, falling back to cp..."
   cp -R "$ACTIVE_DIR/"* "$BUILD_DIR/"
-  rm -rf "$BUILD_DIR/.git" "$BUILD_DIR/.next" "$BUILD_DIR/node_modules" "$BUILD_DIR/logs" 2>/dev/null || true
+  rm -rf "$BUILD_DIR/.deploy-source" "$BUILD_DIR/.git" "$BUILD_DIR/.next" "$BUILD_DIR/node_modules" "$BUILD_DIR/logs" 2>/dev/null || true
 fi
 
 # 3. Copy node_modules to build folder to cache package installs
@@ -42,30 +42,34 @@ fi
 # 4. Install dependencies and build in the build folder
 cd "$BUILD_DIR"
 echo "[4/7] Installing dependencies in build directory..."
-npm install --no-audit --no-fund
+if command -v pnpm >/dev/null 2>&1; then
+  pnpm install
+else
+  npm install --no-audit --no-fund
+fi
 
 echo "[4/7] Compiling Next.js application..."
-# Set memory limit to prevent VPS OOM (Out Of Memory) crash during webpack builds
-export NODE_OPTIONS="--max-old-space-size=1536"
-npm run build
+export NODE_OPTIONS="--max-old-space-size=2048"
+if command -v pnpm >/dev/null 2>&1; then
+  pnpm run build
+else
+  npm run build
+fi
 
 # 5. Swap the builds atomically
 echo "[5/7] Build successful! Swapping builds in active directory..."
 
-# Ensure logs directory exists
 mkdir -p "$ACTIVE_DIR/logs"
 
-# Atomic swap:
-# Move active .next folder out to a temp name, then move the new one in.
-# Renaming is atomic on Unix filesystems, preventing page chunk 404s for active users.
 if [ -d "$ACTIVE_DIR/.next" ]; then
+  rm -rf "$ACTIVE_DIR/.next_old"
   mv "$ACTIVE_DIR/.next" "$ACTIVE_DIR/.next_old"
 fi
 mv "$BUILD_DIR/.next" "$ACTIVE_DIR/.next"
 
-# Sync public/ files if they changed (images, favicon, etc.)
 if command -v rsync >/dev/null 2>&1; then
   rsync -a --delete "$BUILD_DIR/public/" "$ACTIVE_DIR/public/"
+  rsync -a --delete "$BUILD_DIR/node_modules/" "$ACTIVE_DIR/node_modules/"
 else
   rm -rf "$ACTIVE_DIR/public"
   cp -R "$BUILD_DIR/public" "$ACTIVE_DIR/"
@@ -75,21 +79,16 @@ fi
 echo "[6/7] Reloading storefront processes via PM2..."
 cd "$ACTIVE_DIR"
 
-# Verify if ecosystem config exists in active dir
 if [ ! -f "ecosystem.config.js" ]; then
-  echo "WARNING: ecosystem.config.js not found in active directory! Copying from build..."
   cp "$BUILD_DIR/ecosystem.config.js" "$ACTIVE_DIR/"
 fi
 
-# Check if application is already running in PM2
-pm2 describe khanbaba >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-  # pm2 reload restarts workers sequentially (zero-downtime)
-  pm2 reload khanbaba
+if pm2 describe khanbaba >/dev/null 2>&1; then
+  pm2 reload khanbaba --update-env
 else
-  # First-time start
   pm2 start ecosystem.config.js
 fi
+pm2 save
 
 # 7. Cleanup
 echo "[7/7] Cleaning up temporary folders..."
