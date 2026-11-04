@@ -589,6 +589,8 @@ export default async function importCatalog({ container, args }: ExecArgs) {
       rating: r.rating,
       content: r.content,
       is_verified: r.verified,
+      // The db column is NOT NULL (default '[]'); leaving it out sends null.
+      photos: [],
       status: "approved",
       created_at: new Date(r.date),
       metadata: { source: "woocommerce", wp_review_id: r.wp_id, original_date: r.date },
