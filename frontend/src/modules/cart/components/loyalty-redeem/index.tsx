@@ -159,7 +159,7 @@ export default function LoyaltyRedeem({ cart, loyaltyBalance }: Props) {
           <span className="text-xs text-ink/75 font-medium">Use loyalty points</span>
         </div>
         <LocalizedClientLink
-          href={`/account?return_to=${returnTo}`}
+          href={`/my-account?return_to=${returnTo}`}
           className="text-xs font-semibold text-primary hover:underline shrink-0"
         >
           Sign in
@@ -177,7 +177,7 @@ export default function LoyaltyRedeem({ cart, loyaltyBalance }: Props) {
           <span className="text-xs text-ink/50">No loyalty points available.</span>
         </div>
         <LocalizedClientLink
-          href="/account/loyalty"
+          href="/my-account/loyalty"
           className="text-xs font-medium text-ink/70 hover:text-ink shrink-0 underline"
         >
           Earn points

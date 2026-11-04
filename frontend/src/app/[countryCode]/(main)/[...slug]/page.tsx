@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, permanentRedirect } from "next/navigation"
 import React from "react"
 
 import { getCategoryByHandle } from "@lib/data/categories"
@@ -8,8 +8,8 @@ import { getSiteSettings } from "@lib/data/site-settings"
 import { listProducts } from "@lib/data/products"
 import { canonicalUrl, seoText } from "@lib/util/seo-url"
 import { htmlToText } from "@lib/util/html-text"
-import { buildCategoryPath, buildCategoryChain } from "@lib/util/category-path"
-import { getImagesForVariant } from "@lib/util/product"
+import { buildCategoryChain, categoryUrl, CATEGORY_BASE } from "@lib/util/category-path"
+import { getImagesForVariant, getProductPath } from "@lib/util/product"
 
 
 import ProductTemplate from "@modules/products/templates"
@@ -47,6 +47,26 @@ export const _nextJsCompilerWorkaround = {
   getImagesForVariant,
 }
 
+/**
+ * URL structure = the old WordPress / WooCommerce site, unchanged:
+ *   /product/<handle>/          product
+ *   /collection/<handle>/       category (/collection/<parent>/<child>/ when nested)
+ *
+ * Anything else that still resolves to a product or category (the
+ * interim /<category>/ and /<category>/<product>/ URLs, old links) is
+ * permanently redirected to the URL above, so there is one address per
+ * page and every ranking signal lands on it.
+ */
+function resolveSegments(segments: string[]) {
+  const isCollection = segments[0] === CATEGORY_BASE && segments.length > 1
+  const isProduct = segments[0] === "product" && segments.length === 2
+  return {
+    isCollection,
+    isProduct,
+    categorySegments: isCollection ? segments.slice(1) : segments,
+  }
+}
+
 export async function generateStaticParams() {
   // Return empty array to prevent build failures when backend or publishable keys are missing/offline.
   // Routes will resolve dynamically at runtime.
@@ -63,11 +83,15 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   // X-Robots-Tag header in middleware — query strings are invisible to an
   // ISR render, so robots handling cannot live here anymore.
 
-  // 1. Try Product Match
-  const product = await listProducts({
-    countryCode,
-    queryParams: { handle: lastSegment, limit: 1 },
-  }).then(({ response }) => response.products[0]).catch(() => null)
+  const { isCollection, categorySegments } = resolveSegments(segments)
+
+  // 1. Try Product Match (never under /collection/)
+  const product = isCollection
+    ? null
+    : await listProducts({
+        countryCode,
+        queryParams: { handle: lastSegment, limit: 1 },
+      }).then(({ response }) => response.products[0]).catch(() => null)
 
   if (product) {
     // Independent lookups — run in parallel (they were sequential, adding
@@ -95,7 +119,6 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       (product.metadata as any)?.meta_description || (product.metadata as any)?.seo_description || description
     )
 
-    const { getProductPath } = await import("@lib/util/product")
     const canonical = canonicalUrl(getProductPath(product))
 
 
@@ -182,7 +205,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   // 2. Try Category Match
   try {
-    const productCategory = await getCategoryByHandle(segments)
+    const productCategory = await getCategoryByHandle(categorySegments)
     if (!productCategory) notFound()
     const meta = (productCategory as any).metadata || {}
     const title = seoText(meta.meta_title?.trim() || productCategory.name)
@@ -191,7 +214,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
         productCategory.description ||
         `Shop ${productCategory.name}.`
     )
-    const canonical = canonicalUrl(`/${segments.join("/")}`)
+    const canonical = canonicalUrl(categoryUrl(productCategory))
     const ogImage =
       (meta as any).og_image || (productCategory as any).metadata?.image || undefined
 
@@ -232,16 +255,23 @@ export default async function SlugPage(props: Props) {
   if (!segments || segments.length === 0) notFound()
   const lastSegment = segments[segments.length - 1]
 
+  const { isCollection, isProduct, categorySegments } = resolveSegments(segments)
+
   // Parallelize the product and category lookups to optimize TTFB
   const [pricedProduct, productCategory] = await Promise.all([
-    listProducts({
-      countryCode,
-      queryParams: { handle: lastSegment, limit: 1 },
-    }).then(({ response }) => response.products[0]).catch(() => null),
-    getCategoryByHandle(segments).catch(() => null),
+    isCollection
+      ? Promise.resolve(null)
+      : listProducts({
+          countryCode,
+          queryParams: { handle: lastSegment, limit: 1 },
+        }).then(({ response }) => response.products[0]).catch(() => null),
+    getCategoryByHandle(categorySegments).catch(() => null),
   ])
 
   if (pricedProduct) {
+    // One address per product: /product/<handle>/
+    if (!isProduct) permanentRedirect(`${getProductPath(pricedProduct)}/`)
+
     const region = await getRegion(countryCode)
     if (!region) notFound()
 
@@ -263,7 +293,7 @@ export default async function SlugPage(props: Props) {
             { name: "Home", href: "/" },
             ...categoryChain.map((c) => ({
               name: c.name,
-              href: `/${buildCategoryPath(c)}`,
+              href: categoryUrl(c),
             })),
             { name: pricedProduct.title },
           ]}
@@ -289,6 +319,9 @@ export default async function SlugPage(props: Props) {
 
   // 2. Try Category Render
   if (productCategory) {
+    // One address per category: /collection/<handle>/
+    if (!isCollection) permanentRedirect(`${categoryUrl(productCategory)}/`)
+
     const chain: any[] = []
     let cur: any = productCategory
     while (cur) {
@@ -302,10 +335,10 @@ export default async function SlugPage(props: Props) {
           countryCode={countryCode}
           items={[
             { name: "Home", href: "/" },
-            { name: "Shop", href: "/store" },
+            { name: "Shop", href: "/shop" },
             ...chain.slice(0, -1).map((c) => ({
               name: c.name,
-              href: `/${buildCategoryPath(c)}`,
+              href: categoryUrl(c),
             })),
             { name: productCategory.name },
           ]}

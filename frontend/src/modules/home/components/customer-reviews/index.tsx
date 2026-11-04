@@ -54,9 +54,7 @@ export default function CustomerReviews({
 
       <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 no-scrollbar small:mx-0 small:grid small:grid-cols-4 small:gap-5 small:overflow-visible small:px-0">
         {reviews.slice(0, 8).map((r, i) => {
-          const href = r.product.category_handle
-            ? `/${r.product.category_handle}/${r.product.handle}`
-            : `/${r.product.handle}`
+          const href = `/product/${r.product.handle}`
           return (
             <li
               key={r.id}

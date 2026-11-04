@@ -153,13 +153,13 @@ async function listCategories(query?: Record<string, any>) {
 
 const STATIC_PATHS = [
   "",
-  "/store",
+  "/shop",
   "/blog",
-  "/contact",
-  "/about",
-  "/terms",
-  "/privacy",
-  "/refund-policy",
+  "/contact-us",
+  "/about-us",
+  "/terms-conditions",
+  "/privacy-policy",
+  "/refund_returns",
 ]
 
 type Entry = MetadataRoute.Sitemap[number]
@@ -260,7 +260,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const path = buildCategoryPath(cat as any)
       if (!path) continue
       entries.push(
-        entry(baseUrl, `/${path}`, cat.updated_at, "weekly", 0.6)
+        entry(baseUrl, `/collection/${path}`, cat.updated_at, "weekly", 0.6)
       )
     }
 

@@ -90,7 +90,7 @@ export async function recordReturnTo(path: string | null) {
  * Resolve the post-auth landing URL. We prefer the explicit hidden
  * form field (`return_to`), then the cookie set above, then a sane
  * default. The default depends on the action — a fresh signup goes to
- * the new `/account/setup` wizard so we can collect profile data and
+ * the new `/my-account/setup` wizard so we can collect profile data and
  * award onboarding loyalty points.
  */
 async function consumeReturnTo(
@@ -157,7 +157,7 @@ export async function signup(_currentState: unknown, formData: FormData) {
   // would just re-ask the same fields. Anything still missing surfaces
   // as a "Finish your profile" checklist on the dashboard with deep
   // links to the relevant editor — far less disruptive.
-  const target = await consumeReturnTo(returnToField, "/account/")
+  const target = await consumeReturnTo(returnToField, "/my-account/")
   redirect(target)
 }
 
@@ -185,7 +185,7 @@ export async function login(_currentState: unknown, formData: FormData) {
   }
 
   // Returning users default to /account/; cart/checkout flows override.
-  const target = await consumeReturnTo(returnToField, "/account/")
+  const target = await consumeReturnTo(returnToField, "/my-account/")
   redirect(target)
 }
 
@@ -202,7 +202,7 @@ export async function signout(countryCode: string) {
   const cartCacheTag = await getCacheTag("carts")
   revalidateTag(cartCacheTag)
 
-  redirect(`/account/`)
+  redirect(`/my-account/`)
 }
 
 export async function transferCart() {

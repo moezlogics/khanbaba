@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = await getSiteSettings()
   const siteName = s.site_name?.trim() || undefined
   return publicSeo({
-    path: "/privacy",
+    path: "/privacy-policy",
     title: s.page_privacy_title?.trim() || "Privacy Policy",
     description: `Read the ${siteName || "store"} privacy policy \u2014 how we collect, use and protect your personal information.`,
     image: s.seo_default_og_image?.trim() || undefined,

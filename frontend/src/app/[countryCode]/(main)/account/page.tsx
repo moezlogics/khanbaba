@@ -7,7 +7,7 @@ import { listOrders } from "@lib/data/orders"
 import { claimCompletionReward, getCustomerLoyalty } from "@lib/data/loyalty"
 
 /**
- * `/account` — combined login + dashboard entry point.
+ * `/my-account` — combined login + dashboard entry point.
  *
  * This file replaces the previous parallel-route setup
  * (`@dashboard` + `@login` slots) which triggered a Next.js 15

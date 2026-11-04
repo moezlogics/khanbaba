@@ -20,7 +20,7 @@ const EmptyCartMessage = () => {
         seasonal picks.
       </p>
       <LocalizedClientLink
-        href="/store"
+        href="/shop"
         className="inline-flex items-center gap-2 h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold shadow-[0_6px_20px_-6px_rgb(var(--color-primary)/0.45)] hover:brightness-110 active:scale-[0.98] transition-all"
       >
         <i className="ph-bold ph-storefront text-[15px]" aria-hidden />

@@ -39,7 +39,7 @@ export default function FashionDrapeCard({ productPath,
     <article className="group relative flex flex-col">
       <div className="relative overflow-hidden bg-stone-50 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.35)]">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="block"
@@ -83,7 +83,7 @@ export default function FashionDrapeCard({ productPath,
 
         {/* Quick Shop bar — slides up from bottom of image */}
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={`Quick shop ${product.title}`}
           className="absolute inset-x-0 bottom-0 z-[2] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"
         >
@@ -97,7 +97,7 @@ export default function FashionDrapeCard({ productPath,
       <div className="mt-3.5 flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <LocalizedClientLink
-            href={productPath || `/products/${product.handle}`}
+            href={productPath || `/product/${product.handle}`}
             data-testid="product-title"
             className="text-[15px] font-normal text-stone-900 hover:text-stone-600 transition-colors line-clamp-1 leading-snug"
             style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
@@ -144,7 +144,7 @@ export default function FashionDrapeCard({ productPath,
 
       {/* Shop Now link */}
       <LocalizedClientLink
-        href={productPath || `/products/${product.handle}`}
+        href={productPath || `/product/${product.handle}`}
         aria-label={`Shop ${product.title}`}
         className="mt-1.5 group/link inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-[0.22em] text-stone-500 hover:text-stone-900 transition-colors w-fit"
       >

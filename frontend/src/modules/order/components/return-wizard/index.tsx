@@ -132,7 +132,7 @@ export default function ReturnWizard({ order }: Props) {
           Your post-purchase request has been logged successfully. Our support team will review it and get in touch with you shortly.
         </p>
         <LocalizedClientLink
-          href="/account"
+          href="/my-account"
           className="inline-block px-5 py-2.5 rounded-full bg-primary text-primary-fg text-xs font-semibold hover:brightness-110 transition"
         >
           Go to Dashboard

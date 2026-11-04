@@ -33,7 +33,7 @@ export default function ShowcaseCard({ productPath,
   return (
     <article className="group relative flex flex-col">
       <LocalizedClientLink
-        href={productPath || `/products/${product.handle}`}
+        href={productPath || `/product/${product.handle}`}
         aria-label={product.title}
         data-testid="product-link"
         className="block relative overflow-hidden rounded-2xl bg-surface"

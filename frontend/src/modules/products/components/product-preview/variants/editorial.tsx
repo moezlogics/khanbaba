@@ -29,7 +29,7 @@ export default function EditorialCard({ productPath,
     <article className="group relative flex flex-col">
       <div className="relative overflow-hidden rounded-base bg-transparent">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
         >
@@ -78,7 +78,7 @@ export default function EditorialCard({ productPath,
           </span>
         )}
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="text-[11.5px] small:text-[15px] font-semibold small:font-medium text-ink hover:text-primary transition-colors line-clamp-2 leading-tight"
         >

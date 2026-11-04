@@ -38,7 +38,7 @@ export default function AccountMobileTopBar({ customer, loyaltyBalance }: Props)
     ? pathname.replace(new RegExp(`^/${countryCode}`), "") || "/"
     : pathname.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/"
 
-  const isRoot = cleanRoute === "/account" || cleanRoute === "/account/"
+  const isRoot = cleanRoute === "/my-account" || cleanRoute === "/my-account/"
 
   const greeting = customer.first_name
     ? `Hi, ${customer.first_name}`
@@ -84,7 +84,7 @@ export default function AccountMobileTopBar({ customer, loyaltyBalance }: Props)
 
         {/* Right: loyalty pill */}
         <LocalizedClientLink
-          href="/account/loyalty"
+          href="/my-account/loyalty"
           className="shrink-0 inline-flex items-center gap-1.5 h-8 rounded-full bg-surface border border-line hover:border-ink px-3 transition-colors"
           aria-label={`${loyaltyBalance} loyalty points`}
         >
@@ -104,12 +104,12 @@ export default function AccountMobileTopBar({ customer, loyaltyBalance }: Props)
  * added routes still render a sensible label without code changes.
  */
 function pageTitleFromPath(path: string): string {
-  if (path.startsWith("/account/orders/details")) return "Order details"
-  if (path.startsWith("/account/orders")) return "My orders"
-  if (path.startsWith("/account/profile")) return "Profile"
-  if (path.startsWith("/account/addresses")) return "Addresses"
-  if (path.startsWith("/account/loyalty")) return "Loyalty points"
-  if (path.startsWith("/account/setup")) return "Set up your account"
+  if (path.startsWith("/my-account/orders/details")) return "Order details"
+  if (path.startsWith("/my-account/orders")) return "My orders"
+  if (path.startsWith("/my-account/profile")) return "Profile"
+  if (path.startsWith("/my-account/addresses")) return "Addresses"
+  if (path.startsWith("/my-account/loyalty")) return "Loyalty points"
+  if (path.startsWith("/my-account/setup")) return "Set up your account"
   const last = path.split("/").filter(Boolean).pop() || "Account"
   return last.charAt(0).toUpperCase() + last.slice(1).replace(/-/g, " ")
 }

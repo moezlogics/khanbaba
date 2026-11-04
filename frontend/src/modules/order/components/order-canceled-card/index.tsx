@@ -63,14 +63,14 @@ export default function OrderCanceledCard({
 
       <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full max-w-md">
         <LocalizedClientLink
-          href="/store"
+          href="/shop"
           className="flex-1 h-12 bg-primary text-primary-fg rounded-[var(--radius-btn)] text-[16px] font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
         >
           <i className="ph-bold ph-storefront" aria-hidden />
           Continue browsing
         </LocalizedClientLink>
         <LocalizedClientLink
-          href="/contact"
+          href="/contact-us"
           className="flex-1 h-11 bg-surface text-ink border border-line/60 rounded-full text-sm font-semibold hover:bg-surface-alt/40 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
         >
           <i className="ph-bold ph-headset" aria-hidden />

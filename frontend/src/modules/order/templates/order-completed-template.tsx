@@ -150,13 +150,13 @@ export default async function OrderCompletedTemplate({
               </div>
               <div className="flex gap-2.5 w-full sm:w-auto">
                 <LocalizedClientLink
-                  href="/contact"
+                  href="/contact-us"
                   className="flex-1 sm:flex-initial text-center px-4 py-2 text-xs font-bold text-ink bg-surface-alt hover:bg-surface-alt/70 border border-line/35 rounded-xl transition duration-150"
                 >
                   Contact
                 </LocalizedClientLink>
                 <LocalizedClientLink
-                  href="/contact"
+                  href="/contact-us"
                   className="flex-1 sm:flex-initial text-center px-4 py-2 text-xs font-bold text-white bg-primary hover:brightness-110 rounded-xl transition duration-150"
                 >
                   Returns Policy

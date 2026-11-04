@@ -25,7 +25,7 @@ export default async function Profile() {
   const regions = await listRegions()
 
   if (!customer) {
-    redirect("/account/")
+    redirect("/my-account/")
   }
 
   if (!regions) {

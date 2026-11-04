@@ -101,7 +101,7 @@ export default function GuestDashboard() {
           </div>
         </div>
         <LocalizedClientLink
-          href="/account/login"
+          href="/my-account/login"
           className="px-5 py-2.5 rounded-full bg-primary text-primary-fg text-xs font-semibold hover:brightness-110 active:scale-95 transition-all text-center shrink-0"
         >
           Register & Earn Coins
@@ -197,7 +197,7 @@ export default function GuestDashboard() {
                   <i className="ph ph-package text-3xl text-ink/20 block mx-auto mb-2" />
                   <h4 className="font-semibold text-ink text-xs mb-1">No orders yet</h4>
                   <p className="text-[10px] text-ink/45 mb-4">Orders placed from this browser will appear here.</p>
-                  <LocalizedClientLink href="/store" className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                  <LocalizedClientLink href="/shop" className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                     Start Shopping
                   </LocalizedClientLink>
                 </div>
@@ -257,7 +257,7 @@ export default function GuestDashboard() {
                             </LocalizedClientLink>
                             {(o.status === "completed" || o.status === "delivered") && (
                               <LocalizedClientLink
-                                href={`/account/orders/details/${o.id}/return`}
+                                href={`/my-account/orders/details/${o.id}/return`}
                                 className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold active:scale-95 transition"
                               >
                                 Return / Exchange

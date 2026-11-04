@@ -20,7 +20,7 @@ export default function LuxeCard({ productPath,
   return (
     <article className="group relative overflow-hidden rounded-large">
       <LocalizedClientLink
-        href={productPath || `/products/${product.handle}`}
+        href={productPath || `/product/${product.handle}`}
         aria-label={product.title}
         data-testid="product-link"
         className="block"
@@ -55,7 +55,7 @@ export default function LuxeCard({ productPath,
       {/* Gradient scrim + text overlay */}
       <div className="absolute inset-x-0 bottom-0 p-4 pt-16 bg-gradient-to-t from-black/75 via-black/40 to-transparent pointer-events-none">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="pointer-events-auto block text-white text-sm font-medium line-clamp-2 leading-snug hover:text-accent transition-colors"
         >

@@ -23,7 +23,7 @@ export default function CompactCard({ productPath,
     <article className="group relative flex flex-col">
       <div className="relative overflow-hidden rounded-base">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
         >
@@ -63,7 +63,7 @@ export default function CompactCard({ productPath,
 
       <div className="mt-2 flex flex-col gap-0.5">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="text-[13px] font-semibold text-black hover:text-primary transition-colors line-clamp-1 leading-snug"
         >

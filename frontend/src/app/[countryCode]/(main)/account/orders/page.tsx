@@ -19,7 +19,7 @@ export default async function Orders() {
   const orders = await listOrders()
 
   if (!orders) {
-    redirect("/account/")
+    redirect("/my-account/")
   }
 
   return (

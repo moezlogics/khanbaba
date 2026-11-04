@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = await getSiteSettings()
   const siteName = s.site_name?.trim() || undefined
   return publicSeo({
-    path: "/refund-policy",
+    path: "/refund_returns",
     title: s.page_refund_title?.trim() || "Refund & Return Policy",
     description: `Refund and return policy for ${siteName || "our store"} \u2014 how returns work, eligibility windows and timelines.`,
     image: s.seo_default_og_image?.trim() || undefined,

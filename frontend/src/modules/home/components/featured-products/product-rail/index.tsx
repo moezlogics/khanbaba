@@ -72,10 +72,10 @@ export default async function ProductRail({
 
   const heading = category?.name || collection?.title || title || "Latest Products"
   const viewAllHref = category
-    ? `/${category.handle}`
+    ? `/collection/${category.handle}`
     : collection
       ? `/collections/${collection.handle}`
-      : `/store`
+      : `/shop`
 
   return (
     <section className="pt-0 pb-2">

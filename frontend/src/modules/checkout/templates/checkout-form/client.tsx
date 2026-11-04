@@ -35,7 +35,7 @@ export function CheckoutFormClient({ cart, customer, shippingMethods, paymentMet
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-[13px] font-semibold text-ink tracking-wide uppercase">Contact</h2>
         <LocalizedClientLink
-          href="/account?return_to=/checkout"
+          href="/my-account?return_to=/checkout"
           className="text-xs text-primary hover:underline"
         >
           Have an account? Log in

@@ -21,7 +21,7 @@ import { NextRequest, NextResponse } from "next/server"
  *      POST `/store/customers` with the registration bearer to create
  *      the Customer, then POST `/auth/token/refresh` to get a new
  *      token that carries `actor_id`.
- *   D) Set the httpOnly `_medusa_jwt` cookie and 302 to `/account`.
+ *   D) Set the httpOnly `_medusa_jwt` cookie and 302 to `/my-account`.
  *
  * Errors render a small HTML page with a "Try again" link instead of
  * crashing — the most common cause is the user closing the Google
@@ -94,7 +94,7 @@ function errorResponse(message: string, debug?: string): NextResponse {
     <h1>Sign-in didn't complete</h1>
     <p>${safeMessage}</p>
     ${safeDebug ? `<pre>${safeDebug}</pre>` : ""}
-    <a class="btn" href="/account">Try again</a>
+    <a class="btn" href="/my-account">Try again</a>
   </div>
 </body>
 </html>`
@@ -142,7 +142,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   //   1. Explicit `?return_to=` query (rare — Google strips this)
   //   2. The `_medusa_return_to` cookie set when the user clicked the
   //      "Continue with Google" button on /cart, /checkout, or /account.
-  //   3. Default to `/account`.
+  //   3. Default to `/my-account`.
   // The cookie is cleared once consumed so a future stale value can't
   // hijack a normal sign-in.
   const queryReturn = url.searchParams.get("return_to")
@@ -154,11 +154,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   } catch {
     /* `next/headers` only works in this scope when the file is server-only — fine */
   }
-  const returnToCandidate = queryReturn || cookieReturn || "/account/"
+  const returnToCandidate = queryReturn || cookieReturn || "/my-account/"
   let returnTo =
     returnToCandidate.startsWith("/") && !returnToCandidate.startsWith("//")
       ? returnToCandidate
-      : "/account/"
+      : "/my-account/"
 
   if (returnTo.includes("?")) {
     const [pathname, search] = returnTo.split("?")

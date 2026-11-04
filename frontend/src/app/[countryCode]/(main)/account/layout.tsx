@@ -4,7 +4,7 @@ import { Toaster } from "@medusajs/ui"
 import AccountLayout from "@modules/account/templates/account-layout"
 
 /**
- * Every page under `/account/*` is user-specific: it reads the auth
+ * Every page under `/my-account/*` is user-specific: it reads the auth
  * cookie via `retrieveCustomer()`, fetches loyalty balance, orders,
  * addresses, etc. None of those have a meaningful static prerender.
  *
@@ -15,7 +15,7 @@ import AccountLayout from "@modules/account/templates/account-layout"
  * during the static-export phase that no combination of
  * `force-dynamic` + `default.tsx` reliably suppressed. The current
  * shape is a plain `children` layout with a single decision-making
- * `page.tsx` at the root of `/account` — simpler and bug-free.
+ * `page.tsx` at the root of `/my-account` — simpler and bug-free.
  */
 export const dynamic = "force-dynamic"
 

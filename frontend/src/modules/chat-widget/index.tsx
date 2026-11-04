@@ -1204,8 +1204,8 @@ export default function ChatWidget({
                   onAction={async (a: any) => {
                     if (a?.type === "checkout") window.location.href = "/checkout"
                     else if (a?.type === "view_cart") window.location.href = "/cart"
-                    else if (a?.type === "sign_in_required") window.location.href = "/account"
-                    else if (a?.type === "contact_page") window.location.href = "/contact"
+                    else if (a?.type === "sign_in_required") window.location.href = "/my-account"
+                    else if (a?.type === "contact_page") window.location.href = "/contact-us"
                     else if (a?.type === "whatsapp" && a.url) window.open(a.url, "_blank", "noopener")
                     else if (a?.type === "confirm_order" && a.cart_id) {
                       const r = await confirmChatOrder(a.cart_id)
@@ -1910,7 +1910,7 @@ function MessageRow({
                 (e.currentTarget as HTMLElement).style.borderColor = "var(--hex-border)"
               }}
             >
-              <a href={`/products/${p.handle}`} className="flex items-center gap-3">
+              <a href={`/product/${p.handle}`} className="flex items-center gap-3">
                 {p.thumbnail ? (
                   <div
                     className={`w-14 rounded-xl overflow-hidden shrink-0 ${globalAspectClass}`}

@@ -45,34 +45,34 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   {
-    href: "/account",
+    href: "/my-account",
     label: "Overview",
     icon: "ph-house-line",
     testId: "overview-link",
   },
   {
-    href: "/account/orders",
+    href: "/my-account/orders",
     label: "Orders",
     icon: "ph-package",
     testId: "orders-link",
     matchPrefix: true,
   },
   {
-    href: "/account/profile",
+    href: "/my-account/profile",
     label: "Profile",
     icon: "ph-user",
     testId: "profile-link",
     matchPrefix: true,
   },
   {
-    href: "/account/addresses",
+    href: "/my-account/addresses",
     label: "Addresses",
     icon: "ph-map-pin",
     testId: "addresses-link",
     matchPrefix: true,
   },
   {
-    href: "/account/loyalty",
+    href: "/my-account/loyalty",
     label: "Loyalty",
     icon: "ph-coin",
     testId: "loyalty-link",
@@ -176,7 +176,7 @@ const DesktopRail = ({
 
       {/* Loyalty mini-pill */}
       <LocalizedClientLink
-        href="/account/loyalty"
+        href="/my-account/loyalty"
         className="flex items-center justify-between gap-2 rounded-xl bg-surface/60 hover:bg-surface px-3 py-2 transition-colors"
         aria-label={`${loyaltyBalance} loyalty points`}
       >

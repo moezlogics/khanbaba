@@ -22,21 +22,21 @@ type MenuLink = {
 
 const PRIMARY: MenuLink[] = [
   { label: "Home", href: "/", icon: "house", testId: "home-link" },
-  { label: "Shop all", href: "/store", icon: "squares-four", testId: "store-link" },
+  { label: "Shop all", href: "/shop", icon: "squares-four", testId: "store-link" },
   { label: "Blog", href: "/blog", icon: "newspaper", testId: "blog-link" },
 ]
 
 const SECONDARY: MenuLink[] = [
-  { label: "My profile", href: "/account/profile", icon: "user-circle", testId: "account-link" },
-  { label: "My orders", href: "/account/orders", icon: "package", testId: "orders-link" },
+  { label: "My profile", href: "/my-account/profile", icon: "user-circle", testId: "account-link" },
+  { label: "My orders", href: "/my-account/orders", icon: "package", testId: "orders-link" },
 
   { label: "Cart", href: "/cart", icon: "handbag", testId: "cart-link" },
 ]
 
 const HELP: MenuLink[] = [
-  { label: "Contact us", href: "/contact", icon: "chat-circle", testId: "contact-link" },
-  { label: "About", href: "/about", icon: "info", testId: "about-link" },
-  { label: "Returns", href: "/refund-policy", icon: "arrow-u-up-left", testId: "returns-link" },
+  { label: "Contact us", href: "/contact-us", icon: "chat-circle", testId: "contact-link" },
+  { label: "About", href: "/about-us", icon: "info", testId: "about-link" },
+  { label: "Returns", href: "/refund_returns", icon: "arrow-u-up-left", testId: "returns-link" },
 ]
 
 type SideMenuProps = {
@@ -174,7 +174,7 @@ const SideMenu = ({ locales }: SideMenuProps) => {
                           </span>
                           <GoogleSignInButton label="Sign in with Google" />
                           <LocalizedClientLink
-                            href="/account"
+                            href="/my-account"
                             onClick={close}
                             className="text-center text-sm font-medium text-ink/60 hover:text-primary underline"
                           >

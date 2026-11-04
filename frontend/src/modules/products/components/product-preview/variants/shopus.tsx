@@ -21,7 +21,7 @@ export default function ShopUsCard({ productPath,
       {/* Image container */}
       <div className={`relative overflow-hidden bg-[#f8f8f8] ${aspectClass || "aspect-[3/4]"}`}>
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="w-full h-full block"
@@ -78,7 +78,7 @@ export default function ShopUsCard({ productPath,
         </div>
 
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="text-sm font-semibold text-neutral-800 hover:text-[#AE1C9A] transition-colors duration-200 line-clamp-2 leading-snug font-sans"
         >

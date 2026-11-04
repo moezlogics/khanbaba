@@ -1,37 +1,25 @@
 import { HttpTypes } from "@medusajs/types";
-import { buildCategoryPath } from "./category-path";
 
 export const isSimpleProduct = (product: HttpTypes.StoreProduct): boolean => {
     return product.options?.length === 1 && product.options[0].values?.length === 1;
 }
 
 /**
- * Builds the dynamic canonical URL path for a product based on its
- * primary category and brand.
- * 
- * URL structure:
- *   - Both brand & category: `/[brand_handle]/[category_handle]/[product_handle]`
- *   - Category only:         `/[category_handle]/[product_handle]`
- *   - Brand only:            `/[brand_handle]/[product_handle]`
- *   - Neither:               `/[product_handle]`
+ * Public URL of a product — the WordPress/WooCommerce structure the store
+ * has always used, so links and search rankings carry over unchanged:
  *
- * @param product  — the product object (must have `handle`, optionally `categories`, `metadata`, `collection`)
- * @param brand    — optional resolved Brand from the brands system (has `handle`)
+ *   /product/<handle>
+ *
+ * (the trailing slash is added by `trailingSlash: true`). Category is not
+ * part of the URL; product handles are unique on their own.
  */
-export function getProductPath(
-  product: any,
-  brand?: { handle?: string } | null
-): string {
+export function productPathFromHandle(handle: string): string {
+  return handle ? `/product/${handle}` : "/"
+}
+
+export function getProductPath(product: any, _brand?: unknown): string {
   if (!product || !product.handle) return "/"
-
-  const primaryCategory = product.categories?.[0]
-  const categorySegment = primaryCategory ? buildCategoryPath(primaryCategory) : ""
-
-  const segments = []
-  if (categorySegment) segments.push(categorySegment)
-  segments.push(product.handle)
-
-  return `/${segments.join("/")}`
+  return productPathFromHandle(product.handle)
 }
 
 /**

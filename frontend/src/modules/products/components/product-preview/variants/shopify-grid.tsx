@@ -23,7 +23,7 @@ export default function ShopifyGridCard({ productPath,
       {/* Media Wrapper */}
       <div className={`relative overflow-hidden bg-neutral-50 ${aspectClass || "aspect-[4/5]"}`}>
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="w-full h-full block"
@@ -64,7 +64,7 @@ export default function ShopifyGridCard({ productPath,
         )}
 
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="text-xs font-semibold text-neutral-800 hover:text-neutral-950 transition-colors line-clamp-1 leading-snug"
         >

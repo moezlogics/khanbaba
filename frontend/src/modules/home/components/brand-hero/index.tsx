@@ -32,7 +32,7 @@ export default function BrandHero({ rating }: Props) {
         </p>
         <div className="mt-8 flex w-full flex-col items-center gap-3 xsmall:w-auto xsmall:flex-row">
           <LocalizedClientLink
-            href="/store"
+            href="/shop"
             className="inline-flex h-[54px] w-full items-center justify-center gap-2 rounded-[var(--radius-btn)] bg-primary px-8 text-[17px] font-semibold text-primary-fg transition hover:brightness-110 active:scale-[0.98] xsmall:w-auto"
           >
             Shop now

@@ -101,7 +101,7 @@ export default function CartDrawer({ cart }: CartDrawerProps) {
                           data-testid="cart-drawer-item"
                         >
                           <LocalizedClientLink
-                            href={`/${item.product_handle}`}
+                            href={`/product/${item.product_handle}`}
                             onClick={close}
                             className={`w-20 shrink-0 rounded-xl overflow-hidden border border-line group-hover:border-primary/40 transition-colors ${globalAspectClass}`}
                           >
@@ -114,7 +114,7 @@ export default function CartDrawer({ cart }: CartDrawerProps) {
                           <div className="flex-1 min-w-0 flex flex-col justify-between">
                             <div>
                               <LocalizedClientLink
-                                href={`/${item.product_handle}`}
+                                href={`/product/${item.product_handle}`}
                                 onClick={close}
                                 className="text-sm font-semibold text-ink truncate block hover:text-primary transition-colors"
                               >
@@ -213,7 +213,7 @@ export default function CartDrawer({ cart }: CartDrawerProps) {
                     </span>
                   </div>
                   <LocalizedClientLink
-                    href="/store"
+                    href="/shop"
                     onClick={close}
                     className="mt-2 inline-flex items-center justify-center gap-1.5 h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 transition-all"
                   >

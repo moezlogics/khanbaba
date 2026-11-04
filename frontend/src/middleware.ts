@@ -20,6 +20,32 @@
    */
   const SKIP_PREFIXES = ["/api", "/auth", "/sitemap", "/sitemap.xml", "/robots"]
 
+  /**
+   * Public page URLs are the old WordPress ones; these map them onto the
+   * app's routes. The browser keeps the WordPress URL, and next.config.js
+   * 301s the route names (/about, /store, /account …) back to them.
+   */
+  const PAGE_ALIASES: Record<string, string> = {
+    "/about-us": "/about",
+    "/contact-us": "/contact",
+    "/terms-conditions": "/terms",
+    "/privacy-policy": "/privacy",
+    "/refund_returns": "/refund-policy",
+    "/shop": "/store",
+  }
+  const ACCOUNT_ALIAS = "/my-account"
+
+  function toRoutePath(pathname: string): string {
+    const slash = pathname.length > 1 && pathname.endsWith("/") ? "/" : ""
+    const clean = pathname.replace(/\/+$/, "") || "/"
+    const page = PAGE_ALIASES[clean]
+    if (page) return page + slash
+    if (clean === ACCOUNT_ALIAS || clean.startsWith(ACCOUNT_ALIAS + "/")) {
+      return "/account" + clean.slice(ACCOUNT_ALIAS.length) + slash
+    }
+    return pathname
+  }
+
   export async function middleware(request: NextRequest) {
     const { pathname, search, origin } = request.nextUrl
 
@@ -47,7 +73,7 @@
     // Rewrite internally to /pk/... — URL in browser stays the same.
     // Under trailingSlash: true, "/" rewrites to "/pk/" to keep trailing slash consistency.
     const rewriteUrl = new URL(
-      `/${DEFAULT_REGION}${pathname}${search}`,
+      `/${DEFAULT_REGION}${toRoutePath(pathname)}${search}`,
       origin
     )
 
@@ -61,7 +87,7 @@
     // the page is user-independent, so let the CDN hold it.
     const isUserBound =
       request.cookies.get("_medusa_jwt") || request.cookies.get("_medusa_cart_id")
-    const isPrivatePath = ["/account", "/cart", "/checkout", "/order", "/compare"].some(
+    const isPrivatePath = ["/account", "/my-account", "/cart", "/checkout", "/order"].some(
       (p) => pathname === p || pathname.startsWith(p + "/")
     )
     const cacheableAnon =

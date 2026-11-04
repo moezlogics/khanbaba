@@ -69,19 +69,19 @@ function getChecklist(customer: HttpTypes.StoreCustomer): ChecklistItem[] {
   const addresses = customer.addresses || []
   const meta = (customer.metadata as any) || {}
   return [
-    { done: !!customer.email, label: "Email", href: "/account/profile" },
+    { done: !!customer.email, label: "Email", href: "/my-account/profile" },
     {
       done: !!(customer.first_name && customer.last_name),
       label: "Name",
-      href: "/account/profile",
+      href: "/my-account/profile",
     },
-    { done: !!customer.phone, label: "Phone", href: "/account/profile" },
+    { done: !!customer.phone, label: "Phone", href: "/my-account/profile" },
     {
       done:
         addresses.some((a: any) => a.is_default_billing) ||
         addresses.length > 0,
       label: "Address",
-      href: "/account/addresses",
+      href: "/my-account/addresses",
     },
   ]
 }
@@ -128,7 +128,7 @@ const OverviewModern = ({
               {/* Top strip: avatar + greeting + tiny edit chip */}
               <div className="flex items-center justify-between gap-3">
                 <LocalizedClientLink
-                  href="/account/profile"
+                  href="/my-account/profile"
                   aria-label="Edit profile picture"
                   className="flex items-center gap-3 min-w-0 group"
                   title="Change profile picture"
@@ -161,7 +161,7 @@ const OverviewModern = ({
                 </LocalizedClientLink>
 
                 <LocalizedClientLink
-                  href="/account/orders"
+                  href="/my-account/orders"
                   aria-label="View orders"
                   className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-bg/10 hover:bg-bg/20 transition-colors"
                 >
@@ -190,7 +190,7 @@ const OverviewModern = ({
               {/* Action row */}
               <div className="mt-5">
                 <LocalizedClientLink
-                  href="/store"
+                  href="/shop"
                   className="inline-flex items-center justify-center gap-1.5 h-10 w-full rounded-full bg-bg/10 text-bg text-[12px] font-bold hover:bg-bg/15 transition-colors border border-bg/15"
                 >
                   Shop now
@@ -267,28 +267,28 @@ const OverviewModern = ({
              mobile, four-up on desktop. */}
           <section className="grid grid-cols-2 gap-2.5">
             <Tile
-              href="/account/orders"
+              href="/my-account/orders"
               icon="ph-package"
               label="Orders"
               metric={orderCount}
               tint="blue"
             />
             <Tile
-              href="/account/addresses"
+              href="/my-account/addresses"
               icon="ph-map-pin"
               label="Address"
               metric={(customer.addresses || []).length > 0 ? "Saved" : "Add"}
               tint="emerald"
             />
             <Tile
-              href="/account/profile"
+              href="/my-account/profile"
               icon="ph-user-circle"
               label="Profile"
               metric={isComplete ? "100%" : `${completion}%`}
               tint="purple"
             />
             <Tile
-              href="/account/loyalty"
+              href="/my-account/loyalty"
               icon="ph-coin"
               label="Points"
               metric={loyaltyBalance.toLocaleString()}
@@ -305,7 +305,7 @@ const OverviewModern = ({
               <h2 className="text-sm font-semibold text-ink">Recent orders</h2>
               {recentOrders.length > 0 && (
                 <LocalizedClientLink
-                  href="/account/orders"
+                  href="/my-account/orders"
                   className="text-[11px] font-medium text-ink/55 hover:text-ink"
                 >
                   View all →
@@ -323,7 +323,7 @@ const OverviewModern = ({
                   When you place your first order, it'll show up here.
                 </p>
                 <LocalizedClientLink
-                  href="/store"
+                  href="/shop"
                   className="mt-3 inline-flex items-center gap-1.5 h-8 px-4 rounded-full bg-ink text-bg text-[11px] font-semibold hover:bg-ink/85 transition-colors"
                 >
                   Start shopping
@@ -339,7 +339,7 @@ const OverviewModern = ({
                     data-value={order.id}
                   >
                     <LocalizedClientLink
-                      href={`/account/orders/details/${order.id}`}
+                      href={`/my-account/orders/details/${order.id}`}
                       className="group flex items-center gap-3 px-5 small:px-6 py-3 hover:bg-surface/50 transition-colors"
                     >
                       <span className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface text-ink/70">

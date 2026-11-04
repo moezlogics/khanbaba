@@ -15,7 +15,7 @@ const SignInPrompt = () => {
         </div>
       </div>
       <LocalizedClientLink
-        href="/account?return_to=/cart"
+        href="/my-account?return_to=/cart"
         className="text-xs font-semibold text-primary border border-primary/30 rounded-full px-4 py-1.5 hover:bg-primary/5 transition-colors shrink-0"
         data-testid="sign-in-button"
       >

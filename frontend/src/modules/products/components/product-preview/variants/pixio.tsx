@@ -21,7 +21,7 @@ export default function PixioCard({ productPath,
       {/* Media Wrapper */}
       <div className={`relative overflow-hidden rounded-[20px] bg-neutral-50 transition-all duration-500 ${aspectClass || "aspect-[3/4]"}`}>
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="w-full h-full block"
@@ -57,7 +57,7 @@ export default function PixioCard({ productPath,
         {/* Action icons overlay (fade & slide on hover) */}
         <div className="absolute inset-x-4 bottom-4 flex items-center justify-between opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-350 z-10">
           <LocalizedClientLink
-            href={productPath || `/products/${product.handle}`}
+            href={productPath || `/product/${product.handle}`}
             className="flex-grow mr-2 text-center text-xs font-bold text-white bg-neutral-900 hover:bg-neutral-800 py-2.5 px-4 rounded-full shadow-md transition-colors duration-200"
           >
             Quick View
@@ -76,7 +76,7 @@ export default function PixioCard({ productPath,
       {/* Content */}
       <div className="py-4 px-1 flex items-start justify-between gap-3">
         <h5 className="text-sm font-semibold text-neutral-800 hover:text-neutral-900 transition-colors line-clamp-2 leading-snug w-[70%]">
-          <LocalizedClientLink href={productPath || `/products/${product.handle}`}>
+          <LocalizedClientLink href={productPath || `/product/${product.handle}`}>
             {product.title}
           </LocalizedClientLink>
         </h5>

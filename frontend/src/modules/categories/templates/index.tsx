@@ -5,7 +5,7 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 import CategoryCarousel from "@modules/home/components/category-carousel"
 import CategoryCarouselServer from "@modules/home/components/category-carousel/server"
 import ExpandableContent from "@modules/common/components/expandable-content"
-import { buildCategoryPath } from "@lib/util/category-path"
+import { buildCategoryPath, categoryUrl } from "@lib/util/category-path"
 import { listCategories, collectDescendantCategoryIds } from "@lib/data/categories"
 
 export default async function CategoryTemplate({
@@ -41,10 +41,10 @@ export default async function CategoryTemplate({
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: "Shop", href: "/store" },
+    { label: "Shop", href: "/shop" },
     ...parents.map((p) => ({
       label: p.name,
-      href: `/${buildCategoryPath(p)}`,
+      href: categoryUrl(p),
     })),
     { label: category.name },
   ]

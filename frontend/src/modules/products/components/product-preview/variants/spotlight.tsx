@@ -38,7 +38,7 @@ export default function SpotlightCard({ productPath,
       {/* Image frame */}
       <div className="relative overflow-hidden rounded-2xl bg-surface transition-shadow duration-500 group-hover:shadow-[0_18px_40px_-18px_rgb(var(--color-primary)/0.35)]">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="block"
@@ -92,7 +92,7 @@ export default function SpotlightCard({ productPath,
         {defaultVariantId && (
           <div className="absolute top-3 right-3 z-[2] flex flex-col gap-2 translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
             <LocalizedClientLink
-              href={productPath || `/products/${product.handle}`}
+              href={productPath || `/product/${product.handle}`}
               aria-label={`Quick view ${product.title}`}
               className="flex items-center justify-center w-9 h-9 rounded-full bg-bg text-ink shadow-soft hover:bg-primary hover:text-primary-fg transition-colors"
             >
@@ -105,7 +105,7 @@ export default function SpotlightCard({ productPath,
       {/* Info */}
       <div className="mt-3.5 flex flex-col gap-1.5">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="text-sm font-semibold text-black hover:text-primary transition-colors line-clamp-2 leading-snug"
         >
@@ -133,7 +133,7 @@ export default function SpotlightCard({ productPath,
           )}
 
           <LocalizedClientLink
-            href={productPath || `/products/${product.handle}`}
+            href={productPath || `/product/${product.handle}`}
             aria-label={`View ${product.title}`}
             className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-ink/60 hover:text-primary transition-colors"
           >

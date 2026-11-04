@@ -40,7 +40,7 @@ export default function KhanBabaCard({
   priority,
   sizes,
 }: ProductCardProps) {
-  const href = productPath || `/products/${product.handle}`
+  const href = productPath || `/product/${product.handle}`
   const packs = packSizes(product)
   const shownPacks = packs.slice(0, 4)
 

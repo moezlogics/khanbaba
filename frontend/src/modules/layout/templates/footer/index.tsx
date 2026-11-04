@@ -44,16 +44,16 @@ export default async function Footer() {
     ...(categories || [])
       .filter((c: any) => !c.parent_category_id)
       .slice(0, 5)
-      .map((c: any) => ({ href: `/${c.handle}`, label: c.name as string })),
-    { href: "/store", label: "All products" },
+      .map((c: any) => ({ href: `/collection/${c.handle}`, label: c.name as string })),
+    { href: "/shop", label: "All products" },
   ]
   const helpLinks = [
-    { href: "/about", label: "About us" },
-    { href: "/contact", label: "Contact" },
-    { href: "/account/orders", label: "Track order" },
-    { href: "/refund-policy", label: "Refund policy" },
-    { href: "/terms", label: "Terms" },
-    { href: "/privacy", label: "Privacy" },
+    { href: "/about-us", label: "About us" },
+    { href: "/contact-us", label: "Contact" },
+    { href: "/my-account/orders", label: "Track order" },
+    { href: "/refund_returns", label: "Refund policy" },
+    { href: "/terms-conditions", label: "Terms" },
+    { href: "/privacy-policy", label: "Privacy" },
   ]
 
   // Footer tokens as utility values (no Tailwind alias exists for them).

@@ -83,7 +83,7 @@ export const ROBOTS_NOINDEX: Metadata["robots"] = {
 }
 
 export type PublicSeoInput = {
-  /** Public path WITHOUT the country prefix. Example: `/store`, `/about`. */
+  /** Public path WITHOUT the country prefix. Example: `/shop`, `/about-us`. */
   path: string
   title: string
   description?: string
@@ -102,7 +102,7 @@ export type PublicSeoInput = {
  * same SEO signals without copy-pasting 30 lines per file.
  *
  * Usage:
- *   return publicSeo({ path: "/about", title: "About Us", description })
+ *   return publicSeo({ path: "/about-us", title: "About Us", description })
  */
 export function publicSeo({
   path,

@@ -5,9 +5,8 @@ import { HttpTypes } from "@medusajs/types"
  * `parent_category` chain to the root. Returns a slash-separated
  * string of category handles, e.g. `"fashion/men/kurta"`.
  *
- * The returned value is *just the path part* — callers concatenate
- * it with a leading `/` (and an optional locale prefix) to form an
- * actual href, e.g. `/fashion/men/kurta`.
+ * The returned value is *just the handle chain* — use `categoryUrl()`
+ * for an href, which adds the `/collection/` base.
  *
  * Requirements:
  *  - `category.handle` is required.
@@ -34,6 +33,21 @@ export function buildCategoryPath(
     parent = parent.parent_category
   }
   return segments.join("/")
+}
+
+/** URL prefix for category pages — WooCommerce's category base on the old site. */
+export const CATEGORY_BASE = "collection"
+
+/**
+ * Public URL of a category, in the old WordPress structure:
+ *   /collection/<handle>            (top level)
+ *   /collection/<parent>/<handle>   (nested, as WooCommerce did)
+ */
+export function categoryUrl(
+  category: Pick<HttpTypes.StoreProductCategory, "handle"> & { parent_category?: any | null }
+): string {
+  const path = buildCategoryPath(category)
+  return path ? `/${CATEGORY_BASE}/${path}` : `/${CATEGORY_BASE}`
 }
 
 /**

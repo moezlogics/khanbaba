@@ -98,7 +98,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
       {/* Actions */}
       <div className="flex items-center gap-2 pt-1">
         <LocalizedClientLink
-          href={`/account/orders/details/${order.id}`}
+          href={`/my-account/orders/details/${order.id}`}
           className="flex-1"
         >
           <Button

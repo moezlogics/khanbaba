@@ -155,7 +155,7 @@ export default async function Nav() {
               </li>
               <li className="h-full flex items-center relative group">
                 <LocalizedClientLink
-                  href="/store"
+                  href="/shop"
                   className="relative px-4 h-full inline-flex items-center text-sm font-medium text-header-fg transition-colors gap-1.5 group-hover:text-header-accent"
                 >
                   Shop
@@ -179,7 +179,7 @@ export default async function Nav() {
                       {topCategories.map((c) => (
                         <LocalizedClientLink
                           key={c.id}
-                          href={`/${c.handle}`}
+                          href={`/collection/${c.handle}`}
                           className="group/cat text-sm text-ink/80 hover:text-primary hover:bg-surface rounded-base px-3 py-2 -mx-3 transition-colors inline-flex items-center justify-between"
                         >
                           <span>{c.name}</span>
@@ -190,7 +190,7 @@ export default async function Nav() {
                         </LocalizedClientLink>
                       ))}
                       <LocalizedClientLink
-                        href="/store"
+                        href="/shop"
                         className="text-sm font-semibold text-primary hover:text-accent col-span-2 pt-3 mt-2 border-t border-line flex items-center gap-1"
                       >
                         View all categories
@@ -207,7 +207,7 @@ export default async function Nav() {
                 <NavLink href="/blog">Blog</NavLink>
               </li>
               <li className="h-full flex items-center">
-                <NavLink href="/contact">Contact</NavLink>
+                <NavLink href="/contact-us">Contact</NavLink>
               </li>
             </ul>
 

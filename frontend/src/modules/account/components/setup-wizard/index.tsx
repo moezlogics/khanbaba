@@ -391,7 +391,7 @@ export default function SetupWizard({ customer: initial }: Props) {
             <div className="mt-6 flex flex-col small:flex-row gap-3 justify-center">
               <button
                 type="button"
-                onClick={() => router.push("/account")}
+                onClick={() => router.push("/my-account")}
                 className="inline-flex items-center justify-center gap-2 h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold hover:bg-primary/90 transition-colors"
               >
                 Go to dashboard
@@ -399,7 +399,7 @@ export default function SetupWizard({ customer: initial }: Props) {
               </button>
               <button
                 type="button"
-                onClick={() => router.push("/store")}
+                onClick={() => router.push("/shop")}
                 className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full border border-line text-ink hover:bg-surface text-sm font-semibold transition-colors"
               >
                 Start shopping
@@ -468,7 +468,7 @@ export default function SetupWizard({ customer: initial }: Props) {
               if (step === 3) {
                 advance()
               } else {
-                router.push("/account")
+                router.push("/my-account")
               }
             }}
             className="text-xs text-ink/45 hover:text-ink/70 underline underline-offset-2"

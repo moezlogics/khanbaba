@@ -328,7 +328,7 @@ function FreeShippingPopup({
             View Cart
           </LocalizedClientLink>
           <LocalizedClientLink
-            href="/store"
+            href="/shop"
             className="h-10 inline-flex items-center justify-center rounded-full bg-primary text-primary-fg text-[13px] font-semibold hover:brightness-110 transition-all shadow-[0_4px_14px_-4px_rgb(var(--color-primary)/0.4)]"
           >
             Keep Shopping

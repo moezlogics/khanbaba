@@ -46,7 +46,7 @@ export default function GroceryFreshCard({ productPath,
       {/* Frame */}
       <div className="relative overflow-hidden rounded-2xl bg-white border border-line transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-[0_18px_40px_-22px_rgb(var(--color-primary)/0.45)] group-hover:-translate-y-0.5">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="block"
@@ -105,7 +105,7 @@ export default function GroceryFreshCard({ productPath,
 
         {/* Quick-add — bottom-right, always visible */}
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={`Add ${product.title} to cart`}
           className="absolute bottom-2.5 right-2.5 z-[2] inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-fg shadow-md hover:brightness-110 active:scale-95 transition-all"
         >
@@ -116,7 +116,7 @@ export default function GroceryFreshCard({ productPath,
       {/* Info */}
       <div className="mt-2.5 flex flex-col gap-1">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="text-[13px] font-medium text-ink hover:text-primary transition-colors line-clamp-2 leading-snug"
         >

@@ -47,7 +47,7 @@ export default async function Hero() {
         <h1 className="heading1 text-brand-black mb-5">{headline}</h1>
         <p className="body1 text-secondary max-w-xl mb-8">{subline}</p>
         <div className="flex flex-wrap items-center gap-3">
-          <LocalizedClientLink href="/store" className="button-main">
+          <LocalizedClientLink href="/shop" className="button-main">
             Shop Now
           </LocalizedClientLink>
           <LocalizedClientLink href="/blog" className="button-outline">

@@ -22,7 +22,7 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
       <div className="flex gap-2 justify-between items-center">
         <h1 className="text-2xl-semi">Order details</h1>
         <LocalizedClientLink
-          href="/account/orders"
+          href="/my-account/orders"
           className="flex gap-2 items-center text-ui-fg-subtle hover:text-ui-fg-base"
           data-testid="back-to-overview-button"
         >
@@ -37,7 +37,7 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
         {order.status !== "canceled" && (
           <div className="flex justify-end py-2 border-b border-line">
             <LocalizedClientLink
-              href={`/account/orders/details/${order.id}/return`}
+              href={`/my-account/orders/details/${order.id}/return`}
               className="px-4 py-2 bg-primary text-primary-fg text-xs font-bold rounded-full hover:brightness-110 active:scale-95 transition"
             >
               Request Return / Exchange / Claim

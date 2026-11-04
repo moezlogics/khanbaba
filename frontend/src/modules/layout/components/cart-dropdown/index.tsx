@@ -136,7 +136,7 @@ const CartDropdown = ({
                         data-testid="cart-item"
                       >
                         <LocalizedClientLink
-                          href={`/${item.product_handle}`}
+                          href={`/product/${item.product_handle}`}
                           className={`w-[88px] rounded-xl overflow-hidden border border-line group-hover:border-primary/40 transition-colors ${globalAspectClass}`}
                         >
                           <Thumbnail
@@ -149,7 +149,7 @@ const CartDropdown = ({
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex flex-col flex-1 min-w-0">
                               <LocalizedClientLink
-                                href={`/${item.product_handle}`}
+                                href={`/product/${item.product_handle}`}
                                 data-testid="product-link"
                                 className="text-sm font-semibold text-ink truncate hover:text-primary transition-colors"
                               >
@@ -241,7 +241,7 @@ const CartDropdown = ({
                   </span>
                 </div>
                 <LocalizedClientLink
-                  href="/store"
+                  href="/shop"
                   onClick={close}
                   className="mt-2 inline-flex items-center justify-center gap-1.5 h-11 px-6 rounded-full bg-primary text-primary-fg text-sm font-semibold shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 transition-all"
                 >

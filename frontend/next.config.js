@@ -3,10 +3,13 @@ const checkEnvVariables = require("./check-env-variables")
 checkEnvVariables()
 
 /**
- * 301s from the old WordPress URLs (/product/x/, /collection/x/, /about-us/
- * ...) to the new ones, so links and Google rankings carry over. Generated
- * by api/data/woocommerce/build_catalog.py. Each rule is emitted with and
- * without the trailing slash, as the rules below do.
+ * The storefront keeps the old WordPress URL structure as its live URLs
+ * (/product/x/, /collection/x/, /about-us/, /my-account/ ... — the page
+ * aliases are mapped to their routes in middleware.ts). This list 301s
+ * everything else onto it: WordPress-only addresses that no longer exist,
+ * and the app's internal route names (/about, /store, /account ...) so a
+ * page is only ever served at its WordPress address. Each rule is emitted
+ * with and without the trailing slash, as the rules below do.
  */
 function wordpressRedirects() {
   let rules = []
@@ -233,17 +236,26 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      ...wordpressRedirects(),
       // Retired /account/setup wizard â€” points old links at the
       // dashboard instead of crashing the parallel-slot prerender.
       {
         source: "/account/setup",
-        destination: "/account",
+        destination: "/my-account/",
         permanent: true,
       },
       {
         source: "/account/setup/",
-        destination: "/account/",
+        destination: "/my-account/",
+        permanent: true,
+      },
+      {
+        source: "/my-account/setup",
+        destination: "/my-account/",
+        permanent: true,
+      },
+      {
+        source: "/my-account/setup/",
+        destination: "/my-account/",
         permanent: true,
       },
       {
@@ -256,6 +268,9 @@ const nextConfig = {
         destination: "/:country/account/",
         permanent: true,
       },
+      // After the specific rules above: old WordPress-only URLs and the
+      // app's route names → the live WordPress-structure URLs.
+      ...wordpressRedirects(),
       // The standalone /search page was removed in favour of the
       // inline SmartSearchBar overlay. Doing the redirect at the
       // framework level (instead of `redirect()` inside a server

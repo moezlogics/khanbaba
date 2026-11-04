@@ -23,7 +23,7 @@ export default function BoxedCard({ productPath,
     <article className="group relative flex flex-col rounded-large border border-line bg-bg overflow-hidden transition-all hover:shadow-pop hover:-translate-y-0.5 duration-300">
       <div className="relative overflow-hidden">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
         >
@@ -63,7 +63,7 @@ export default function BoxedCard({ productPath,
 
       <div className="p-4 flex flex-col gap-1 flex-1">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="text-sm font-medium text-ink hover:text-primary transition-colors line-clamp-2 leading-snug min-h-[2.5rem]"
         >

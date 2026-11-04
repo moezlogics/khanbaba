@@ -24,7 +24,7 @@ export default async function Addresses(props: {
   const region = await getRegion(countryCode)
 
   if (!customer) {
-    redirect("/account/")
+    redirect("/my-account/")
   }
 
   if (!region) {

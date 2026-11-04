@@ -2,7 +2,7 @@ import React from "react"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { getProductReviewStats } from "@lib/data/reviews"
-import { buildCategoryPath, buildCategoryChain } from "@lib/util/category-path"
+import { buildCategoryChain, categoryUrl } from "@lib/util/category-path"
 
 type ProductInfoProps = {
   product: HttpTypes.StoreProduct
@@ -59,7 +59,7 @@ const ProductInfo = async ({ product, mode = "main" }: ProductInfoProps) => {
           <React.Fragment key={c.id}>
             <i className="ph ph-caret-right text-[10px]" aria-hidden />
             <LocalizedClientLink
-              href={`/${buildCategoryPath(c)}`}
+              href={categoryUrl(c)}
               className="hover:text-primary transition-colors"
             >
               {c.name}

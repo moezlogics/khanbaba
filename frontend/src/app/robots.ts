@@ -34,9 +34,9 @@ export default function robots(): MetadataRoute.Robots {
   const baseUrl = getBaseURL()
 
   const disallowPaths = [
-    "/account",
-    "/account/",
-    "/account/*",
+    "/my-account",
+    "/my-account/",
+    "/my-account/*",
     "/cart",
     "/cart/",
     "/checkout",

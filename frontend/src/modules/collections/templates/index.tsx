@@ -11,7 +11,7 @@ export default function CollectionTemplate({
 }) {
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: "Shop", href: "/store" },
+    { label: "Shop", href: "/shop" },
     { label: collection.title }
   ]
 

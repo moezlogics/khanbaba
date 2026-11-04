@@ -127,7 +127,7 @@ const CategoryNode = ({
         }`}
       >
         <LocalizedClientLink
-          href={`/${path}`}
+          href={`/collection/${path}`}
           className="flex-1 px-2 py-1.5"
           style={{ paddingLeft: `${depth * 12 + 8}px` }}
         >
@@ -259,7 +259,7 @@ const ShopFilters = ({
           <ul className="flex flex-col gap-1">
             <li>
               <LocalizedClientLink
-                href="/store"
+                href="/shop"
                 className={`block px-2 py-1.5 rounded-base transition-colors ${
                   !currentCategory
                     ? "bg-ink text-bg font-medium"

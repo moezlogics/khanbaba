@@ -29,7 +29,7 @@ export default function MinimalCard({ productPath,
     >
       <div className="relative overflow-hidden rounded-xl">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           /* NOTE: deliberately NO prefetch={true} here. Full-page
@@ -78,7 +78,7 @@ export default function MinimalCard({ productPath,
 
       <div className="mt-3 flex flex-col gap-1">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           data-testid="product-title"
           className="text-sm font-semibold text-black hover:text-primary transition-colors line-clamp-2 leading-snug"
         >

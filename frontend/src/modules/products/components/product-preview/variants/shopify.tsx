@@ -21,7 +21,7 @@ export default function ShopifyCard({ productPath,
       {/* Media Wrapper */}
       <div className={`relative overflow-hidden bg-neutral-50 ${aspectClass || "aspect-[3/4]"}`}>
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="w-full h-full block"
@@ -61,7 +61,7 @@ export default function ShopifyCard({ productPath,
       <div className="p-3.5 flex flex-col flex-grow justify-between gap-1.5 bg-white">
         <div className="space-y-1">
           <LocalizedClientLink
-            href={productPath || `/products/${product.handle}`}
+            href={productPath || `/product/${product.handle}`}
             data-testid="product-title"
             className="text-xs text-neutral-800 font-medium hover:text-neutral-900 transition-colors line-clamp-2 leading-relaxed tracking-tight"
           >

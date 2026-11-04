@@ -13,7 +13,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 const TRUST_ITEMS = [
   { label: "Free Delivery over Rs 3,000", icon: "ph-truck" },
   { label: "Cash on Delivery", icon: "ph-hand-coins" },
-  { label: "24h Damage Refund", icon: "ph-arrow-u-up-left", href: "/refund-policy" },
+  { label: "24h Damage Refund", icon: "ph-arrow-u-up-left", href: "/refund_returns" },
 ] as const
 
 export default function ProductTrustBadges() {

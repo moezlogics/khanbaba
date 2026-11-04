@@ -139,10 +139,10 @@ export default function MobileBottomNavClient({
         badge: liveCount,
       },
       {
-        href: "/account",
+        href: "/my-account",
         label: "Account",
         icon: "user-circle",
-        matches: (p) => p.startsWith("/account"),
+        matches: (p) => p.startsWith("/my-account"),
       },
     ],
     [liveCount]

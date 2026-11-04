@@ -32,9 +32,9 @@ export async function generateMetadata({ params, searchParams }: Params): Promis
   const description =
     settings.seo_store_description ||
     `Browse all products at ${siteName}. Free shipping on qualifying orders.`
-  // Public URL is `/store` — middleware adds `/<countryCode>` internally
+  // Public URL is `/shop` — middleware adds `/<countryCode>` internally
   // for routing only. Canonical MUST mirror what the user sees.
-  const url = canonicalUrl("/store")
+  const url = canonicalUrl("/shop")
 
   const hasFilterParams = Object.entries(resolvedSearchParams || {}).some(
     ([key, val]) => (key.startsWith("spec_") || ["minPrice", "maxPrice", "inStock", "sortBy", "page"].includes(key)) && val

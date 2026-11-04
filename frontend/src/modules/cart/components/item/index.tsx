@@ -36,7 +36,7 @@ export default function Item({ item, type = "full", currencyCode }: ItemProps) {
   if (type === "preview") {
     return (
       <div className="flex items-start gap-3 py-2.5 border-b border-line/50 last:border-b-0" data-testid="product-row">
-        <LocalizedClientLink href={`/${item.product_handle}`} className="shrink-0">
+        <LocalizedClientLink href={`/product/${item.product_handle}`} className="shrink-0">
           <div className={`w-12 rounded-lg overflow-hidden bg-surface border border-line ${globalAspectClass}`}>
             <Thumbnail thumbnail={item.thumbnail} images={item.variant?.product?.images} size="square" />
           </div>
@@ -66,7 +66,7 @@ export default function Item({ item, type = "full", currencyCode }: ItemProps) {
       {/* Thumbnail — neutral surface tile, image floats inside with padding
           so a transparent product PNG doesn't bleed to the card edge. */}
       <LocalizedClientLink
-        href={`/${item.product_handle}`}
+        href={`/product/${item.product_handle}`}
         className={`shrink-0 w-20 rounded-xl bg-surface border border-line/60 overflow-hidden flex items-center justify-center p-2 ${globalAspectClass}`}
       >
         <Thumbnail
@@ -81,7 +81,7 @@ export default function Item({ item, type = "full", currencyCode }: ItemProps) {
         {/* Title + brand + variant */}
         <div className="min-w-0">
           <div className="flex items-start gap-2">
-            <LocalizedClientLink href={`/${item.product_handle}`} className="flex-1 min-w-0">
+            <LocalizedClientLink href={`/product/${item.product_handle}`} className="flex-1 min-w-0">
               <h2
                 className="text-sm font-semibold text-ink leading-tight hover:text-primary transition-colors line-clamp-2"
                 data-testid="product-title"

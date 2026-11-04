@@ -13,7 +13,7 @@ export type CategoryCarouselItem = {
 
 type Props = {
   items: CategoryCarouselItem[]
-  /** URL prefix for each item link. Defaults to `/` (flat category URLs). */
+  /** URL prefix for each item link. Defaults to the `/collection/` category base. */
   linkPrefix?: string
   /** Optional section label for aria. */
   ariaLabel?: string
@@ -31,7 +31,7 @@ type Props = {
  */
 export default function CategoryCarousel({
   items,
-  linkPrefix = "/",
+  linkPrefix = "/collection/",
   ariaLabel = "Shop by category",
 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null)

@@ -37,7 +37,7 @@ export default function SplitFrameCard({ productPath,
       {/* Image top */}
       <div className="relative overflow-hidden">
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="block"
@@ -80,7 +80,7 @@ export default function SplitFrameCard({ productPath,
 
         <div className="flex-1 min-w-0 pl-2">
           <LocalizedClientLink
-            href={productPath || `/products/${product.handle}`}
+            href={productPath || `/product/${product.handle}`}
             data-testid="product-title"
             className="block text-sm font-semibold text-ink hover:text-primary transition-colors line-clamp-2 leading-snug mb-1.5"
           >
@@ -107,7 +107,7 @@ export default function SplitFrameCard({ productPath,
 
         {/* Arrow CTA */}
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={`View ${product.title}`}
           className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-surface text-ink/70 hover:bg-primary hover:text-primary-fg transition-all duration-300 group-hover:translate-x-0 translate-x-[-4px]"
         >

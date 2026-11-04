@@ -34,7 +34,7 @@ export default async function CollectionBanners() {
             return (
               <LocalizedClientLink
                 key={c.id}
-                href={`/${c.handle}`}
+                href={`/collection/${c.handle}`}
                 className="group relative rounded-2xl overflow-hidden bg-surface aspect-[3/4] block box-shadow-xs hover:box-shadow-sm transition-shadow"
               >
                 {image ? (

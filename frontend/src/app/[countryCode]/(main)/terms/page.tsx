@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = await getSiteSettings()
   const siteName = s.site_name?.trim() || undefined
   return publicSeo({
-    path: "/terms",
+    path: "/terms-conditions",
     title: s.page_terms_title?.trim() || "Terms & Conditions",
     description: `Terms and conditions for using ${siteName || "this site"} \u2014 the rules, your rights and our obligations.`,
     image: s.seo_default_og_image?.trim() || undefined,

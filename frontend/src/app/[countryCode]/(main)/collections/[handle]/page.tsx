@@ -119,7 +119,7 @@ export default async function CollectionPage(props: Props) {
   // top banner here anymore — per design feedback the collection page
   // should open straight onto the product grid. The image is still
   // exposed via OpenGraph / Twitter card metadata above for SEO + link
-  // previews, and the storefront `/store` page surfaces it in the
+  // previews, and the storefront `/shop` page surfaces it in the
   // Pinterest-style collection gallery below the products.
 
   const jsonLd = {
@@ -132,7 +132,7 @@ export default async function CollectionPage(props: Props) {
 
   const breadcrumbs = [
     { name: "Home", href: "/" },
-    { name: "Shop", href: "/store" },
+    { name: "Shop", href: "/shop" },
     { name: collection.title },
   ]
 

@@ -21,7 +21,7 @@ export default function ShopifyBoldCard({ productPath,
       {/* Media Wrapper */}
       <div className={`relative overflow-hidden bg-neutral-100 ${aspectClass || "aspect-[3/4]"}`}>
         <LocalizedClientLink
-          href={productPath || `/products/${product.handle}`}
+          href={productPath || `/product/${product.handle}`}
           aria-label={product.title}
           data-testid="product-link"
           className="w-full h-full block"
@@ -57,7 +57,7 @@ export default function ShopifyBoldCard({ productPath,
       <div className="p-4 flex flex-col flex-grow justify-between gap-2.5 bg-white relative">
         <div className="space-y-1">
           <LocalizedClientLink
-            href={productPath || `/products/${product.handle}`}
+            href={productPath || `/product/${product.handle}`}
             data-testid="product-title"
             className="text-xs font-bold uppercase tracking-wider text-neutral-900 hover:text-neutral-700 transition-colors line-clamp-2 leading-relaxed"
           >
@@ -83,7 +83,7 @@ export default function ShopifyBoldCard({ productPath,
         {/* Hover slide/fade Add to Cart */}
         <div className="absolute inset-x-0 bottom-0 p-4 bg-white translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10 border-t border-neutral-100 flex items-center justify-center">
           <LocalizedClientLink
-            href={productPath || `/products/${product.handle}`}
+            href={productPath || `/product/${product.handle}`}
             className="w-full text-center text-xs font-bold uppercase tracking-widest bg-neutral-900 text-white py-2.5 hover:bg-neutral-800 transition-colors duration-200"
           >
             Add to Cart
