@@ -12,6 +12,7 @@ import {
   createSalesChannelsWorkflow,
   createShippingOptionsWorkflow,
   createShippingProfilesWorkflow,
+  deleteShippingOptionsWorkflow,
   createStockLocationsWorkflow,
   createTaxRegionsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
@@ -26,12 +27,23 @@ import { SITE_SETTINGS_MODULE } from "../modules/site-settings"
  * Imports the Khan Baba WooCommerce catalogue and sets the store up for
  * Pakistan. Reads the snapshot made by data/woocommerce/build_catalog.py.
  *
- *   npx medusa exec ./src/scripts/import-catalog.ts            # import
- *   npx medusa exec ./src/scripts/import-catalog.ts --dry-run  # check only
+ *   npx medusa exec ./src/scripts/import-catalog.ts               # import
+ *   npx medusa exec ./src/scripts/import-catalog.ts --dry-run     # check only
+ *   npx medusa exec ./src/scripts/import-catalog.ts --keep-theme  # don't touch the look
  *
- * Safe to run again: anything that already exists (matched by handle, name
- * or WordPress id) is left alone, so a second run only fills in what a
- * failed first run missed. It never edits or deletes existing data.
+ * Safe to run again:
+ *   - Products / categories / reviews: anything that exists (matched by
+ *     handle or WordPress id) is left alone; anything missing, including
+ *     products deleted in the admin, is created again. Reviews of a
+ *     re-created product are moved onto it.
+ *   - Delivery: always ends with exactly two options, replacing whatever
+ *     delivery options exist:
+ *       "Standard Delivery"  Rs 200, every order
+ *       "Free Delivery"      Rs 0, only orders of Rs 3,000 or more
+ *     (checkout then shows only Free and selects it).
+ *   - Look: the Khan Baba theme (colours + fonts) is applied every run
+ *     unless --keep-theme is passed. Other settings are only filled when
+ *     empty.
  *
  * Mapping from WooCommerce:
  *   variable product + variations -> product with a "Size" option
@@ -53,9 +65,8 @@ const API_KEY_TITLE = "Khan Baba Storefront"
 const STOCK_LOCATION = "Khan Baba Warehouse"
 const FULFILLMENT_SET = "Khan Baba Delivery"
 
-// Matches the live WooCommerce checkout: a Rs 199 flat rate, free from
-// Rs 3,000 (measured: Rs 2,820 paid delivery, Rs 3,760 was free).
-const DELIVERY_FEE = Number(process.env.KB_DELIVERY_FEE ?? 199)
+// Rs 200 standard delivery; free delivery from Rs 3,000.
+const DELIVERY_FEE = Number(process.env.KB_DELIVERY_FEE ?? 200)
 const FREE_DELIVERY_FROM = Number(process.env.KB_FREE_DELIVERY_FROM ?? 3000)
 
 type Catalog = {
@@ -116,6 +127,7 @@ export default async function importCatalog({ container, args }: ExecArgs) {
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
   const link = container.resolve(ContainerRegistrationKeys.LINK)
   const dryRun = (args || []).includes("--dry-run")
+  const keepTheme = (args || []).includes("--keep-theme")
 
   const catalog: Catalog = JSON.parse(
     fs.readFileSync(path.join(DATA_DIR, "catalog.json"), "utf8")
@@ -262,8 +274,56 @@ export default async function importCatalog({ container, args }: ExecArgs) {
     })
   } catch {}
 
-  const existingOptions = await fulfillmentService.listShippingOptions({ name: "Standard Delivery" })
-  if (!existingOptions.length) {
+  // Delivery options: replace whatever exists with exactly these two.
+  // Skipped when they're already in place with the same prices.
+  const wanted = [
+    { code: "kb-standard", amount: DELIVERY_FEE },
+    { code: "kb-free", amount: 0 },
+  ]
+  const allOptions = await fulfillmentService.listShippingOptions(
+    {},
+    { relations: ["rules", "type"], take: 1000 }
+  )
+  const deliveryOptions = allOptions.filter(
+    (o: any) =>
+      !(o.rules || []).some((r: any) => r.attribute === "is_return" && String(r.value) === "true")
+  )
+  const { data: pricedOptions } = deliveryOptions.length
+    ? await query.graph({
+        entity: "shipping_option",
+        fields: ["id", "type.code", "prices.amount", "prices.price_rules.attribute", "prices.price_rules.value"],
+        filters: { id: deliveryOptions.map((o: any) => o.id) },
+      })
+    : { data: [] as any[] }
+  const minTotalRule = (o: any) =>
+    (o.prices || [])
+      .flatMap((pr: any) => pr.price_rules || [])
+      .find((r: any) => r.attribute === "item_total")
+  const alreadyRight =
+    deliveryOptions.length === wanted.length &&
+    wanted.every((w) => {
+      const o: any = pricedOptions.find((x: any) => x.type?.code === w.code)
+      if (!o || o.prices?.length !== 1 || Number(o.prices[0].amount) !== w.amount) return false
+      const rule = minTotalRule(o)
+      return w.code === "kb-free" ? Number(rule?.value) === FREE_DELIVERY_FROM : !rule
+    })
+
+  if (alreadyRight) {
+    logger.info(`[import] delivery: already Standard Rs ${DELIVERY_FEE} + Free from Rs ${FREE_DELIVERY_FROM}`)
+  } else {
+    if (deliveryOptions.length) {
+      await deleteShippingOptionsWorkflow(container).run({
+        input: { ids: deliveryOptions.map((o: any) => o.id) },
+      })
+      logger.info(
+        `[import] delivery: removed ${deliveryOptions.length} old option(s): ` +
+          deliveryOptions.map((o: any) => o.name).join(", ")
+      )
+    }
+    const storeRules = [
+      { attribute: "enabled_in_store", value: "true", operator: "eq" as const },
+      { attribute: "is_return", value: "false", operator: "eq" as const },
+    ]
     await createShippingOptionsWorkflow(container).run({
       input: [
         {
@@ -272,23 +332,35 @@ export default async function importCatalog({ container, args }: ExecArgs) {
           provider_id: "manual_manual",
           service_zone_id: serviceZone.id,
           shipping_profile_id: shippingProfile.id,
-          type: { label: "Standard", description: "Delivery across Pakistan in 2–4 days.", code: "standard" },
+          type: { label: "Standard", description: "Delivery across Pakistan in 2-4 days.", code: "kb-standard" },
+          prices: [{ currency_code: CURRENCY, amount: DELIVERY_FEE }],
+          rules: storeRules,
+        },
+        {
+          name: "Free Delivery",
+          price_type: "flat",
+          provider_id: "manual_manual",
+          service_zone_id: serviceZone.id,
+          shipping_profile_id: shippingProfile.id,
+          type: {
+            label: "Free",
+            description: `Free delivery on orders of Rs ${FREE_DELIVERY_FROM} or more.`,
+            code: "kb-free",
+          },
+          // Only priced (Rs 0) once the items reach the threshold; below it
+          // the option has no price and the storefront checkout hides it.
           prices: [
-            { currency_code: CURRENCY, amount: DELIVERY_FEE },
             {
               currency_code: CURRENCY,
               amount: 0,
               rules: [{ attribute: "item_total", operator: "gte", value: FREE_DELIVERY_FROM }],
             },
           ],
-          rules: [
-            { attribute: "enabled_in_store", value: "true", operator: "eq" },
-            { attribute: "is_return", value: "false", operator: "eq" },
-          ],
+          rules: storeRules,
         },
       ],
     })
-    logger.info(`[import] delivery: Rs ${DELIVERY_FEE}, free from Rs ${FREE_DELIVERY_FROM}`)
+    logger.info(`[import] delivery: Standard Rs ${DELIVERY_FEE} + Free from Rs ${FREE_DELIVERY_FROM}`)
   }
 
   /* ---------------- publishable key ---------------- */
@@ -384,6 +456,7 @@ export default async function importCatalog({ container, args }: ExecArgs) {
   const salePrices: { variant_id: string; amount: number; currency_code: string }[] = []
 
   const productIdByHandle = new Map<string, string>()
+  const failedProducts: string[] = []
   let newProducts = 0
   for (const p of catalog.products) {
     const [existing] = await productModule.listProducts({ handle: p.handle }, { take: 1 })
@@ -392,10 +465,12 @@ export default async function importCatalog({ container, args }: ExecArgs) {
       continue
     }
 
-    const images: { url: string }[] = []
-    for (const im of p.images) images.push({ url: await upload(im.file) })
+    let result: any[]
+    try {
+      const images: { url: string }[] = []
+      for (const im of p.images) images.push({ url: await upload(im.file) })
 
-    const { result } = await createProductsWorkflow(container).run({
+      ;({ result } = await createProductsWorkflow(container).run({
       input: {
         products: [
           {
@@ -440,7 +515,11 @@ export default async function importCatalog({ container, args }: ExecArgs) {
           },
         ],
       },
-    })
+    }))
+    } catch (e: any) {
+      failedProducts.push(`${p.handle}: ${e?.message || e}`)
+      continue
+    }
     const product = result[0]
     productIdByHandle.set(p.handle, product.id)
     newProducts++
@@ -451,7 +530,11 @@ export default async function importCatalog({ container, args }: ExecArgs) {
       if (created) salePrices.push({ variant_id: created.id, amount: v.sale_price, currency_code: CURRENCY })
     }
   }
-  logger.info(`[import] products: ${newProducts} created, ${catalog.products.length - newProducts} already there`)
+  logger.info(
+    `[import] products: ${newProducts} created, ` +
+      `${catalog.products.length - newProducts - failedProducts.length} already there`
+  )
+  for (const f of failedProducts) logger.warn(`[import] product FAILED: ${f}`)
 
   if (salePrices.length) {
     if (!saleListId) {
@@ -481,11 +564,23 @@ export default async function importCatalog({ container, args }: ExecArgs) {
   /* ---------------- reviews ---------------- */
 
   const reviewService: any = container.resolve(ADVANCED_REVIEWS_MODULE)
-  const done = new Set<number>(
-    (await reviewService.listAdvancedReviews({}, { take: 10000 }))
-      .map((r: any) => Number(r.metadata?.wp_review_id))
-      .filter(Boolean)
-  )
+  const existingReviews: any[] = await reviewService.listAdvancedReviews({}, { take: 10000 })
+  const reviewByWpId = new Map<number, any>()
+  for (const r of existingReviews) {
+    const id = Number(r.metadata?.wp_review_id)
+    if (id) reviewByWpId.set(id, r)
+  }
+  const done = new Set<number>(reviewByWpId.keys())
+
+  // A product deleted and re-created gets a new id: move its old reviews.
+  const moves = catalog.reviews
+    .map((r) => ({ review: reviewByWpId.get(r.wp_id), productId: productIdByHandle.get(r.product_handle) }))
+    .filter((m) => m.review && m.productId && m.review.product_id !== m.productId)
+    .map((m) => ({ id: m.review.id, product_id: m.productId }))
+  if (moves.length) {
+    await reviewService.updateAdvancedReviews(moves)
+    logger.info(`[import] reviews: ${moves.length} moved to re-created products`)
+  }
   const toCreate = catalog.reviews
     .filter((r) => !done.has(r.wp_id) && productIdByHandle.has(r.product_handle))
     .map((r) => ({
@@ -536,10 +631,12 @@ export default async function importCatalog({ container, args }: ExecArgs) {
       }))
     if (sections.length) toWrite.homepage_sections = JSON.stringify(sections)
   }
+  const filled = Object.keys(toWrite).length
+  if (!keepTheme) Object.assign(toWrite, BRAND_THEME)
   if (Object.keys(toWrite).length) await settingsService.bulkUpsert(toWrite)
   logger.info(
-    `[import] site settings: ${Object.keys(toWrite).length} filled, ` +
-      `${Object.keys(site.settings).length + Object.keys(site.assets).length - Object.keys(toWrite).length} kept as they were`
+    `[import] site settings: ${filled} filled` +
+      (keepTheme ? " (theme left as it is)" : ", Khan Baba theme applied")
   )
 
   /* ---------------- what the storefront needs ---------------- */
@@ -548,6 +645,56 @@ export default async function importCatalog({ container, args }: ExecArgs) {
   logger.info("[import] Done. Put these two lines in the storefront .env:")
   logger.info(`NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${(apiKey as any).token}`)
   logger.info(`NEXT_PUBLIC_MEDUSA_SALES_CHANNEL_ID=${salesChannel.id}`)
+}
+
+/**
+ * The Khan Baba look (same as the "Terracotta Earth" preset in Admin >
+ * Appearance): solid near-black text, deep terracotta buttons, maroon-brown
+ * footer, Josefin Sans body + Abril Fatface headings. The announcement bar
+ * colours are cleared so the bar follows the theme.
+ */
+const BRAND_THEME: Record<string, string> = {
+  theme_preset: "terracotta-earth",
+  theme_primary: "#8E3B12",
+  theme_primary_fg: "#FFFFFF",
+  theme_accent: "#F3E3D3",
+  theme_accent_fg: "#4A1D06",
+  theme_bg: "#FFFFFF",
+  theme_surface: "#FAF4EC",
+  theme_surface_alt: "#FDF9F4",
+  theme_text: "#111111",
+  theme_text_muted: "#3A3A3A",
+  theme_border: "#E6D8C6",
+  theme_success: "#2F6B1F",
+  theme_warning: "#B45309",
+  theme_danger: "#B42318",
+  theme_info: "#0E7490",
+  theme_header_bg: "#FFFFFF",
+  theme_header_fg: "#111111",
+  theme_header_fg_muted: "#3A3A3A",
+  theme_header_hover_bg: "#FAF4EC",
+  theme_header_border: "#ECE1D3",
+  theme_header_accent: "#8E3B12",
+  theme_header_top_border: "#8E3B12",
+  theme_footer_bg: "#4A1A06",
+  theme_footer_fg: "#FFFFFF",
+  theme_footer_border: "#6E3517",
+  theme_card_bg: "#FFFFFF",
+  theme_card_border: "#ECE1D3",
+  theme_price_color: "#8E3B12",
+  theme_radius: "md",
+  theme_radius_card: "lg",
+  theme_radius_btn: "sm",
+  theme_radius_search: "full",
+  theme_radius_input: "sm",
+  theme_radius_sidebar: "lg",
+  theme_radius_mobile_footer: "lg",
+  theme_mobile_footer_border: "#ECE1D3",
+  theme_container: "default",
+  theme_font: "josefin",
+  theme_font_heading: "abril",
+  announcement_bar_bg: "",
+  announcement_bar_fg: "",
 }
 
 /** Fail before writing anything if the snapshot is incomplete. */

@@ -4,7 +4,7 @@
  * a threshold) — change both together. Checkout itself always charges what
  * the backend says; these only drive copy and the PDP nudge.
  */
-export const DELIVERY_FEE = 199
+export const DELIVERY_FEE = 200
 export const FREE_DELIVERY_FROM = 3000
 /** Working days from order to doorstep, nationwide. */
 export const DELIVERY_DAYS = { min: 2, max: 4 }

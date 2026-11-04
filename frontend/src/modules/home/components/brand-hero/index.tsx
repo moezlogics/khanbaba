@@ -29,13 +29,13 @@ export default function BrandHero({ rating, products = [] }: Props) {
     <section className="overflow-hidden rounded-[var(--radius-card)] bg-primary text-primary-fg">
       <div className="grid items-center gap-8 px-5 py-10 xsmall:px-8 small:grid-cols-[1.05fr_1fr] small:gap-12 small:px-14 small:py-16">
         <div className="text-center small:text-left">
-          <p className="label-caps text-[12px] small:text-[13px] tracking-[0.18em] text-primary-fg/90">
+          <p className="label-caps text-[13px] small:text-[14px] tracking-[0.18em] text-primary-fg">
             Premium dry fruits · Since 40+ years
           </p>
-          <h1 className="mt-4 font-heading text-[40px] leading-[1.05] text-primary-fg xsmall:text-[48px] small:text-[64px]">
+          <h1 className="mt-4 font-heading text-[42px] leading-[1.04] text-primary-fg xsmall:text-[50px] small:text-[66px]">
             Pakistan&rsquo;s Finest Dry Fruits
           </h1>
-          <p className="mx-auto mt-5 max-w-lg text-[17px] leading-relaxed text-primary-fg small:mx-0 small:text-[19px]">
+          <p className="mx-auto mt-5 max-w-lg text-[17px] font-semibold leading-relaxed text-primary-fg small:mx-0 small:text-[20px]">
             Hand-picked chilgoza, badam, pista, kaju &amp; dates — fresh stock, wholesale
             prices, cash on delivery across Pakistan.
           </p>

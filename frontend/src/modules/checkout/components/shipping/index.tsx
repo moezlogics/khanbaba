@@ -32,8 +32,12 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
     cart.shipping_methods?.at(-1)?.shipping_option_id || null
   )
 
+  // A flat option with no price for this cart is not available to it
+  // (e.g. "Free Delivery" only has a price from Rs 3,000) — hide it.
   const _shippingMethods = availableShippingMethods?.filter(
-    (sm) => (sm as any).service_zone?.fulfillment_set?.type !== "pickup"
+    (sm) =>
+      (sm as any).service_zone?.fulfillment_set?.type !== "pickup" &&
+      (sm.price_type === "calculated" || typeof sm.amount === "number")
   )
   const _pickupMethods = availableShippingMethods?.filter(
     (sm) => (sm as any).service_zone?.fulfillment_set?.type === "pickup"
@@ -76,11 +80,16 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableShippingMethods])
 
+  // The chosen option can stop applying (free delivery after the cart
+  // drops under Rs 3,000) — then pick again as if nothing was chosen.
+  const selectionValid =
+    !!shippingMethodId &&
+    ((_shippingMethods ?? []).some((o) => o.id === shippingMethodId) ||
+      (_pickupMethods ?? []).some((o) => o.id === shippingMethodId))
+
   useEffect(() => {
-    if (!shippingMethodId && availableShippingMethods && availableShippingMethods.length > 0) {
-      const standardOptions = availableShippingMethods.filter(
-        (sm) => (sm as any).service_zone?.fulfillment_set?.type !== "pickup"
-      )
+    if (!selectionValid && availableShippingMethods && availableShippingMethods.length > 0) {
+      const standardOptions = _shippingMethods ?? []
       if (freeMethods.length > 0) {
         handleSelect(freeMethods[0].id)
       } else if (standardOptions.length > 0) {
@@ -90,7 +99,7 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shippingMethodId, availableShippingMethods])
+  }, [selectionValid, availableShippingMethods])
 
   // Switch to free delivery as soon as the cart qualifies (a paid option
   // may already be selected from before the cart grew), unless the shopper

@@ -29,7 +29,7 @@ const FrequentlyBoughtTogether = dynamic(
 
 // Delivery as configured on the backend shipping option (see
 // api/src/scripts/import-catalog.ts) — kept in step for the Offer schema.
-const DELIVERY_FEE = 199
+const DELIVERY_FEE = 200
 // The store's own CDN — images from it can go through /_next/image.
 const CDN_ORIGIN = (process.env.NEXT_PUBLIC_CDN_URL || "").replace(/\/+$/, "")
 
@@ -177,7 +177,7 @@ const ProductTemplate = async ({
           merchantReturnDays: 1,
           returnFees: "https://schema.org/FreeReturn",
         },
-        // Flat Rs 199 (free from Rs 3,000 — not expressible per product).
+        // Flat Rs 200 (free from Rs 3,000 — not expressible per product).
         shippingDetails: {
           "@type": "OfferShippingDetails",
           shippingRate: {

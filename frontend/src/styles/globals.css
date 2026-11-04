@@ -107,7 +107,6 @@ h6,
 .heading6,
 .font-heading {
   font-family: var(--font-heading-stack, var(--font-stack));
-  color: var(--hex-text);
   letter-spacing: 0.01em;
   line-height: 1.18;
   /* Display faces like Abril Fatface ship a single heavy weight; never let
@@ -1435,7 +1434,6 @@ body {
   text-align: center;
   font-family: var(--font-heading-stack, var(--font-stack));
   font-synthesis: none;
-  color: var(--hex-text);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   line-height: 1.15;
