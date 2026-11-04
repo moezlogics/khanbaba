@@ -185,7 +185,7 @@ export default function CartDrawer({ cart }: CartDrawerProps) {
                       <LocalizedClientLink
                         href="/checkout"
                         onClick={close}
-                        className="h-11 inline-flex items-center justify-center gap-1.5 rounded-full bg-primary text-primary-fg text-sm font-semibold shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 transition-all"
+                        className="h-12 inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 transition-all"
                       >
                         Checkout
                         <i
@@ -215,7 +215,7 @@ export default function CartDrawer({ cart }: CartDrawerProps) {
                   <LocalizedClientLink
                     href="/store"
                     onClick={close}
-                    className="mt-2 inline-flex items-center justify-center gap-1.5 h-11 px-6 rounded-full bg-primary text-primary-fg text-sm font-semibold shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 transition-all"
+                    className="mt-2 inline-flex items-center justify-center gap-1.5 h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 transition-all"
                   >
                     Explore Products
                     <i

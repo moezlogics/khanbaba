@@ -87,7 +87,7 @@ export function CheckoutFormClient({ cart, customer, shippingMethods, paymentMet
           type="submit"
           disabled={pending}
           data-testid="submit-order-button"
-          className="h-12 px-8 rounded-full bg-primary text-primary-fg text-sm font-semibold flex items-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:active:scale-100"
+          className="h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold flex items-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:active:scale-100"
         >
           {pending ? (
             <>
@@ -114,7 +114,7 @@ export function CheckoutFormClient({ cart, customer, shippingMethods, paymentMet
         <button
           type="submit"
           disabled={pending}
-          className="h-11 px-6 rounded-full bg-primary text-primary-fg text-sm font-semibold flex items-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold flex items-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {pending ? (
             <>

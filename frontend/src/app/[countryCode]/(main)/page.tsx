@@ -15,9 +15,7 @@ import BrandHero from "@modules/home/components/brand-hero"
 import CustomerReviews from "@modules/home/components/customer-reviews"
 import WholesaleBand from "@modules/home/components/wholesale-band"
 import ExpandableContent from "@modules/common/components/expandable-content"
-import { listProducts } from "@lib/data/products"
 import { getLatestReviews } from "@lib/data/reviews"
-import { PRODUCT_CARD_FIELDS } from "@lib/util/product-card-fields"
 
 // ── ISR: let the CDN hold the homepage ───────────────────────────────
 // The homepage is anonymous and identical for every first-time visitor
@@ -84,16 +82,10 @@ export default async function Home(props: {
   const { countryCode } = await props.params
 
   // Parallelize independent fetches so the homepage TTFB stays tight.
-  const [region, banners, settings, heroProducts, latestReviews] = await Promise.all([
+  const [region, banners, settings, latestReviews] = await Promise.all([
     getRegion(countryCode),
     listBanners(),
     getSiteSettings(),
-    listProducts({
-      countryCode,
-      queryParams: { limit: 12, fields: PRODUCT_CARD_FIELDS } as any,
-    })
-      .then(({ response }) => response.products)
-      .catch(() => []),
     getLatestReviews(8),
   ])
 
@@ -140,15 +132,11 @@ export default async function Home(props: {
       {banners.length > 0 ? (
         <HeroSlider banners={banners} />
       ) : (
-        <BrandHero
-          products={heroProducts}
-          whatsappNumber={whatsappNumber}
-          rating={{ average: latestReviews.average, count: latestReviews.count }}
-        />
+        <BrandHero rating={{ average: latestReviews.average, count: latestReviews.count }} />
       )}
 
-      <div className="mt-6 small:mt-10">
-        <h2 className="mb-3 text-lg small:text-2xl font-bold text-ink">Shop by category</h2>
+      <div id="shop-by-category" className="mt-8 small:mt-12 scroll-mt-28">
+        <h2 className="mb-4 text-[22px] small:text-[30px] font-semibold text-ink">Shop by category</h2>
         <CategoryCarouselServer
           selectedIds={topCategoryBar.ids}
           hidden={topCategoryBar.hidden}

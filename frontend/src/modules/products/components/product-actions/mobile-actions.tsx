@@ -138,7 +138,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 onClick={!variant ? open : handleAddToCart}
                 disabled={variant && !inStock}
                 data-testid="mobile-cart-button"
-                className="h-11 px-4 rounded-full bg-primary text-primary-fg text-sm font-bold inline-flex items-center justify-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-12 px-4 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-bold inline-flex items-center justify-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isAdding ? (
                   <i className="ph-bold ph-spinner animate-spin text-[16px]" aria-hidden />

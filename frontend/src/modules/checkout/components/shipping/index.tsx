@@ -39,6 +39,14 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
     (sm) => (sm as any).service_zone?.fulfillment_set?.type === "pickup"
   )
 
+  // When the order qualifies for free delivery (an option prices at Rs 0
+  // for this cart, e.g. over Rs 3,000), offer only the free option(s) and
+  // select one — nobody should be able to pick the paid rate by mistake.
+  const effectiveAmount = (o: HttpTypes.StoreCartShippingOption) =>
+    o.price_type === "calculated" ? calculatedPricesMap[o.id] : o.amount
+  const freeMethods = (_shippingMethods ?? []).filter((o) => effectiveAmount(o) === 0)
+  const deliveryMethods = freeMethods.length ? freeMethods : _shippingMethods
+
   useEffect(() => {
     setIsLoadingPrices(true)
     if (_shippingMethods?.length) {
@@ -73,7 +81,9 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
       const standardOptions = availableShippingMethods.filter(
         (sm) => (sm as any).service_zone?.fulfillment_set?.type !== "pickup"
       )
-      if (standardOptions.length > 0) {
+      if (freeMethods.length > 0) {
+        handleSelect(freeMethods[0].id)
+      } else if (standardOptions.length > 0) {
         handleSelect(standardOptions[0].id)
       } else if (availableShippingMethods.length > 0) {
         handleSelect(availableShippingMethods[0].id)
@@ -81,6 +91,20 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shippingMethodId, availableShippingMethods])
+
+  // Switch to free delivery as soon as the cart qualifies (a paid option
+  // may already be selected from before the cart grew), unless the shopper
+  // chose store pickup.
+  const freeIds = freeMethods.map((o) => o.id).join(",")
+  useEffect(() => {
+    if (!freeMethods.length || isLoading) return
+    const onPickup = _pickupMethods?.some((m) => m.id === shippingMethodId)
+    if (onPickup) return
+    if (!shippingMethodId || !freeMethods.some((o) => o.id === shippingMethodId)) {
+      handleSelect(freeMethods[0].id)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [freeIds, shippingMethodId])
 
   const handleSelect = async (id: string) => {
     setError(null)
@@ -129,7 +153,7 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
             value={shippingMethodId}
             onChange={(v) => { if (v) handleSelect(v) }}
           >
-            {_shippingMethods?.map((option) => {
+            {deliveryMethods?.map((option) => {
               const isDisabled =
                 option.price_type === "calculated" &&
                 !isLoadingPrices &&
@@ -150,7 +174,9 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
                   <MedusaRadio checked={option.id === shippingMethodId} />
                   <span className="text-sm font-medium text-ink flex-1">{option.name}</span>
                   <span className="text-sm font-semibold text-ink/80">
-                    {option.price_type === "flat" ? (
+                    {effectiveAmount(option) === 0 ? (
+                      <span className="text-success font-bold">FREE</span>
+                    ) : option.price_type === "flat" ? (
                       convertToLocale({ amount: option.amount!, currency_code: cart?.currency_code })
                     ) : calculatedPricesMap[option.id] !== undefined ? (
                       convertToLocale({ amount: calculatedPricesMap[option.id], currency_code: cart?.currency_code })

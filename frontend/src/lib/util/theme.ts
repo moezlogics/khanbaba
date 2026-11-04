@@ -20,8 +20,10 @@ export type ThemeRuntime = {
   cssVarsBlock: string
   /** Inline style object for `<html style={...}>` — same vars as fallback */
   inlineStyle: Record<string, string>
-  /** Resolved font family stack key (used to swap fonts) */
+  /** Resolved body font key (used to swap fonts) */
   fontKey: string
+  /** Resolved heading font key ("" = same as body) */
+  headingFontKey: string
   /** Resolved container width key */
   containerKey: string
   /** Resolved radius scale key */
@@ -56,7 +58,8 @@ const DEFAULTS = {
   header_accent: "#603F26",
   radius: "lg",
   container: "default",
-  font: "manrope",
+  font: "dm-sans",
+  font_heading: "fraunces",
   header_top_border: "",
   footer_bg: "#000000",
   footer_fg: "#CFCFCF",
@@ -132,6 +135,7 @@ const FONT_STACKS: Record<string, string> = {
   "plus-jakarta": `"Plus Jakarta Sans", ${SYSTEM_FALLBACK}`,
   outfit: `Outfit, ${SYSTEM_FALLBACK}`,
   sora: `Sora, ${SYSTEM_FALLBACK}`,
+  jost: `Jost, ${SYSTEM_FALLBACK}`,
 
   // ---- Friendly / rounded — great for grocery, kids, food, lifestyle ----
   manrope: `Manrope, ${SYSTEM_FALLBACK}`,
@@ -148,6 +152,7 @@ const FONT_STACKS: Record<string, string> = {
   playfair: `"Playfair Display", ${SERIF_FALLBACK}`,
   cormorant: `"Cormorant Garamond", ${SERIF_FALLBACK}`,
   lora: `Lora, ${SERIF_FALLBACK}`,
+  fraunces: `Fraunces, ${SERIF_FALLBACK}`,
 
   // ---- System default — fastest possible load, zero network cost ----
   system: SYSTEM_FALLBACK,
@@ -258,10 +263,21 @@ export function buildTheme(s: SiteSettings): ThemeRuntime {
   const radiusKey = pick(s, "radius")
   const containerKey = pick(s, "container")
   const fontKey = pick(s, "font")
+  // Heading font: an explicit admin choice wins; an empty setting means
+  // "same as body" once the admin has picked a body font, and the store
+  // default pairing otherwise.
+  const headingRaw = (s.theme_font_heading as string | undefined)?.trim()
+  const headingFontKey =
+    headingRaw && FONT_STACKS[headingRaw]
+      ? headingRaw
+      : s.theme_font?.trim()
+      ? ""
+      : DEFAULTS.font_heading
 
   const radius = RADIUS_SCALE[radiusKey] || RADIUS_SCALE.md
   const containerW = CONTAINER_WIDTH[containerKey] || CONTAINER_WIDTH.default
   const fontStack = FONT_STACKS[fontKey] || FONT_STACKS.instrument
+  const headingStack = (headingFontKey && FONT_STACKS[headingFontKey]) || fontStack
 
   // Resolve individual radii helper function
   const resolveIndividualRadius = (
@@ -356,9 +372,11 @@ export function buildTheme(s: SiteSettings): ThemeRuntime {
     "--hex-price": price_color,
     "--hex-mobile-footer-border": mobileFooterBorder,
 
-    // Legacy Anvogue tokens — aliased so existing components keep working
+    // Legacy Anvogue tokens — aliased so existing components keep working.
+    // "black" was Anvogue's TEXT colour: mapping it to primary turned body
+    // copy into brand-coloured text on themes like Terracotta.
     "--green": accent,
-    "--black": primary,
+    "--black": text,
     "--secondary": text_muted,
     "--secondary2": text_muted,
     "--white": bg,
@@ -383,6 +401,7 @@ export function buildTheme(s: SiteSettings): ThemeRuntime {
     "--radius-mobile-footer": radiusMobileFooter,
     "--container-width": containerW,
     "--font-stack": fontStack,
+    "--font-heading-stack": headingStack,
   }
 
   // Build CSS string for <style> injection (works without JS)
@@ -397,6 +416,7 @@ export function buildTheme(s: SiteSettings): ThemeRuntime {
     cssVarsBlock,
     inlineStyle: map,
     fontKey,
+    headingFontKey,
     containerKey,
     radiusKey,
   }
@@ -453,6 +473,21 @@ const GOOGLE_FONT_HREFS: Record<string, string> = {
     "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap",
   lora:
     "https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap",
+  fraunces:
+    "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap",
+  jost:
+    "https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap",
+}
+
+/** Stylesheets for the body and heading fonts (deduplicated). */
+export function getFontHrefs(theme: Pick<ThemeRuntime, "fontKey" | "headingFontKey">): string[] {
+  return Array.from(
+    new Set(
+      [theme.fontKey, theme.headingFontKey]
+        .map((k) => (k ? GOOGLE_FONT_HREFS[k] : null))
+        .filter((h): h is string => !!h)
+    )
+  )
 }
 
 export function getFontHref(fontKey: string): string | null {

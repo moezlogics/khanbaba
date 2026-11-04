@@ -49,8 +49,10 @@ export type ThemeTokens = {
   radius: string
   /** Container width: "narrow" | "default" | "wide" | "full" */
   container: string
-  /** Font family stack key: "inter" | "instrument" | "manrope" | "poppins" | "system" */
+  /** Body font key: "inter" | "instrument" | "manrope" | "poppins" | "system" … */
   font: string
+  /** Heading font key (h1–h6). Empty = same as the body font. */
+  font_heading?: string
   header_top_border?: string
   footer_bg?: string
   footer_fg?: string
@@ -691,32 +693,49 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: "Terracotta Earth",
     description: "Terracotta + sand + olive — handcraft, ceramics, slow lifestyle",
     swatch: ["#9C4A1A", "#E8B98F", "#FBF5EE"],
+    // Tuned for legibility: body text and muted text both clear WCAG AA on
+    // white and on the sand surfaces, the footer is a warm espresso with
+    // light text, and every surface/radius/font is set explicitly so
+    // nothing falls back to another theme's values.
     tokens: {
       primary: "#9C4A1A",
       primary_fg: "#FFFFFF",
       accent: "#E8B98F",
-      accent_fg: "#52250A",
+      accent_fg: "#3F1E0B",
       bg: "#FFFFFF",
       surface: "#FBF5EE",
-      surface_alt: "#FDF8F2",
-      text: "#3F1E0B",
-      text_muted: "#8B6A52",
-      border: "#EFD9C2",
-      success: "#16A34A",
-      warning: "#D97706",
-      danger: "#B91C1C",
+      surface_alt: "#FDF9F4",
+      text: "#2B1A10",
+      text_muted: "#6F5443",
+      border: "#EADCCB",
+      success: "#3F6B2A",
+      warning: "#B45309",
+      danger: "#B42318",
       info: "#0E7490",
-      ...lightHeader({
-        bg: "#FBF5EE",
-        text: "#3F1E0B",
-        text_muted: "#8B6A52",
-        border: "#EFD9C2",
-        accent: "#9C4A1A",
-        hoverBg: "#F4E5D2",
-      }),
+      header_bg: "#FFFFFF",
+      header_fg: "#2B1A10",
+      header_fg_muted: "#6F5443",
+      header_hover_bg: "#FBF5EE",
+      header_border: "#EFE4D6",
+      header_accent: "#9C4A1A",
+      header_top_border: "#9C4A1A",
+      footer_bg: "#2B1A10",
+      footer_fg: "#E9DCCD",
+      footer_border: "#4A3426",
+      card_bg: "#FFFFFF",
+      card_border: "#EFE4D6",
+      price_color: "#9C4A1A",
       radius: "lg",
+      radius_card: "lg",
+      radius_btn: "md",
+      radius_search: "full",
+      radius_input: "md",
+      radius_sidebar: "lg",
+      radius_mobile_footer: "lg",
+      mobile_footer_border: "#EFE4D6",
       container: "default",
-      font: "manrope",
+      font: "dm-sans",
+      font_heading: "fraunces",
     },
   },
   {
@@ -880,6 +899,7 @@ export const THEME_KEYS = [
   "theme_radius",
   "theme_container",
   "theme_font",
+  "theme_font_heading",
   "theme_header_top_border",
   "theme_footer_bg",
   "theme_footer_fg",
@@ -939,6 +959,7 @@ export const FONT_OPTIONS = [
   { value: "plus-jakarta", label: "Modern \u2022 Plus Jakarta Sans \u2014 contemporary" },
   { value: "outfit", label: "Modern \u2022 Outfit \u2014 geometric, crisp" },
   { value: "sora", label: "Modern \u2022 Sora \u2014 tech-forward" },
+  { value: "jost", label: "Modern \u2022 Jost \u2014 Shopify-style geometric" },
 
   // Friendly / rounded
   { value: "manrope", label: "Friendly \u2022 Manrope \u2014 warm, geometric" },
@@ -955,6 +976,7 @@ export const FONT_OPTIONS = [
   { value: "playfair", label: "Luxury \u2022 Playfair Display \u2014 high-fashion serif" },
   { value: "cormorant", label: "Luxury \u2022 Cormorant Garamond \u2014 refined serif" },
   { value: "lora", label: "Luxury \u2022 Lora \u2014 readable, editorial serif" },
+  { value: "fraunces", label: "Luxury \u2022 Fraunces \u2014 warm, artisanal serif (headings)" },
 ]
 
 /** Convert preset to settings dict */
@@ -986,6 +1008,7 @@ export function presetToSettings(
     theme_radius: preset.tokens.radius,
     theme_container: preset.tokens.container,
     theme_font: preset.tokens.font,
+    theme_font_heading: preset.tokens.font_heading || "",
     theme_header_top_border: preset.tokens.header_top_border || "",
     theme_footer_bg: preset.tokens.footer_bg || "",
     theme_footer_fg: preset.tokens.footer_fg || "",

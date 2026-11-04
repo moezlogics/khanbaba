@@ -117,7 +117,7 @@ export default function KhanBabaCard({
           className="mt-auto pt-1.5"
           aria-label={`Choose a size of ${product.title}`}
         >
-          <span className="flex items-center justify-center gap-1.5 h-9 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[12.5px] font-semibold transition-[filter] group-hover:brightness-110">
+          <span className="flex items-center justify-center gap-1.5 h-10 px-2 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[14px] small:text-[15px] font-semibold transition-[filter] group-hover:brightness-110">
             <i className="ph-bold ph-shopping-bag text-[14px]" aria-hidden />
             {packs.length > 1 ? "Choose size" : "View product"}
           </span>

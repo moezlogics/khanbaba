@@ -123,7 +123,7 @@ const ForgotPassword = ({ setCurrentView }: Props) => {
           <button
             type="submit"
             disabled={pending}
-            className="w-full mt-4 h-11 bg-primary text-primary-fg rounded-full text-sm font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-4 h-12 bg-primary text-primary-fg rounded-[var(--radius-btn)] text-[16px] font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {pending ? "Sending..." : "Send reset code"}
           </button>
@@ -139,7 +139,7 @@ const ForgotPassword = ({ setCurrentView }: Props) => {
           <button
             type="submit"
             disabled={pending || code.length !== 6}
-            className="w-full mt-6 h-11 bg-primary text-primary-fg rounded-full text-sm font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-6 h-12 bg-primary text-primary-fg rounded-[var(--radius-btn)] text-[16px] font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {pending ? "Verifying..." : "Verify code"}
           </button>
@@ -187,7 +187,7 @@ const ForgotPassword = ({ setCurrentView }: Props) => {
           <button
             type="submit"
             disabled={pending}
-            className="w-full mt-4 h-11 bg-primary text-primary-fg rounded-full text-sm font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-4 h-12 bg-primary text-primary-fg rounded-[var(--radius-btn)] text-[16px] font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {pending ? "Updating..." : "Update password"}
           </button>
@@ -198,7 +198,7 @@ const ForgotPassword = ({ setCurrentView }: Props) => {
         <button
           type="button"
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
-          className="w-full mt-4 h-11 bg-primary text-primary-fg rounded-full text-sm font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center"
+          className="w-full mt-4 h-12 bg-primary text-primary-fg rounded-[var(--radius-btn)] text-[16px] font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center"
         >
           Back to Sign in
         </button>

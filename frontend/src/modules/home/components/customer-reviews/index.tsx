@@ -37,7 +37,7 @@ export default function CustomerReviews({
     <section className="py-8 small:py-12" aria-labelledby="customer-reviews-heading">
       <div className="mb-4 small:mb-6 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 id="customer-reviews-heading" className="text-lg small:text-2xl font-bold text-ink">
+          <h2 id="customer-reviews-heading" className="text-[22px] small:text-[30px] font-semibold text-ink">
             Loved by customers across Pakistan
           </h2>
           {count > 0 && (

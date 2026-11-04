@@ -201,7 +201,7 @@ export default function ProfilePassword({ customer }: Props) {
                 <button
                   type="submit"
                   disabled={pending}
-                  className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-primary text-primary-fg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60"
+                  className="inline-flex items-center gap-2 h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60"
                 >
                   {pending ? "Updating…" : "Save new password"}
                 </button>

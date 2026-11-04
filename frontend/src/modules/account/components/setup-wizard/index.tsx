@@ -392,7 +392,7 @@ export default function SetupWizard({ customer: initial }: Props) {
               <button
                 type="button"
                 onClick={() => router.push("/account")}
-                className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-primary text-primary-fg text-sm font-semibold hover:bg-primary/90 transition-colors"
+                className="inline-flex items-center justify-center gap-2 h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold hover:bg-primary/90 transition-colors"
               >
                 Go to dashboard
                 <i className="ph-bold ph-arrow-right text-sm" aria-hidden />
@@ -529,7 +529,7 @@ function PrimaryButton({
       type="button"
       onClick={onClick}
       disabled={pending}
-      className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-primary text-primary-fg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+      className="inline-flex items-center gap-2 h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {pending ? "Saving…" : children}
       {!pending && <i className="ph-bold ph-arrow-right text-sm" aria-hidden />}

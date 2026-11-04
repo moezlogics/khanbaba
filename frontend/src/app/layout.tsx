@@ -8,7 +8,7 @@ import CustomHeadCode from "@modules/analytics/custom-head-code"
 import BusinessJsonLd from "@modules/seo/business-json-ld"
 import SiteJsonLd from "@modules/seo/site-json-ld"
 import { getSiteSettings, resolveProductCardAspectClass } from "@lib/data/site-settings"
-import { buildTheme, getFontHref } from "@lib/util/theme"
+import { buildTheme, getFontHrefs } from "@lib/util/theme"
 import { CartDrawerProvider } from "@lib/context/cart-drawer-context"
 import { SiteSettingsProvider } from "@lib/context/site-settings-context"
 import { UserDataProvider } from "@lib/context/user-data-context"
@@ -100,7 +100,8 @@ export async function generateViewport(): Promise<Viewport> {
 export default async function RootLayout(props: { children: React.ReactNode }) {
   const settings = await getSiteSettings()
   const theme = buildTheme(settings)
-  const fontHref = getFontHref(theme.fontKey)
+  // Body + heading font stylesheets.
+  const fontHrefs = getFontHrefs(theme)
   // NOTE: customer/cart are NOT read here anymore. Reading auth cookies in
   // the root layout poisoned static/ISR rendering for EVERY route (proven
   // DYNAMIC_SERVER_USAGE root cause). Per-user data now hydrates
@@ -132,10 +133,16 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             public/) — same-origin + Cloudflare-cached. unpkg.com was a
             slow third-party chain (DNS+TLS+~600ms on mobile) flagged in
             every PageSpeed report, and a single point of failure. */}
-        {fontHref && (
+        {fontHrefs.length > 0 && (
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+            {/* Theme fonts load straight away (display=swap keeps it
+                non-blocking). Waiting for idle, like the icon fonts below,
+                showed the page in the fallback font for up to ~2s. */}
+            {fontHrefs.map((href) => (
+              <link key={href} rel="stylesheet" href={href} />
+            ))}
           </>
         )}
         <script
@@ -144,7 +151,6 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
               "/icons/phosphor/regular/style.css",
               "/icons/phosphor/bold/style.css",
               "/icons/phosphor/fill/style.css",
-              ...(fontHref ? [fontHref] : []),
             ])};function inject(){for(var i=0;i<u.length;i++){var l=document.createElement("link");l.rel="stylesheet";l.href=u[i];document.head.appendChild(l);}}/* Defer until the browser is idle so the ~420KB Phosphor icon fonts
             don't compete with the LCP product image for Slow-4G bandwidth.
             Body text uses the next/font Instrument Sans (already preloaded),
@@ -156,7 +162,6 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           <link rel="stylesheet" href="/icons/phosphor/regular/style.css" />
           <link rel="stylesheet" href="/icons/phosphor/bold/style.css" />
           <link rel="stylesheet" href="/icons/phosphor/fill/style.css" />
-          {fontHref && <link rel="stylesheet" href={fontHref} />}
         </noscript>
         {/* Theme variables injected from /admin/theme — overrides defaults in globals.css */}
         <style

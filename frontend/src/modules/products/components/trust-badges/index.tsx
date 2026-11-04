@@ -297,7 +297,7 @@ export default function TrustBadges({ selected, compact = false }: TrustBadgesPr
               <button
                 type="button"
                 onClick={() => setOpenBadge(null)}
-                className="w-full h-11 rounded-full bg-primary text-primary-fg text-sm font-semibold hover:brightness-110 transition-all"
+                className="w-full h-12 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold hover:brightness-110 transition-all"
               >
                 Got it
               </button>

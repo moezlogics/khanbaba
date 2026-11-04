@@ -74,7 +74,7 @@ export default function HoverRevealCard({ productPath,
           aria-label={`View ${product.title}`}
           className="absolute left-3 right-3 bottom-3 z-[2] translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
         >
-          <span className="w-full flex items-center justify-center gap-2 h-10 rounded-full bg-bg text-ink text-sm font-medium shadow-pop hover:bg-primary hover:text-primary-fg transition-colors">
+          <span className="w-full flex items-center justify-center gap-2 h-12 rounded-[var(--radius-btn)] bg-bg text-ink text-[16px] font-medium shadow-pop hover:bg-primary hover:text-primary-fg transition-colors">
             <i className="ph-bold ph-eye text-[14px]" aria-hidden />
             View product
           </span>

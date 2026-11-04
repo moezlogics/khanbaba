@@ -16,18 +16,17 @@ import OptionSelect from "@modules/products/components/product-actions/option-se
 
 import QuantityStepper from "../quantity-stepper"
 
-import WhatsAppOrderButton from "@modules/common/components/whatsapp-button"
 import { getPreorderState } from "@lib/util/preorder"
 import ProductTrustBadges from "@modules/products/components/product-trust-badges"
 import SizeCards, { isWeightOption } from "./size-cards"
 import DeliveryInfo from "./delivery-info"
 import { convertToLocale } from "@lib/util/money"
-import { getProductPath } from "@lib/util/product"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
   disabled?: boolean
+  /** Kept for callers; the PDP no longer shows an Order-on-WhatsApp button. */
   whatsappNumber?: string
   whatsappBuyNowEnabled?: boolean
 }
@@ -44,16 +43,14 @@ const optionsAsKeymap = (
 /**
  * PDP buy box, ordered for conversion: price (with savings) → pack sizes
  * with per-size and per-kg prices → quantity + stock → Add to Cart /
- * Buy Now → delivery dates + free-delivery progress → WhatsApp → trust
- * tiles, plus a sticky buy bar on phones.
+ * Buy Now → delivery dates + free-delivery progress → trust tiles, plus a
+ * sticky buy bar on phones.
  *
  * Buy It Now → goes DIRECTLY to checkout (not cart page).
  */
 export default function ProductActions({
   product,
   disabled,
-  whatsappNumber,
-  whatsappBuyNowEnabled = true,
 }: ProductActionsProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -403,7 +400,7 @@ export default function ProductActions({
               onClick={handleAddToCart}
               disabled={disabledAdd}
               data-testid="add-product-button"
-              className="inline-flex items-center justify-center gap-1.5 h-[52px] px-4 rounded-[var(--radius-btn)] bg-bg border-2 border-primary text-primary text-[15px] font-bold transition-all duration-200 hover:bg-primary/5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-1.5 h-[54px] px-3 rounded-[var(--radius-btn)] bg-bg border-2 border-primary text-primary text-[17px] font-bold transition-all duration-200 hover:bg-primary/5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isAdding ? (
                 <>
@@ -427,7 +424,7 @@ export default function ProductActions({
               type="button"
               onClick={handleBuyItNow}
               disabled={disabledAdd || isBuyingNow}
-              className="inline-flex items-center justify-center gap-1.5 h-[52px] px-4 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[15px] font-bold shadow-[0_10px_24px_-12px_rgb(var(--color-primary)/0.9)] transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-1.5 h-[54px] px-3 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[17px] font-bold shadow-[0_10px_24px_-12px_rgb(var(--color-primary)/0.9)] transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isBuyingNow ? (
                 <>
@@ -447,23 +444,6 @@ export default function ProductActions({
 
           <DeliveryInfo subtotal={unitPrice !== null ? unitPrice * qty : null} currency={currency} />
 
-          {whatsappNumber && whatsappBuyNowEnabled && (
-            <WhatsAppOrderButton
-              productTitle={product.title || ""}
-              productPath={getProductPath(product)}
-              whatsappNumber={whatsappNumber}
-              selection={
-                selectedVariant
-                  ? `${selectedVariant.title}${
-                      unitPrice !== null
-                        ? ` — ${convertToLocale({ amount: unitPrice, currency_code: currency, maximumFractionDigits: 0 })}`
-                        : ""
-                    }`
-                  : undefined
-              }
-              quantity={qty}
-            />
-          )}
         </>
       )}
 
@@ -495,7 +475,7 @@ export default function ProductActions({
               onClick={handleStickyAddToCart}
               disabled={disabledStickyAdd}
               tabIndex={showStickyBar ? 0 : -1}
-              className="h-11 shrink-0 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-12 shrink-0 px-4 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-bold flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isAdding ? (
                 <>

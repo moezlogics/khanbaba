@@ -71,7 +71,7 @@ export default function NotFoundVariants() {
           <div className="mt-9 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full sm:w-auto px-4 sm:px-0">
             <Link
               href="/"
-              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-xs font-bold uppercase tracking-wider transition-all active:scale-95 shadow-sm bg-primary text-primary-fg hover:bg-primary/95"
+              className="inline-flex items-center justify-center gap-2 h-12 px-5 rounded-[var(--radius-btn)] text-[16px] font-bold uppercase tracking-wider transition-all active:scale-95 shadow-sm bg-primary text-primary-fg hover:bg-primary/95"
             >
               <i className="ph-fill ph-house text-sm" />
               Go to Homepage

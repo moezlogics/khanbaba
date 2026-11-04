@@ -67,7 +67,9 @@ module.exports = {
 
         /* Anvogue legacy aliases — same CSS vars so they re-theme too */
         brand: {
-          black: "rgb(var(--color-primary) / <alpha-value>)",
+          // Anvogue's "black" was its text colour — keep it on the text
+          // token so legacy components stay readable on any theme.
+          black: "rgb(var(--color-text) / <alpha-value>)",
           green: "rgb(var(--color-accent) / <alpha-value>)",
           secondary: "rgb(var(--color-text-muted) / <alpha-value>)",
           secondary2: "rgb(var(--color-text-muted) / <alpha-value>)",

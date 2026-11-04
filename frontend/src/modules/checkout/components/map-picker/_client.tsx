@@ -255,7 +255,7 @@ const MapPickerClient = ({
               type="button"
               onClick={onSearch}
               disabled={searching || !query.trim()}
-              className="h-10 px-4 rounded-base bg-ink text-bg text-sm font-medium hover:bg-primary hover:text-primary-fg disabled:opacity-50 transition-colors"
+              className="h-12 px-4 rounded-base bg-ink text-bg text-[16px] font-medium hover:bg-primary hover:text-primary-fg disabled:opacity-50 transition-colors"
             >
               {searching ? "…" : "Find"}
             </button>

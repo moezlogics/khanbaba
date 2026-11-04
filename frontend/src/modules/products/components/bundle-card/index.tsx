@@ -168,7 +168,7 @@ function BundleBlock({ bundle }: { bundle: Bundle }) {
           type="button"
           onClick={onAdd}
           disabled={pending}
-          className="w-full h-11 rounded-lg bg-ink text-bg font-semibold text-sm hover:bg-primary hover:text-primary-fg transition-colors disabled:opacity-50"
+          className="w-full h-12 rounded-lg bg-ink text-bg font-semibold text-[16px] hover:bg-primary hover:text-primary-fg transition-colors disabled:opacity-50"
         >
           {pending ? "Adding…" : "Add bundle to cart"}
         </button>

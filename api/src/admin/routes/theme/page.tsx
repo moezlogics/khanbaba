@@ -808,7 +808,7 @@ const Page = () => {
                 </select>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <Label>Font family</Label>
+                <Label>Body font</Label>
                 <select
                   value={theme.theme_font || "instrument"}
                   onChange={(e) => set("theme_font", e.target.value)}
@@ -821,6 +821,28 @@ const Page = () => {
                     color: A.fg,
                   }}
                 >
+                  {FONT_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <Label>Heading font</Label>
+                <select
+                  value={theme.theme_font_heading || ""}
+                  onChange={(e) => set("theme_font_heading", e.target.value)}
+                  style={{
+                    padding: "8px 10px",
+                    border: A.border,
+                    borderRadius: 6,
+                    fontSize: 14,
+                    background: A.bgField,
+                    color: A.fg,
+                  }}
+                >
+                  <option value="">Same as body font</option>
                   {FONT_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>
                       {o.label}

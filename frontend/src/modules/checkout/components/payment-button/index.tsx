@@ -45,7 +45,7 @@ const DefaultPaymentButton = ({
         disabled={notReady || submitting}
         onClick={handlePayment}
         data-testid={dataTestId || "submit-order-button"}
-        className="w-full h-12 rounded-full bg-primary text-primary-fg text-sm font-semibold flex items-center justify-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:active:scale-100"
+        className="w-full h-12 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold flex items-center justify-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:active:scale-100"
       >
         {submitting ? (
           <>

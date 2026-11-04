@@ -129,7 +129,7 @@ export default function FBTClient({
             type="button"
             onClick={handleAddAll}
             disabled={isAdding || done}
-            className="h-11 px-6 rounded-full bg-primary text-primary-fg text-sm font-semibold inline-flex items-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 transition-all disabled:opacity-60"
+            className="h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold inline-flex items-center gap-2 shadow-[0_6px_18px_-6px_rgb(var(--color-primary)/0.5)] hover:brightness-110 transition-all disabled:opacity-60"
           >
             {isAdding ? (
               <>

@@ -91,6 +91,25 @@
   --radius-input: 8px;
 }
 
+/* Headings use the theme's heading font (Site → Appearance → Heading font);
+   it falls back to the body font when none is set. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.heading1,
+.heading2,
+.heading3,
+.heading4,
+.heading5,
+.heading6,
+.font-heading {
+  font-family: var(--font-heading-stack, var(--font-stack));
+  letter-spacing: -0.01em;
+}
+
 html,
 body {
   font-family: var(--font-stack);
@@ -457,15 +476,13 @@ body {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 16px;
+    line-height: 22px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
     color: var(--hex-primary-fg);
     background-color: var(--hex-primary);
-    padding: 14px 32px;
-    border-radius: var(--radius-lg);
+    padding: 14px 22px;
+    border-radius: var(--radius-btn);
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);

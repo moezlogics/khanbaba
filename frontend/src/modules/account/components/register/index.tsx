@@ -133,7 +133,7 @@ const Register = ({ setCurrentView, returnTo }: Props) => {
           <button
             type="submit"
             disabled={pending || otp.length !== 6}
-            className="w-full mt-6 h-11 bg-primary text-primary-fg rounded-full text-sm font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-6 h-12 bg-primary text-primary-fg rounded-[var(--radius-btn)] text-[16px] font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {pending ? "Verifying..." : "Verify & Create Account"}
           </button>
@@ -259,7 +259,7 @@ const Register = ({ setCurrentView, returnTo }: Props) => {
         <button
           type="submit"
           disabled={pending}
-          className="w-full mt-6 h-11 bg-primary text-primary-fg rounded-full text-sm font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full mt-6 h-12 bg-primary text-primary-fg rounded-[var(--radius-btn)] text-[16px] font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           data-testid="register-button"
         >
           {pending ? "Sending code..." : "Continue"}

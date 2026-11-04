@@ -22,7 +22,7 @@ export function SubmitButton({
       data-testid={dataTestId}
       className={
         className ??
-        "w-full h-11 rounded-full bg-primary text-primary-fg text-sm font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-60"
+        "w-full h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-60"
       }
     >
       {pending ? (

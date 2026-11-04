@@ -62,7 +62,7 @@ const Login = ({ setCurrentView, returnTo }: Props) => {
         <ErrorMessage error={message} data-testid="login-error-message" />
         <SubmitButton 
           data-testid="sign-in-button" 
-          className="w-full mt-6 h-11 rounded-full bg-primary text-primary-fg text-sm font-semibold flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm"
+          className="w-full mt-6 h-12 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm"
         >
           Sign in
         </SubmitButton>

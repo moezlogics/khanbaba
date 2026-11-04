@@ -64,7 +64,7 @@ export default function OrderCanceledCard({
       <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full max-w-md">
         <LocalizedClientLink
           href="/store"
-          className="flex-1 h-11 bg-primary text-primary-fg rounded-full text-sm font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
+          className="flex-1 h-12 bg-primary text-primary-fg rounded-[var(--radius-btn)] text-[16px] font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
         >
           <i className="ph-bold ph-storefront" aria-hidden />
           Continue browsing

@@ -109,7 +109,7 @@ const CartTemplate = ({
               >
                 <button
                   type="button"
-                  className="h-11 px-6 rounded-full bg-primary text-primary-fg text-sm font-semibold tracking-wide flex items-center gap-2 shadow-[0_6px_20px_-6px_rgb(var(--color-primary)/0.55)] hover:brightness-110 active:scale-[0.98] transition-all"
+                  className="h-12 px-5 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold flex items-center gap-2 shadow-[0_6px_20px_-6px_rgb(var(--color-primary)/0.55)] hover:brightness-110 active:scale-[0.98] transition-all"
                 >
                   <i className="ph-bold ph-lock-key text-[13px]" aria-hidden />
                   Checkout

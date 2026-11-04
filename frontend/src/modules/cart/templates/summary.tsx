@@ -37,7 +37,7 @@ export default function Summary({ cart, loyaltyBalance = null }: SummaryProps) {
       <LocalizedClientLink href={checkoutHref} data-testid="checkout-button">
         <button
           type="button"
-          className="w-full h-12 rounded-full bg-primary text-primary-fg text-sm font-semibold tracking-wide flex items-center justify-center gap-2 shadow-[0_6px_20px_-6px_rgb(var(--color-primary)/0.45)] hover:brightness-110 active:scale-[0.98] transition-all"
+          className="w-full h-12 rounded-[var(--radius-btn)] bg-primary text-primary-fg text-[16px] font-semibold flex items-center justify-center gap-2 shadow-[0_6px_20px_-6px_rgb(var(--color-primary)/0.45)] hover:brightness-110 active:scale-[0.98] transition-all"
         >
           <i className="ph-bold ph-lock-key text-[13px]" aria-hidden />
           Checkout
