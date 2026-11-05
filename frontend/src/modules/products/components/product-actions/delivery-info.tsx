@@ -1,31 +1,22 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { convertToLocale } from "@lib/util/money"
-import { DELIVERY_FEE, deliveryWindow } from "@lib/util/delivery"
+import { deliveryWindow } from "@lib/util/delivery"
 
 /**
- * Delivery promise under the buy buttons: the expected delivery dates and
- * the flat delivery fee.
+ * Delivery promise under the buy buttons: the expected delivery dates.
+ * The delivery charge is not mentioned here — it shows at checkout.
  *
  * Dates are worked out after mount — the page is ISR-cached, so a date
  * rendered on the server could be days old by the time it is served.
  */
-export default function DeliveryInfo({
-  currency,
-}: {
-  /** Kept for callers that still pass it; the fee is flat. */
+export default function DeliveryInfo(_props: {
+  /** Kept for callers that still pass them; not used. */
   subtotal?: number | null
-  currency: string
+  currency?: string
 }) {
   const [dates, setDates] = useState<string | null>(null)
   useEffect(() => setDates(deliveryWindow()), [])
-
-  const fee = convertToLocale({
-    amount: DELIVERY_FEE,
-    currency_code: currency,
-    maximumFractionDigits: 0,
-  })
 
   return (
     <div className="rounded-[var(--radius-btn)] border border-line bg-surface/60 p-3 text-[13px] text-ink/80">
@@ -41,9 +32,7 @@ export default function DeliveryInfo({
               <>Delivered in 2–4 working days</>
             )}
           </p>
-          <p className="mt-0.5">
-            Delivery charges <strong className="text-ink">{fee}</strong> all over Pakistan
-          </p>
+          <p className="mt-0.5">Delivery all over Pakistan</p>
         </div>
       </div>
       <div className="mt-2.5 flex items-center gap-2.5 border-t border-line pt-2.5">

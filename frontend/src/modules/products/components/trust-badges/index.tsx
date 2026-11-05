@@ -54,10 +54,10 @@ const BADGE_CATALOG: Badge[] = [
   {
     id: "free_delivery",
     icon: "ph-truck",
-    title: "Delivery Rs. 200",
-    sub: "Nationwide shipping",
+    title: "Nationwide Delivery",
+    sub: "All over Pakistan",
     detail:
-      "A flat Rs. 200 delivery charge applies to every order, anywhere in Pakistan. We ship nationwide through trusted courier partners and most orders are delivered within 2-4 working days.",
+      "We deliver anywhere in Pakistan through trusted courier partners and most orders arrive within 2-4 working days. The delivery charge is shown at checkout.",
   },
   {
     id: "easy_returns",

@@ -2,7 +2,8 @@
  * Delivery terms shown on the storefront. They mirror the backend shipping
  * option created by api/src/scripts/import-catalog.ts (one flat fee on every
  * order, no free delivery) — change both together. Checkout itself always
- * charges what the backend says; these only drive copy.
+ * charges what the backend says. The fee is never shown on the storefront
+ * (only at checkout); it is used in the product structured data for Google.
  */
 export const DELIVERY_FEE = 200
 /** Working days from order to doorstep, nationwide. */

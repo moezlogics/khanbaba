@@ -5,7 +5,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
  * always one row, even on mobile.
  *
  * Every line is a promise checkout and the policy pages actually keep:
- *   - delivery is a flat Rs 200 on every order (the backend shipping option)
+ *   - delivery all over Pakistan (the charge itself shows only at checkout)
  *   - cash on delivery is the only payment method
  *   - refunds are for damaged/incorrect items reported within 24 hours
  *     (the WordPress refund policy carried over to /refund-policy)

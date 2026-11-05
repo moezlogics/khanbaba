@@ -1,9 +1,9 @@
 /**
  * Store promises strip — icon + headline + subline quartet.
  *
- * Delivery is a flat Rs 200 on every order (the backend shipping option,
- * see api/src/scripts/import-catalog.ts) and cash on delivery is the only
- * payment method, so this copy states what checkout really does.
+ * The delivery charge is only shown at checkout, never here. Cash on
+ * delivery is the only payment method, so this copy states what checkout
+ * really does.
  */
 const BENEFITS: Array<{
   icon: string
@@ -13,7 +13,7 @@ const BENEFITS: Array<{
   {
     icon: "truck",
     title: "Nationwide Delivery",
-    subtitle: "Rs 200 flat, 2–4 working days",
+    subtitle: "All over Pakistan in 2–4 days",
   },
   {
     icon: "hand-coins",
