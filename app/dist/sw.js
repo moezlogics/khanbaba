@@ -4,7 +4,7 @@
  *   { title, body, icon?, url?, tag?, data:{ order_id } }
  */
 
-const SHELL_CACHE = "orders-admin-shell-v2"
+const SHELL_CACHE = "orders-admin-shell-v3"
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -33,16 +33,39 @@ self.addEventListener("activate", (event) => {
   )
 })
 
+// The app shell (index.html): fresh from the network, cached copy offline.
+async function appShell() {
+  try {
+    const res = await fetch("/index.html", { cache: "no-store" })
+    if (res.ok) {
+      const cache = await caches.open(SHELL_CACHE)
+      cache.put("/index.html", res.clone()).catch(() => {})
+      return res
+    }
+  } catch (_e) {
+    /* offline — use the cached copy below */
+  }
+  return (await caches.match("/index.html")) || new Response("", { status: 504, statusText: "offline" })
+}
+
 // --- Fetch: network-first (no stale assets), offline → cached shell ---
 // Required for installability. We always hit the network first so hashed
 // assets are never stale; only when offline do we fall back to cache.
+//
+// SPA fallback: the app uses real paths (/orders, /orders/<id>, /dashboard).
+// If the web server has no "try_files ... /index.html" rule, reloading such
+// a page (or opening one from a notification) gets an nginx 404 — so any
+// page navigation that comes back 404 is answered with the app shell and
+// the router shows the right screen.
 self.addEventListener("fetch", (event) => {
   const req = event.request
   if (req.method !== "GET") return
   event.respondWith(
     (async () => {
       try {
-        return await fetch(req)
+        const res = await fetch(req)
+        if (req.mode === "navigate" && res.status === 404) return appShell()
+        return res
       } catch (_e) {
         // Offline. For page navigations, serve the cached shell.
         if (req.mode === "navigate") {
