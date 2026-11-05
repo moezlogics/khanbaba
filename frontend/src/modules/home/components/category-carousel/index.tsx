@@ -21,7 +21,7 @@ type Props = {
 
 /**
  * Horizontal category rail in the Khan Baba style: each category icon sits
- * in a white circle with a thin border, its name underneath. Without an
+ * in a borderless white circle, its name underneath. Without an
  * image, the first letter is shown instead.
  *
  * Scroll: native horizontal on mobile; arrow buttons on desktop.
@@ -100,7 +100,7 @@ export default function CategoryCarousel({
             href={`${linkPrefix}${c.handle}`}
             className="group snap-start flex flex-col items-center flex-shrink-0 w-[72px] md:w-[100px]"
           >
-            <div className="relative w-[64px] h-[64px] md:w-[92px] md:h-[92px] rounded-full border border-line bg-white flex items-center justify-center overflow-hidden transition-colors group-hover:border-primary">
+            <div className="relative w-[64px] h-[64px] md:w-[92px] md:h-[92px] rounded-full bg-white flex items-center justify-center overflow-hidden">
               {c.image ? (
                 <div className="relative w-[74%] h-[74%] transition-transform duration-500 ease-out group-hover:scale-110">
                   <Image

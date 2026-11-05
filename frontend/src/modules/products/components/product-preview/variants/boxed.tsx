@@ -71,12 +71,14 @@ export default function BoxedCard({ productPath,
         </LocalizedClientLink>
 
         {cheapestPrice && (
-          <div className="flex items-baseline gap-2 mt-1">
+          // flex-wrap: on narrow phone cards the struck price drops to the
+          // next line instead of being clipped by the card's overflow-hidden.
+          <div className="flex items-baseline flex-wrap gap-x-2 gap-y-0.5 mt-1">
             <span className={`text-base font-semibold ${isSale ? "text-danger" : "text-ink"}`}>
               {cheapestPrice.calculated_price}
             </span>
             {isSale && (
-              <span className="text-xs line-through text-ink/50">
+              <span className="text-[13px] line-through text-ink/60" data-testid="original-price">
                 {cheapestPrice.original_price}
               </span>
             )}
