@@ -92,32 +92,32 @@ export default function CategoryCarousel({
 
       <div
         ref={trackRef}
-        className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory px-2 py-2 -mx-2"
+        className="flex gap-3 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory px-2 py-2 -mx-2"
       >
         {items.map((c) => (
           <LocalizedClientLink
             key={c.id}
             href={`${linkPrefix}${c.handle}`}
-            className="group snap-start flex flex-col items-center flex-shrink-0 w-[72px] md:w-[100px]"
+            className="group snap-start flex flex-col items-center flex-shrink-0 w-[84px] md:w-[124px]"
           >
-            <div className="relative w-[64px] h-[64px] md:w-[92px] md:h-[92px] rounded-full bg-white flex items-center justify-center overflow-hidden">
+            <div className="relative w-[80px] h-[80px] md:w-[116px] md:h-[116px] rounded-full bg-white flex items-center justify-center overflow-hidden">
               {c.image ? (
-                <div className="relative w-[74%] h-[74%] transition-transform duration-500 ease-out group-hover:scale-110">
+                <div className="relative w-[84%] h-[84%] transition-transform duration-500 ease-out group-hover:scale-110">
                   <Image
                     src={c.image}
                     alt={c.name}
                     fill
-                    sizes="(max-width: 768px) 48px, 68px"
+                    sizes="(max-width: 768px) 72px, 100px"
                     className="object-contain"
                   />
                 </div>
               ) : (
-                <span className="text-primary font-semibold text-xl md:text-2xl">
+                <span className="text-primary font-semibold text-2xl md:text-3xl">
                   {c.name.trim().charAt(0).toUpperCase()}
                 </span>
               )}
             </div>
-            <span className="mt-2 text-[11px] md:text-[13px] text-center text-ink font-semibold group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+            <span className="mt-1.5 md:mt-2 text-[12px] md:text-[14px] text-center text-ink font-semibold group-hover:text-primary transition-colors line-clamp-2 leading-tight">
               {c.name}
             </span>
           </LocalizedClientLink>
