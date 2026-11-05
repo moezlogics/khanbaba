@@ -90,8 +90,8 @@ export default async function CategoryTemplate({
 
       {/* Rich content from admin — rendered below products */}
       {richContent && (
-        <div className="container-anvogue pb-12">
-          <div className="border-t border-line pt-8 mt-4 max-w-4xl">
+        <div className="container-anvogue pb-6 small:pb-12">
+          <div className="border-t border-line pt-5 small:pt-8 mt-4 max-w-4xl">
             <ExpandableContent collapsedHeight={240} moreLabel={`Read more about ${category.name}`}>
               <div
                 className="prose prose-sm md:prose-base max-w-none text-ink/80 leading-relaxed prose-headings:text-ink prose-a:text-primary"

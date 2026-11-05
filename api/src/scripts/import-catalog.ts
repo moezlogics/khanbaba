@@ -36,11 +36,11 @@ import { SITE_SETTINGS_MODULE } from "../modules/site-settings"
  *     handle or WordPress id) is left alone; anything missing, including
  *     products deleted in the admin, is created again. Reviews of a
  *     re-created product are moved onto it.
- *   - Delivery: always ends with exactly two options, replacing whatever
- *     delivery options exist:
- *       "Standard Delivery"  Rs 200, every order
- *       "Free Delivery"      Rs 0, only orders of Rs 3,000 or more
- *     (checkout then shows only Free and selects it).
+ *   - Delivery: always ends with exactly one option, deleting every other
+ *     delivery option (including the old "Free Delivery"):
+ *       "Standard Delivery"  Rs 200, every order — no free delivery.
+ *   - Old "free delivery over Rs 3,000" lines are removed from the
+ *     announcement bar and the Terms page settings.
  *   - Look: the Khan Baba theme (colours + fonts) is applied every run
  *     unless --keep-theme is passed. Other settings are only filled when
  *     empty.
@@ -65,9 +65,23 @@ const API_KEY_TITLE = "Khan Baba Storefront"
 const STOCK_LOCATION = "Khan Baba Warehouse"
 const FULFILLMENT_SET = "Khan Baba Delivery"
 
-// Rs 200 standard delivery; free delivery from Rs 3,000.
+// Rs 200 delivery on every order. Khan Baba offers no free delivery.
 const DELIVERY_FEE = Number(process.env.KB_DELIVERY_FEE ?? 200)
-const FREE_DELIVERY_FROM = Number(process.env.KB_FREE_DELIVERY_FROM ?? 3000)
+
+/** Drops announcement lines that promise free delivery/shipping. */
+function withoutFreeDeliveryLines(text: string): string {
+  return text
+    .split("\n")
+    .filter((line) => !/free\s+(delivery|shipping)/i.test(line))
+    .join("\n")
+}
+
+/** Removes the "Free Shipping over 3000 PKR" rule from the Terms page HTML. */
+function withoutFreeDeliveryTerms(html: string): string {
+  return html
+    .replace(/<li>(?:(?!<\/li>)[\s\S])*free shipping(?:(?!<\/li>)[\s\S])*<\/li>\s*/gi, "")
+    .replace(/If the order is below 3,?000 PKR, the\s*/gi, "The ")
+}
 
 type Catalog = {
   categories: {
@@ -274,12 +288,9 @@ export default async function importCatalog({ container, args }: ExecArgs) {
     })
   } catch {}
 
-  // Delivery options: replace whatever exists with exactly these two.
-  // Skipped when they're already in place with the same prices.
-  const wanted = [
-    { code: "kb-standard", amount: DELIVERY_FEE },
-    { code: "kb-free", amount: 0 },
-  ]
+  // Delivery options: replace whatever exists with exactly this one.
+  // Skipped when it's already in place with the same price.
+  const wanted = [{ code: "kb-standard", amount: DELIVERY_FEE }]
   const allOptions = await fulfillmentService.listShippingOptions(
     {},
     { relations: ["rules", "type"], take: 1000 }
@@ -304,12 +315,11 @@ export default async function importCatalog({ container, args }: ExecArgs) {
     wanted.every((w) => {
       const o: any = pricedOptions.find((x: any) => x.type?.code === w.code)
       if (!o || o.prices?.length !== 1 || Number(o.prices[0].amount) !== w.amount) return false
-      const rule = minTotalRule(o)
-      return w.code === "kb-free" ? Number(rule?.value) === FREE_DELIVERY_FROM : !rule
+      return !minTotalRule(o)
     })
 
   if (alreadyRight) {
-    logger.info(`[import] delivery: already Standard Rs ${DELIVERY_FEE} + Free from Rs ${FREE_DELIVERY_FROM}`)
+    logger.info(`[import] delivery: already Standard Rs ${DELIVERY_FEE} only (no free delivery)`)
   } else {
     if (deliveryOptions.length) {
       await deleteShippingOptionsWorkflow(container).run({
@@ -336,31 +346,9 @@ export default async function importCatalog({ container, args }: ExecArgs) {
           prices: [{ currency_code: CURRENCY, amount: DELIVERY_FEE }],
           rules: storeRules,
         },
-        {
-          name: "Free Delivery",
-          price_type: "flat",
-          provider_id: "manual_manual",
-          service_zone_id: serviceZone.id,
-          shipping_profile_id: shippingProfile.id,
-          type: {
-            label: "Free",
-            description: `Free delivery on orders of Rs ${FREE_DELIVERY_FROM} or more.`,
-            code: "kb-free",
-          },
-          // Only priced (Rs 0) once the items reach the threshold; below it
-          // the option has no price and the storefront checkout hides it.
-          prices: [
-            {
-              currency_code: CURRENCY,
-              amount: 0,
-              rules: [{ attribute: "item_total", operator: "gte", value: FREE_DELIVERY_FROM }],
-            },
-          ],
-          rules: storeRules,
-        },
       ],
     })
-    logger.info(`[import] delivery: Standard Rs ${DELIVERY_FEE} + Free from Rs ${FREE_DELIVERY_FROM}`)
+    logger.info(`[import] delivery: Standard Rs ${DELIVERY_FEE} only (no free delivery)`)
   }
 
   /* ---------------- publishable key ---------------- */
@@ -634,6 +622,21 @@ export default async function importCatalog({ container, args }: ExecArgs) {
     if (sections.length) toWrite.homepage_sections = JSON.stringify(sections)
   }
   const filled = Object.keys(toWrite).length
+  // No free delivery: strip the old promise from text already saved too.
+  const cleaners: Record<string, (s: string) => string> = {
+    announcement_bar_text: withoutFreeDeliveryLines,
+    page_terms_content: withoutFreeDeliveryTerms,
+  }
+  let cleaned = 0
+  for (const [key, clean] of Object.entries(cleaners)) {
+    const value = String(toWrite[key] ?? current[key] ?? "")
+    const next = clean(value)
+    if (next !== value) {
+      toWrite[key] = next
+      cleaned++
+    }
+  }
+  if (cleaned) logger.info(`[import] site settings: free-delivery text removed from ${cleaned} setting(s)`)
   if (!keepTheme) Object.assign(toWrite, BRAND_THEME)
   if (Object.keys(toWrite).length) await settingsService.bulkUpsert(toWrite)
   logger.info(

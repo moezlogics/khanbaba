@@ -43,7 +43,7 @@ const optionsAsKeymap = (
 /**
  * PDP buy box, ordered for conversion: price (with savings) → pack sizes
  * with per-size and per-kg prices → quantity + stock → Add to Cart /
- * Buy Now → delivery dates + free-delivery progress → trust tiles, plus a
+ * Buy Now → delivery dates + flat delivery fee → trust tiles, plus a
  * sticky buy bar on phones.
  *
  * Buy It Now → goes DIRECTLY to checkout (not cart page).

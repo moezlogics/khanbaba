@@ -31,7 +31,7 @@ export async function generateMetadata({ params, searchParams }: Params): Promis
     settings.seo_store_title || "Shop All Products"
   const description =
     settings.seo_store_description ||
-    `Browse all products at ${siteName}. Free shipping on qualifying orders.`
+    `Browse all products at ${siteName}. Cash on delivery all over Pakistan.`
   // Public URL is `/shop` — middleware adds `/<countryCode>` internally
   // for routing only. Canonical MUST mirror what the user sees.
   const url = canonicalUrl("/shop")
@@ -75,10 +75,10 @@ export default async function StorePage(props: Params) {
   const topCategoryBar = parseCategoryBar((settings as any).store_top_categories)
 
   return (
-    <div className="flex flex-col gap-y-4 md:gap-y-6 pb-8">
+    <div className="flex flex-col gap-y-2 md:gap-y-6 pb-4 md:pb-8">
       {/* Category icons rail */}
       {!topCategoryBar.hidden && (
-        <div className="pt-4 md:pt-6">
+        <div className="pt-3 md:pt-6">
           <CategoryCarouselServer
             selectedIds={topCategoryBar.ids}
             hidden={topCategoryBar.hidden}

@@ -33,7 +33,7 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
       <Footer />
       <MobileBottomNav />
 
-      {/* Cart mismatch banner + free-shipping nudge + cart drawer —
+      {/* Cart mismatch banner + cart drawer —
           per-user, hydrated client-side after mount */}
       <ClientUserWidgets cartDrawerEnabled={cartDrawerEnabled} />
 

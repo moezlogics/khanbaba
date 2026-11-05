@@ -177,7 +177,7 @@ const ProductTemplate = async ({
           merchantReturnDays: 1,
           returnFees: "https://schema.org/FreeReturn",
         },
-        // Flat Rs 200 (free from Rs 3,000 — not expressible per product).
+        // Flat Rs 200 on every order.
         shippingDetails: {
           "@type": "OfferShippingDetails",
           shippingRate: {
@@ -346,8 +346,8 @@ const ProductTemplate = async ({
       </div>
 
       {related.length > 0 && (
-        <section className="container-anvogue pb-10">
-          <h2 className="section-title text-[22px] small:text-[32px] mb-6">
+        <section className="container-anvogue pb-6 small:pb-10">
+          <h2 className="section-title text-[22px] small:text-[32px] mb-4 small:mb-6">
             You may also like
           </h2>
           <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 no-scrollbar small:mx-0 small:grid small:grid-cols-4 small:gap-x-5 small:gap-y-4 small:overflow-visible small:px-0 medium:grid-cols-5">

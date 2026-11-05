@@ -5,13 +5,13 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
  * always one row, even on mobile.
  *
  * Every line is a promise checkout and the policy pages actually keep:
- *   - delivery is free from Rs 3,000 (the backend shipping option rule)
+ *   - delivery is a flat Rs 200 on every order (the backend shipping option)
  *   - cash on delivery is the only payment method
  *   - refunds are for damaged/incorrect items reported within 24 hours
  *     (the WordPress refund policy carried over to /refund-policy)
  */
 const TRUST_ITEMS = [
-  { label: "Free Delivery over Rs 3,000", icon: "ph-truck" },
+  { label: "Delivery All Over Pakistan", icon: "ph-truck" },
   { label: "Cash on Delivery", icon: "ph-hand-coins" },
   { label: "24h Damage Refund", icon: "ph-arrow-u-up-left", href: "/refund_returns" },
 ] as const

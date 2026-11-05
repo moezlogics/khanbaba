@@ -22,7 +22,7 @@ export default async function Hero() {
     "New Season. New You."
   const subline =
     settings.seo_home_description?.trim() ||
-    "Discover the latest arrivals — crafted for modern living. Enjoy free shipping on every order."
+    "Discover the latest arrivals — crafted for modern living. Cash on delivery all over Pakistan."
   const heroImage = settings.seo_default_og_image?.trim()
 
   return (

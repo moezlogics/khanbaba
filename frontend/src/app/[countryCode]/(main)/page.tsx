@@ -147,7 +147,7 @@ export default async function Home(props: {
   // Shopify-style flow: hero → categories → deals → promises → category
   // rails → reviews → wholesale → long-form copy (collapsed).
   return (
-    <div className="container-anvogue pt-3 small:pt-5 pb-6">
+    <div className="container-anvogue pt-3 small:pt-5 pb-4">
       {banners.length > 0 ? (
         <HeroSlider banners={banners} />
       ) : (
@@ -157,8 +157,8 @@ export default async function Home(props: {
         />
       )}
 
-      <div id="shop-by-category" className="mt-8 small:mt-12 scroll-mt-28">
-        <h2 className="section-title mb-5 small:mb-7 text-[22px] small:text-[32px]">Shop by category</h2>
+      <div id="shop-by-category" className="mt-6 small:mt-10 scroll-mt-28">
+        <h2 className="section-title mb-3 small:mb-6 text-[22px] small:text-[32px]">Shop by category</h2>
         <CategoryCarouselServer
           selectedIds={topCategoryBar.ids}
           hidden={topCategoryBar.hidden}
@@ -166,7 +166,7 @@ export default async function Home(props: {
       </div>
 
       {/* Streams behind a skeleton so the shell above paints first. */}
-      <div className="mt-6 small:mt-10">
+      <div className="mt-5 small:mt-10">
         <Suspense fallback={<GridSkeleton count={10} />}>
           <ProductRail region={region} title="Weekly Discounts" limit={10} />
         </Suspense>
@@ -178,7 +178,7 @@ export default async function Home(props: {
           Each streams independently so a slow category query never
           blocks the rest of the page. */}
       {homeSections.map((s) => (
-        <div key={s.category_id} className="mt-4 small:mt-8">
+        <div key={s.category_id} className="mt-5 small:mt-8">
           <Suspense fallback={<GridSkeleton count={Math.min(10, s.limit || 10)} />}>
             <ProductRail
               region={region}
@@ -202,7 +202,7 @@ export default async function Home(props: {
       <WholesaleBand whatsappNumber={whatsappNumber} />
 
       {homeArticle && (
-        <section className="pt-8 pb-4 mt-2 border-t border-line">
+        <section className="pt-5 small:pt-8 pb-2 mt-2 border-t border-line">
           <div className="max-w-4xl mx-auto">
             <ExpandableContent collapsedHeight={260} moreLabel="Read more about Khan Baba">
               <div

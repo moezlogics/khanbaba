@@ -27,47 +27,49 @@ export default function BrandHero({ rating, products = [] }: Props) {
 
   return (
     <section className="overflow-hidden rounded-[var(--radius-card)] bg-primary text-primary-fg">
-      <div className="grid items-center gap-8 px-5 py-10 xsmall:px-8 small:grid-cols-[1.05fr_1fr] small:gap-12 small:px-14 small:py-16">
+      {/* Mobile: compact band (no photo collage) so the products show
+          up within the first screen. Desktop: text + collage side by side. */}
+      <div className="grid items-center gap-8 px-4 py-6 xsmall:px-8 xsmall:py-8 small:grid-cols-[1.05fr_1fr] small:gap-12 small:px-14 small:py-14">
         <div className="text-center small:text-left">
-          <p className="label-caps text-[13px] small:text-[14px] tracking-[0.18em] text-primary-fg">
+          <p className="label-caps text-[11px] small:text-[14px] tracking-[0.14em] small:tracking-[0.18em] text-primary-fg">
             Premium dry fruits · Since 40+ years
           </p>
-          <h1 className="mt-4 font-heading text-[42px] leading-[1.04] text-primary-fg xsmall:text-[50px] small:text-[66px]">
+          <h1 className="mt-2 small:mt-4 font-heading text-[32px] leading-[1.06] text-primary-fg xsmall:text-[44px] small:text-[64px]">
             Pakistan&rsquo;s Finest Dry Fruits
           </h1>
-          <p className="mx-auto mt-5 max-w-lg text-[17px] font-semibold leading-relaxed text-primary-fg small:mx-0 small:text-[20px]">
+          <p className="mx-auto mt-2.5 small:mt-5 max-w-lg text-[14px] font-semibold leading-snug text-primary-fg small:mx-0 small:text-[19px] small:leading-relaxed">
             Hand-picked chilgoza, badam, pista, kaju &amp; dates — fresh stock, wholesale
             prices, cash on delivery across Pakistan.
           </p>
 
-          <div className="mt-8 flex flex-col items-center gap-3 xsmall:flex-row xsmall:justify-center small:justify-start">
+          <div className="mt-4 small:mt-8 grid grid-cols-2 gap-2 xsmall:flex xsmall:justify-center xsmall:gap-3 small:justify-start">
             <LocalizedClientLink
               href="/shop"
-              className="label-caps inline-flex h-[54px] w-full items-center justify-center gap-2 rounded-[var(--radius-btn)] bg-primary-fg px-8 text-[15px] text-primary shadow-sm transition hover:brightness-95 active:scale-[0.98] xsmall:w-auto"
+              className="label-caps inline-flex h-11 small:h-[54px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[var(--radius-btn)] bg-primary-fg px-3 xsmall:px-8 text-[12px] small:text-[15px] text-primary shadow-sm transition hover:brightness-95 active:scale-[0.98]"
             >
               Shop now
-              <i className="ph-bold ph-arrow-right text-[16px]" aria-hidden />
+              <i className="ph-bold ph-arrow-right text-[14px] small:text-[16px]" aria-hidden />
             </LocalizedClientLink>
             <a
               href="#shop-by-category"
-              className="label-caps inline-flex h-[54px] w-full items-center justify-center rounded-[var(--radius-btn)] border-2 border-primary-fg px-7 text-[15px] text-primary-fg transition hover:bg-primary-fg hover:text-primary xsmall:w-auto"
+              className="label-caps inline-flex h-11 small:h-[54px] items-center justify-center whitespace-nowrap rounded-[var(--radius-btn)] border-2 border-primary-fg px-3 xsmall:px-7 text-[12px] small:text-[15px] text-primary-fg transition hover:bg-primary-fg hover:text-primary"
             >
-              Shop by category
+              Categories
             </a>
           </div>
 
-          <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[14px] font-semibold text-primary-fg small:justify-start">
+          <ul className="mt-4 small:mt-8 flex flex-wrap justify-center gap-x-4 small:gap-x-6 gap-y-1 text-[12px] small:text-[14px] font-semibold text-primary-fg small:justify-start">
             <li className="inline-flex items-center gap-2">
-              <i className="ph-bold ph-truck text-[18px]" aria-hidden />
-              Free delivery over Rs 3,000
+              <i className="ph-bold ph-truck text-[15px] small:text-[18px]" aria-hidden />
+              Delivery all over Pakistan
             </li>
             <li className="inline-flex items-center gap-2">
-              <i className="ph-bold ph-hand-coins text-[18px]" aria-hidden />
+              <i className="ph-bold ph-hand-coins text-[15px] small:text-[18px]" aria-hidden />
               Cash on Delivery
             </li>
             {showRating && (
               <li className="inline-flex items-center gap-2">
-                <i className="ph-fill ph-star text-[17px]" aria-hidden />
+                <i className="ph-fill ph-star text-[14px] small:text-[17px]" aria-hidden />
                 {rating!.average.toFixed(1)} from {rating!.count} reviews
               </li>
             )}
@@ -76,8 +78,8 @@ export default function BrandHero({ rating, products = [] }: Props) {
 
         {shots.length > 0 && (
           <div
-            className={`grid gap-3 small:gap-4 ${
-              shots.length >= 3 ? "grid-cols-3 small:grid-cols-2 small:grid-rows-2" : shots.length === 2 ? "grid-cols-2" : "mx-auto w-full max-w-sm grid-cols-1"
+            className={`hidden small:grid gap-4 ${
+              shots.length >= 3 ? "small:grid-cols-2 small:grid-rows-2" : shots.length === 2 ? "grid-cols-2" : "mx-auto w-full max-w-sm grid-cols-1"
             }`}
           >
             {shots.map((p, i) => (
@@ -96,8 +98,8 @@ export default function BrandHero({ rating, products = [] }: Props) {
                   priority={i === 0}
                   sizes={
                     i === 0
-                      ? "(min-width: 1024px) 320px, 31vw"
-                      : "(min-width: 1024px) 220px, 31vw"
+                      ? "(min-width: 1024px) 320px, 64px"
+                      : "(min-width: 1024px) 220px, 64px"
                   }
                   className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
                 />

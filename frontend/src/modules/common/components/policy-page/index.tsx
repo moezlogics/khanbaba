@@ -17,9 +17,9 @@ export default function PolicyPage({
   const pageContent = content?.trim() || defaultContent
 
   return (
-    <div className="container-anvogue py-12 md:py-16">
+    <div className="container-anvogue pt-5 pb-8 md:py-12">
       <div className="max-w-3xl mx-auto">
-        <h1 className="heading2 mb-8">{pageTitle}</h1>
+        <h1 className="heading2 mb-4 md:mb-8">{pageTitle}</h1>
         <div
           className="prose prose-sm md:prose-base max-w-none text-secondary leading-relaxed"
           dangerouslySetInnerHTML={{ __html: pageContent }}

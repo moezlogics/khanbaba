@@ -384,7 +384,7 @@ const Page = () => {
             value={settings.announcement_bar_text}
             onChange={(e: any) => set("announcement_bar_text", e.target.value)}
             placeholder={
-              "Free shipping on orders over Rs. 2,000\n" +
+              "Delivery all over Pakistan\n" +
               "Use code WELCOME10 for 10% off your first order\n" +
               "Cash on delivery available across Pakistan"
             }

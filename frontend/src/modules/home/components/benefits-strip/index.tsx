@@ -1,9 +1,9 @@
 /**
  * Store promises strip — icon + headline + subline quartet.
  *
- * The delivery threshold matches the backend shipping option (free from
- * Rs 3,000, see api/src/scripts/import-catalog.ts) and cash on delivery is
- * the only payment method, so this copy states what checkout really does.
+ * Delivery is a flat Rs 200 on every order (the backend shipping option,
+ * see api/src/scripts/import-catalog.ts) and cash on delivery is the only
+ * payment method, so this copy states what checkout really does.
  */
 const BENEFITS: Array<{
   icon: string
@@ -12,8 +12,8 @@ const BENEFITS: Array<{
 }> = [
   {
     icon: "truck",
-    title: "Free Delivery",
-    subtitle: "On orders over Rs 3,000",
+    title: "Nationwide Delivery",
+    subtitle: "Rs 200 flat, 2–4 working days",
   },
   {
     icon: "hand-coins",
@@ -34,14 +34,14 @@ const BENEFITS: Array<{
 
 export default function BenefitsStrip() {
   return (
-    <section className="py-6 md:py-8">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+    <section className="py-5 md:py-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
         {BENEFITS.map((b) => (
           <div
             key={b.title}
-            className="flex items-center gap-3 rounded-[var(--radius-card)] bg-surface px-3 py-3 md:px-4 md:py-4"
+            className="flex items-center gap-2.5 md:gap-3 rounded-[var(--radius-card)] bg-surface px-2.5 py-2.5 md:px-4 md:py-4"
           >
-            <div className="w-10 h-10 md:w-11 md:h-11 shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="w-9 h-9 md:w-11 md:h-11 shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
               <i className={`ph-bold ph-${b.icon} text-lg md:text-xl text-primary`} aria-hidden />
             </div>
             <div className="min-w-0">

@@ -29,9 +29,9 @@ export default async function ContactPage() {
   const hasContactInfo = contactEmail || contactPhone || contactAddress || whatsappNumber
 
   return (
-    <div className="container-anvogue py-8 md:py-14 pb-16">
+    <div className="container-anvogue pt-4 pb-8 md:pt-12 md:pb-16">
       {/* Premium Hero Section */}
-      <div className="relative rounded-[24px] md:rounded-[32px] overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-line/45 p-6 md:p-12 mb-10 md:mb-12 shadow-sm select-none">
+      <div className="relative rounded-[24px] md:rounded-[32px] overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-line/45 p-5 md:p-12 mb-5 md:mb-12 shadow-sm select-none">
         <div className="max-w-2xl relative z-10">
           <div className="text-sub-display has-line-before text-primary/70 text-[11px] sm:text-xs">
             Get in touch
@@ -46,7 +46,7 @@ export default async function ContactPage() {
         <div className="absolute right-0 bottom-0 top-0 w-1/3 bg-radial-gradient from-primary/5 to-transparent opacity-60 pointer-events-none" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-12 items-start">
         {/* Contact Info Cards (Left Column) */}
         {hasContactInfo && (
           <div className="lg:col-span-5 flex flex-col gap-5">

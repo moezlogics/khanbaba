@@ -204,9 +204,7 @@ def write_site_settings(pages):
         # Add-to-cart slides the cart in (Shopify behaviour).
         "cart_drawer_enabled": "true",
         "announcement_bar_enabled": "true",
-        "announcement_bar_text": "Free delivery on orders over Rs 3,000
-Cash on Delivery all over Pakistan
-100% pure & fresh dry fruits — trusted for 40+ years",
+        "announcement_bar_text": "Cash on Delivery all over Pakistan\n100% pure & fresh dry fruits — trusted for 40+ years",
         # No bar colours: it follows the theme's primary / on-primary.
         "business_type": "dryfruits",
         "business_country": "Pakistan",

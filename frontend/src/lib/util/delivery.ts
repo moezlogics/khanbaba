@@ -1,11 +1,10 @@
 /**
  * Delivery terms shown on the storefront. They mirror the backend shipping
- * option created by api/src/scripts/import-catalog.ts (flat fee, free from
- * a threshold) — change both together. Checkout itself always charges what
- * the backend says; these only drive copy and the PDP nudge.
+ * option created by api/src/scripts/import-catalog.ts (one flat fee on every
+ * order, no free delivery) — change both together. Checkout itself always
+ * charges what the backend says; these only drive copy.
  */
 export const DELIVERY_FEE = 200
-export const FREE_DELIVERY_FROM = 3000
 /** Working days from order to doorstep, nationwide. */
 export const DELIVERY_DAYS = { min: 2, max: 4 }
 

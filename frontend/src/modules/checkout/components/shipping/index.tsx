@@ -32,8 +32,7 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
     cart.shipping_methods?.at(-1)?.shipping_option_id || null
   )
 
-  // A flat option with no price for this cart is not available to it
-  // (e.g. "Free Delivery" only has a price from Rs 3,000) — hide it.
+  // A flat option with no price for this cart is not available to it — hide it.
   const _shippingMethods = availableShippingMethods?.filter(
     (sm) =>
       (sm as any).service_zone?.fulfillment_set?.type !== "pickup" &&
@@ -43,13 +42,9 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
     (sm) => (sm as any).service_zone?.fulfillment_set?.type === "pickup"
   )
 
-  // When the order qualifies for free delivery (an option prices at Rs 0
-  // for this cart, e.g. over Rs 3,000), offer only the free option(s) and
-  // select one — nobody should be able to pick the paid rate by mistake.
-  const effectiveAmount = (o: HttpTypes.StoreCartShippingOption) =>
-    o.price_type === "calculated" ? calculatedPricesMap[o.id] : o.amount
-  const freeMethods = (_shippingMethods ?? []).filter((o) => effectiveAmount(o) === 0)
-  const deliveryMethods = freeMethods.length ? freeMethods : _shippingMethods
+  // Khan Baba charges one flat delivery fee (Rs 200) on every order — there
+  // is no free delivery, so every priced option is shown as it is.
+  const deliveryMethods = _shippingMethods
 
   useEffect(() => {
     setIsLoadingPrices(true)
@@ -80,8 +75,8 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableShippingMethods])
 
-  // The chosen option can stop applying (free delivery after the cart
-  // drops under Rs 3,000) — then pick again as if nothing was chosen.
+  // The chosen option can stop applying (e.g. it was removed on the
+  // backend) — then pick again as if nothing was chosen.
   const selectionValid =
     !!shippingMethodId &&
     ((_shippingMethods ?? []).some((o) => o.id === shippingMethodId) ||
@@ -90,9 +85,7 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
   useEffect(() => {
     if (!selectionValid && availableShippingMethods && availableShippingMethods.length > 0) {
       const standardOptions = _shippingMethods ?? []
-      if (freeMethods.length > 0) {
-        handleSelect(freeMethods[0].id)
-      } else if (standardOptions.length > 0) {
+      if (standardOptions.length > 0) {
         handleSelect(standardOptions[0].id)
       } else if (availableShippingMethods.length > 0) {
         handleSelect(availableShippingMethods[0].id)
@@ -100,20 +93,6 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectionValid, availableShippingMethods])
-
-  // Switch to free delivery as soon as the cart qualifies (a paid option
-  // may already be selected from before the cart grew), unless the shopper
-  // chose store pickup.
-  const freeIds = freeMethods.map((o) => o.id).join(",")
-  useEffect(() => {
-    if (!freeMethods.length || isLoading) return
-    const onPickup = _pickupMethods?.some((m) => m.id === shippingMethodId)
-    if (onPickup) return
-    if (!shippingMethodId || !freeMethods.some((o) => o.id === shippingMethodId)) {
-      handleSelect(freeMethods[0].id)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [freeIds, shippingMethodId])
 
   const handleSelect = async (id: string) => {
     setError(null)
@@ -183,9 +162,7 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
                   <MedusaRadio checked={option.id === shippingMethodId} />
                   <span className="text-sm font-medium text-ink flex-1">{option.name}</span>
                   <span className="text-sm font-semibold text-ink/80">
-                    {effectiveAmount(option) === 0 ? (
-                      <span className="text-success font-bold">FREE</span>
-                    ) : option.price_type === "flat" ? (
+                    {option.price_type === "flat" ? (
                       convertToLocale({ amount: option.amount!, currency_code: cart?.currency_code })
                     ) : calculatedPricesMap[option.id] !== undefined ? (
                       convertToLocale({ amount: calculatedPricesMap[option.id], currency_code: cart?.currency_code })

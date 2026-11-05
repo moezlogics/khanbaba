@@ -12,8 +12,8 @@ export default function WholesaleBand({ whatsappNumber }: { whatsappNumber?: str
   )}`
 
   return (
-    <section className="my-10 small:my-14 rounded-[var(--radius-card)] border border-line bg-surface">
-      <div className="flex flex-col gap-6 px-5 py-8 small:flex-row small:items-center small:justify-between small:gap-10 small:px-12 small:py-12">
+    <section className="my-5 small:my-10 rounded-[var(--radius-card)] border border-line bg-surface">
+      <div className="flex flex-col gap-4 px-4 py-6 small:flex-row small:items-center small:justify-between small:gap-10 small:px-12 small:py-12">
         <div className="max-w-xl">
           <p className="text-[12px] small:text-[13px] font-semibold uppercase tracking-[0.18em] text-ink/60">
             Wholesale &amp; bulk orders

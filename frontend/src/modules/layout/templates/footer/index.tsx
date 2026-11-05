@@ -64,10 +64,10 @@ export default async function Footer() {
 
   return (
     <footer
-      className="relative mt-16 small:mt-24 pb-mobile-nav cv-section bg-[rgb(var(--color-footer-bg))]"
+      className="relative mt-8 small:mt-16 pb-mobile-nav cv-section bg-[rgb(var(--color-footer-bg))]"
       role="contentinfo"
     >
-      <div className="container-anvogue grid grid-cols-2 gap-x-6 gap-y-10 py-12 small:grid-cols-[1.5fr_1fr_1fr_1.3fr] small:gap-12 small:py-16">
+      <div className="container-anvogue grid grid-cols-2 gap-x-6 gap-y-7 py-8 small:grid-cols-[1.5fr_1fr_1fr_1.3fr] small:gap-12 small:py-14">
         <div className="col-span-2 small:col-span-1">
           <p className={`text-[28px] font-heading ${fgStrong}`}>{siteName}</p>
           {tagline && <p className={`mt-2 max-w-xs text-[15px] leading-relaxed ${fgSoft}`}>{tagline}</p>}
@@ -144,7 +144,7 @@ export default async function Footer() {
       </div>
 
       <div className="border-t border-[rgb(var(--color-footer-border))]">
-        <div className={`container-anvogue flex flex-col items-center justify-between gap-2 py-6 text-[13px] small:flex-row ${fgSoft}`}>
+        <div className={`container-anvogue flex flex-col items-center justify-between gap-2 py-4 small:py-6 text-[13px] small:flex-row ${fgSoft}`}>
           <p>
             © {year} {siteName}. All rights reserved.
           </p>

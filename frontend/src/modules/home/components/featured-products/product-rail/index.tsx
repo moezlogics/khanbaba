@@ -79,7 +79,7 @@ export default async function ProductRail({
 
   return (
     <section className="pt-0 pb-2">
-      <div className="mb-5 small:mb-7 flex flex-col items-center gap-2">
+      <div className="mb-3 small:mb-6 flex flex-col items-center gap-1.5 small:gap-2">
         <h2 className="section-title w-full text-[22px] small:text-[32px]">{heading}</h2>
         <LocalizedClientLink
           href={viewAllHref}

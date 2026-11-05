@@ -34,8 +34,8 @@ export default function CustomerReviews({
   if (reviews.length < 2) return null
 
   return (
-    <section className="py-8 small:py-12" aria-labelledby="customer-reviews-heading">
-      <div className="mb-5 small:mb-7 flex flex-col items-center gap-2 text-center">
+    <section className="py-6 small:py-10" aria-labelledby="customer-reviews-heading">
+      <div className="mb-3 small:mb-6 flex flex-col items-center gap-2 text-center">
         <div className="w-full">
           <h2 id="customer-reviews-heading" className="section-title text-[22px] small:text-[32px]">
             Loved by customers across Pakistan

@@ -21,7 +21,7 @@ import { useMemo, useState } from "react"
  * away on click, so opening a modal there would feel awkward.
  *
  * When `metadata.trust_badges` is missing the component falls back
- * to a sensible default (authentic + free delivery + returns +
+ * to a sensible default (authentic + delivery + returns +
  * secure payments) so existing products keep their current look
  * without any admin migration.
  */
@@ -54,18 +54,10 @@ const BADGE_CATALOG: Badge[] = [
   {
     id: "free_delivery",
     icon: "ph-truck",
-    title: "Free Delivery over Rs. 3000",
+    title: "Delivery Rs. 200",
     sub: "Nationwide shipping",
     detail:
-      "Enjoy free standard delivery on all orders above Rs. 3,000. Orders below this threshold are charged a flat delivery fee shown at checkout. We ship nationwide through trusted courier partners (TCS, Leopards, M&P) and most orders are delivered within 3-5 business days.",
-  },
-  {
-    id: "free_shipping",
-    icon: "ph-package",
-    title: "Free Shipping",
-    sub: "On this product",
-    detail:
-      "This item ships free anywhere in the country — no minimum order required. Standard delivery takes 3-5 business days through our trusted courier partners.",
+      "A flat Rs. 200 delivery charge applies to every order, anywhere in Pakistan. We ship nationwide through trusted courier partners and most orders are delivered within 2-4 working days.",
   },
   {
     id: "easy_returns",

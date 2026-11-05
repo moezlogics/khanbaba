@@ -31,10 +31,9 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
   } = totals
 
   const hasShippingMethod = Array.isArray(shipping_methods) && shipping_methods.length > 0
-  const isFreeShipping = hasShippingMethod && (shipping_subtotal ?? 0) === 0
   const hasDiscount = !!discount_subtotal && discount_subtotal > 0
 
-  // Calculate total savings (discount + free shipping equivalent)
+  // Total savings (discounts only — delivery is a flat fee)
   const totalSavings = discount_subtotal ?? 0
   const savingsPercent =
     original_item_subtotal && original_item_subtotal > 0 && totalSavings > 0
@@ -82,21 +81,13 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
           </div>
         )}
 
-        {/* Shipping — green "FREE" badge when free */}
+        {/* Shipping — flat delivery fee */}
         <div className="flex items-center justify-between">
           <span>Shipping</span>
           <span data-testid="cart-shipping" data-value={shipping_subtotal || 0}>
             {!hasShippingMethod ? (
               <span className="text-ink/45 italic">
                 Calculated at checkout
-              </span>
-            ) : isFreeShipping ? (
-              <span className="inline-flex items-center gap-1 font-semibold text-success">
-                <i
-                  className="ph-fill ph-check-circle text-[13px]"
-                  aria-hidden
-                />
-                FREE
               </span>
             ) : (
               <span className="font-medium text-ink">
