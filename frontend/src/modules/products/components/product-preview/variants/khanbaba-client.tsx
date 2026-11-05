@@ -38,16 +38,23 @@ function packSizes(product: ProductCardProps["product"]): string[] {
     .map((x) => x.v)
 }
 
-/** The variant that has this pack size. */
+/**
+ * The variant that has this pack size: matched on the variant's option
+ * values, or — when a listing didn't load those — on its title ("250g").
+ */
 function variantForSize(
   product: ProductCardProps["product"],
   optionId: string | undefined,
   size: string
 ): Variant | undefined {
-  return (product.variants ?? []).find((v) =>
-    (v.options ?? []).some(
-      (o: any) => o.value === size && (!optionId || !o.option_id || o.option_id === optionId)
-    )
+  const variants = product.variants ?? []
+  const norm = (s: unknown) => String(s ?? "").trim().toLowerCase()
+  return (
+    variants.find((v) =>
+      (v.options ?? []).some(
+        (o: any) => o.value === size && (!optionId || !o.option_id || o.option_id === optionId)
+      )
+    ) ?? variants.find((v) => norm(v.title) === norm(size))
   )
 }
 

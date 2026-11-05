@@ -13,7 +13,9 @@
  *    (secondary hover image), variants.calculated_price (price),
  *    variants.id (defaultVariantId)
  *  - paths: categories (category URL building)
- *  - size chips: options + option values (250g / 500g / 1000g ...)
+ *  - size chips: options + option values (250g / 500g / 1000g ...) and
+ *    each variant's own option values, so a picked size maps to its
+ *    variant (price + add to cart on the Khan Baba card)
  *  - inStock refinement: variants.inventory_quantity + manage_inventory
  *
  * Deliberately NOT `+metadata`: imported products carry their full rich
@@ -26,4 +28,4 @@
  * fetches.
  */
 export const PRODUCT_CARD_FIELDS =
-  "id,handle,title,thumbnail,created_at,*images,*options,*options.values,*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,*categories"
+  "id,handle,title,thumbnail,created_at,*images,*options,*options.values,variants.id,variants.title,*variants.options,*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,*categories"

@@ -62,7 +62,9 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   return (
     <div
       className={clx(
-        "relative w-full overflow-hidden bg-surface rounded-[var(--radius-card)] transition-shadow duration-300 group-hover:shadow-md",
+        // No hover effect on product images (no zoom, no shadow) — asked
+        // for by the store owner; the image stays still under the cursor.
+        "relative w-full overflow-hidden bg-surface rounded-[var(--radius-card)]",
         className,
         // Use the aspectClass prop (callers pass it from site-settings),
         // else the legacy size/isFeatured heuristic. NOTE: do NOT read
@@ -100,7 +102,7 @@ const ImageOrPlaceholder = ({
     <Image
       src={image}
       alt={alt || "Product thumbnail"}
-      className="absolute inset-0 object-cover object-center transition-transform duration-700 group-hover:scale-105"
+      className="absolute inset-0 object-cover object-center"
       draggable={false}
       quality={75}
       sizes={sizes || "(max-width: 576px) 50vw, (max-width: 992px) 33vw, 25vw"}
