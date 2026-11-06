@@ -4,7 +4,9 @@ import { Metadata } from "next"
 
 import OrderOverview from "@modules/account/components/order-overview"
 import AccountPageHeader from "@modules/account/components/page-header"
-import { notFound, redirect } from "next/navigation"
+import GuestDashboard from "@modules/account/components/guest-dashboard"
+import { redirect } from "next/navigation"
+import { retrieveCustomer } from "@lib/data/customer"
 import { listOrders } from "@lib/data/orders"
 import Divider from "@modules/common/components/divider"
 import TransferRequestForm from "@modules/account/components/transfer-request-form"
@@ -16,7 +18,16 @@ export const metadata: Metadata = {
 }
 
 export default async function Orders() {
-  const orders = await listOrders()
+  // The footer's "Track order" link lands here, mostly from guest
+  // (cash-on-delivery) shoppers who never logged in. Listing orders needs
+  // a signed-in customer — without one it threw and the page rendered
+  // empty — so guests get the guest dashboard with their orders instead.
+  const customer = await retrieveCustomer().catch(() => null)
+  if (!customer) {
+    return <GuestDashboard />
+  }
+
+  const orders = await listOrders().catch(() => null)
 
   if (!orders) {
     redirect("/my-account/")

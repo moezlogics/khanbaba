@@ -50,7 +50,7 @@ export default async function Footer() {
   const helpLinks = [
     { href: "/about-us", label: "About us" },
     { href: "/contact-us", label: "Contact" },
-    { href: "/my-account/orders", label: "Track order" },
+    { href: "/my-account/orders/", label: "Track order" },
     { href: "/refund_returns", label: "Refund policy" },
     { href: "/terms-conditions", label: "Terms" },
     { href: "/privacy-policy", label: "Privacy" },
